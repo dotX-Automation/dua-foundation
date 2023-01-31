@@ -1,0 +1,185 @@
+# Stanis drone deployment and development environment containers specification.
+#
+# Roberto Masocco <robmasocco@gmail.com>
+# Alessandro Tenaglia <alessandro.tenaglia42@gmail.com>
+#
+# March 15, 2022
+
+version: "3.9"
+
+services:
+  # Up Squared deployment target
+  stanis-base:
+    build:
+      context: .
+      network: host
+      args:
+        TARGET: base
+    network_mode: "host"
+    environment:
+      TERM: xterm-256color
+      DISPLAY:
+      SHELL: /usr/bin/zsh
+      BOARD: $USER
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
+    user: ros
+    stdin_open: false
+    tty: true
+    working_dir: /home/ros/workspace
+    command: ["/bin/bash", "-c", "trap 'exit 0' TERM; sleep infinity & wait"]
+    volumes:
+      - /dev:/dev
+      - /sys:/sys
+      - ~/.Xauthority:/home/ros/.Xauthority:rw
+      - ~/.ssh:/home/ros/.ssh
+      - ~/.gitconfig:/home/ros/.gitconfig
+      - ./config/.aliases.sh:/home/ros/.aliases.sh:rw
+      - ./config/.p10k.zsh:/home/ros/.p10k.zsh:rw
+      - ./config/.ros2_cmds.sh:/home/ros/.ros2_cmds.sh:rw
+      - ./config/.zshrc:/home/ros/.zshrc:rw
+      - ./config/zsh_history:/home/ros/zsh_history
+      - ./config/.bashrc:/home/ros/.bashrc:rw
+      - ./config/.stanis_aliases.sh:/home/ros/.stanis_aliases.sh:rw
+      - ./config/defaults-up.yaml:/home/ros/.colcon/defaults.yaml:rw
+      - /etc/localtime:/etc/localtime:ro
+      - type: bind
+        source: ./
+        target: /home/ros/workspace
+
+  # Nvidia Jetson Xavier NX deployment target
+  stanis-base-nx:
+    build:
+      context: .
+      network: host
+      args:
+        TARGET: base-nx
+    network_mode: "host"
+    environment:
+      TERM: xterm-256color
+      DISPLAY:
+      SHELL: /usr/bin/zsh
+      BOARD: $USER
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
+    user: ros
+    stdin_open: false
+    tty: true
+    working_dir: /home/ros/workspace
+    command: ["/bin/bash", "-c", "trap 'exit 0' TERM; sleep infinity & wait"]
+    volumes:
+      - /dev:/dev
+      - /sys:/sys
+      - ~/.Xauthority:/home/ros/.Xauthority:rw
+      - ~/.ssh:/home/ros/.ssh
+      - ~/.gitconfig:/home/ros/.gitconfig
+      - ./config/.aliases.sh:/home/ros/.aliases.sh:rw
+      - ./config/.p10k.zsh:/home/ros/.p10k.zsh:rw
+      - ./config/.ros2_cmds.sh:/home/ros/.ros2_cmds.sh:rw
+      - ./config/.zshrc:/home/ros/.zshrc:rw
+      - ./config/zsh_history:/home/ros/zsh_history
+      - ./config/.bashrc:/home/ros/.bashrc:rw
+      - ./config/.stanis_aliases.sh:/home/ros/.stanis_aliases.sh:rw
+      - ./config/defaults-nx.yaml:/home/ros/.colcon/defaults.yaml:rw
+      - /etc/localtime:/etc/localtime:ro
+      - /run/jtop.sock:/run/jtop.sock
+      - type: bind
+        source: ./
+        target: /home/ros/workspace
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+
+  # VS Code Development target
+  stanis-dev:
+    build:
+      context: .
+      network: host
+      args:
+        TARGET: dev
+    network_mode: "host"
+    environment:
+      TERM: xterm-256color
+      DISPLAY:
+      SHELL: /usr/bin/zsh
+      BOARD: $USER
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
+    user: ros
+    stdin_open: false
+    tty: true
+    working_dir: /home/ros/workspace
+    command: ["/bin/bash", "-c", "trap 'exit 0' TERM; sleep infinity & wait"]
+    volumes:
+      - /dev:/dev
+      - /sys:/sys
+      - ~/.Xauthority:/home/ros/.Xauthority:rw
+      - ~/.ssh:/home/ros/.ssh
+      - ~/.gitconfig:/home/ros/.gitconfig
+      - ./config/.aliases.sh:/home/ros/.aliases.sh:rw
+      - ./config/.p10k.zsh:/home/ros/.p10k.zsh:rw
+      - ./config/.ros2_cmds.sh:/home/ros/.ros2_cmds.sh:rw
+      - ./config/.zshrc:/home/ros/.zshrc:rw
+      - ./config/zsh_history:/home/ros/zsh_history
+      - ./config/.bashrc:/home/ros/.bashrc:rw
+      - ./config/.stanis_aliases.sh:/home/ros/.stanis_aliases.sh:rw
+      - ./config/defaults-dev.yaml:/home/ros/.colcon/defaults.yaml:rw
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/gazebo:/home/ros/.gazebo
+      - type: bind
+        source: ./
+        target: /home/ros/workspace
+
+  # VS Code Development with Nvidia GPU target
+  stanis-nvidia:
+    build:
+      context: .
+      network: host
+      args:
+        TARGET: nvidia
+    network_mode: "host"
+    environment:
+      TERM: xterm-256color
+      DISPLAY:
+      SHELL: /usr/bin/zsh
+      BOARD: $USER
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
+    user: ros
+    stdin_open: false
+    tty: true
+    working_dir: /home/ros/workspace
+    command: ["/bin/bash", "-c", "trap 'exit 0' TERM; sleep infinity & wait"]
+    volumes:
+      - /dev:/dev
+      - /sys:/sys
+      - ~/.Xauthority:/home/ros/.Xauthority:rw
+      - ~/.ssh:/home/ros/.ssh
+      - ~/.gitconfig:/home/ros/.gitconfig
+      - ./config/.aliases.sh:/home/ros/.aliases.sh:rw
+      - ./config/.p10k.zsh:/home/ros/.p10k.zsh:rw
+      - ./config/.ros2_cmds.sh:/home/ros/.ros2_cmds.sh:rw
+      - ./config/.zshrc:/home/ros/.zshrc:rw
+      - ./config/zsh_history:/home/ros/zsh_history
+      - ./config/.bashrc:/home/ros/.bashrc:rw
+      - ./config/.stanis_aliases.sh:/home/ros/.stanis_aliases.sh:rw
+      - ./config/gazebo:/home/ros/.gazebo
+      - /etc/localtime:/etc/localtime:ro
+      - type: bind
+        source: ./
+        target: /home/ros/workspace
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
