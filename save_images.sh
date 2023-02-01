@@ -5,9 +5,14 @@
 # Roberto Masocco <robmasocco@gmail.com>
 # Intelligent Systems Lab <isl.torvergata@gmail.com>
 #
-# June 29, 2022
+# February 1, 2023
 
-# NOTE: This will take up A LOT of disk space!
+# NOTE: This requires a lot of disk space.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then set -o xtrace; fi
 
 function usage {
   echo >&2 "Usage:"
@@ -18,7 +23,12 @@ function usage {
   echo >&2 "-l              Do not pull images, using locally available ones instead"
 }
 
-REPO=intelligentsystemslabutv/stanis
+if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
+  usage
+  exit 1
+fi
+
+REPO=intelligentsystemslabutv/dua-foundation
 SAVEDIR=/home/$USER/Downloads
 LOCAL=""
 
