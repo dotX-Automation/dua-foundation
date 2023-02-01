@@ -1,21 +1,24 @@
 #!/bin/bash
 
-# Automated Stanis project images builder script.
+# Automated DUA base units images build script.
 #
 # Roberto Masocco <robmasocco@gmail.com>
+# Intelligent Systems Lab <isl.torvergata@gmail.com>
 #
-# April 4, 2022
+# February 1, 2023
 
-# NOTE: For JORDAN or other heavy-duty systems only!
-# NOTE: Make sure that a Docker Hub PAT is enabled for this system!
-# NOTE: Make sure that the system is capable of building multi-arch images!
+# NOTE: This requires a valid Docker Hub login.
 
-# Verify that the PWD is the project root directory
-CURR_DIR=${PWD##*/}
-REQ_CURR_DIR="stanis"
-if [[ $CURR_DIR != "$REQ_CURR_DIR" ]]; then
-  echo >&2 "ERROR: Wrong path, this script must run inside $REQ_CURR_DIR"
-  return 1
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then set -o xtrace; fi
+
+if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
+  echo >&2 "Usage:"
+  echo >&2 "    build_images.sh IMAGE [IMAGE ...] [OPTIONS]"
+  echo >&2 "OPTIONS refer to docker-compose build options."
+  exit 1
 fi
 
 # Check input arguments
@@ -28,16 +31,7 @@ fi
 for ARG in "$@"
 do
   case $ARG in
-    base-nx)
-      TARGETS+=("$ARG")
-      ;;
-    base)
-      TARGETS+=("$ARG")
-      ;;
-    dev)
-      TARGETS+=("$ARG")
-      ;;
-    nvidia)
+    x86-base)
       TARGETS+=("$ARG")
       ;;
     --*)
@@ -51,11 +45,9 @@ do
 done
 echo "Build options: " "${BUILD_FLAGS[@]}"
 
-cd docker || return 1
-
 # Log in as ISL
 unalias docker
-docker login -u intelligentsystemslabutv
+docker login -u intelligentsystemslabutv || exit 1
 
 # Build requested images
 for TARGET in "${TARGETS[@]}"; do
@@ -67,7 +59,5 @@ for TARGET in "${TARGETS[@]}"; do
   fi
   echo "Pushing $TARGET image..."
   sleep 3
-  docker-compose push "$TARGET"
+  docker-compose push "$TARGET" || exit 1
 done
-
-cd ../
