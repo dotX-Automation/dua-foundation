@@ -69,7 +69,7 @@ if [[ -z "$LOCAL" ]]; then
   echo "Pulling all images..."
   sleep 3
   for TAG in "${TAGS[@]}"; do
-    docker pull "$REPO:$TAG" || exit 1
+    docker pull "$REPO:$TAG"
   done
 fi
 
@@ -78,5 +78,5 @@ sleep 1
 
 for TAG in "${TAGS[@]}"; do
   echo "Saving $TAG image..."
-  docker save "$REPO:$TAG" | pigz -c > "$SAVEDIR/${REPO##*/}-$TAG.gz" || exit 1
+  docker save "$REPO:$TAG" | pigz -c > "$SAVEDIR/${REPO##*/}-$TAG.gz"
 done

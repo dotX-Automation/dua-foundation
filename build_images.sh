@@ -23,7 +23,7 @@ fi
 
 # Check input arguments
 TARGETS=()
-BUILD_FLAGS=("--pull")
+BUILD_FLAGS=()
 if [[ $# -eq 0 ]]; then
   echo >&2 "ERROR: No image specified"
   return 1
@@ -46,8 +46,7 @@ done
 echo "Build options: " "${BUILD_FLAGS[@]}"
 
 # Log in as ISL
-unalias docker
-docker login -u intelligentsystemslabutv || exit 1
+docker login -u intelligentsystemslabutv
 
 # Build requested images
 for TARGET in "${TARGETS[@]}"; do
@@ -59,5 +58,5 @@ for TARGET in "${TARGETS[@]}"; do
   fi
   echo "Pushing $TARGET image..."
   sleep 3
-  docker-compose push "$TARGET" || exit 1
+  docker-compose push "$TARGET"
 done
