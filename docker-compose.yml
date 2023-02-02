@@ -31,3 +31,27 @@ services:
       - type: bind
         source: ./
         target: /root/workspace
+
+  x86-dev:
+    build:
+      context: .
+      network: host
+      dockerfile: Dockerfile.x86-dev
+    image: intelligentsystemslabutv/dua-foundation:x86-dev
+    network_mode: "host"
+    environment:
+      TERM: xterm-256color
+      DISPLAY:
+      SHELL: /usr/bin/zsh
+    privileged: true
+    stdin_open: false
+    tty: true
+    command: ["/bin/bash", "-c", "trap 'exit 0' TERM; sleep infinity & wait"]
+    volumes:
+      - /dev:/dev
+      - /sys:/sys
+      - ~/.Xauthority:/root/.Xauthority:rw
+      - /etc/localtime:/etc/localtime:ro
+      - type: bind
+        source: ./
+        target: /root/workspace

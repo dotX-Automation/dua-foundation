@@ -34,6 +34,9 @@ do
     x86-base)
       TARGETS+=("$ARG")
       ;;
+    x86-dev)
+      TARGETS+=("$ARG")
+      ;;
     --*)
       BUILD_FLAGS+=("$ARG")
       ;;
