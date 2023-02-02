@@ -1,0 +1,288 @@
+# x86 development DUA base unit with Nvidia GPU/CUDA support.
+#
+# Roberto Masocco <robmasocco@gmail.com>
+# Intelligent Systems Lab <isl.torvergata@gmail.com>
+#
+# February 2, 2023
+
+# BUILD THIS WITH:
+# --network host
+
+# Start from an Nvidia CUDA+cuDNN image based on Ubuntu 22.04
+# NOTE: The correct version of the CUDA image must be chosen according to:
+# - The driver version installed on the host systems this image will be run on.
+# - The CUDA version required by the software to be run on this image.
+# - The cuDNN version required by the software to be run on this image.
+# - The Ubuntu version required by the software to be run on this image.
+# - The Ubuntu version of the CUDA image.
+# Please open an issue if you require a different version.
+FROM --platform=linux/amd64 nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Create internal users group
+RUN groupadd -r internal
+
+# Install basic utilities, dependencies, and development tools
+# These include:
+# - C/C++ toolchain and debuggers
+# - Python 3 interpreter, testers, basic modules and scientific libraries
+# - Linters
+# - OpenCV dependencies for x86 systems
+# - Boost C++ libraries
+# - System utilities
+# - Zsh shell
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  apt-utils \
+  build-essential \
+  ca-certificates \
+  ccache \
+  cmake \
+  cppcheck \
+  curl \
+  dirmngr \
+  dmidecode \
+  file \
+  fuse \
+  g++ \
+  gcc \
+  gdb \
+  git \
+  gnupg2 \
+  htop \
+  iproute2 \
+  less \
+  lcov \
+  libasio-dev \
+  libavcodec-dev \
+  libavformat-dev \
+  libboost-all-dev \
+  libdc1394-dev \
+  libgeographic-dev \
+  libgtk2.0-dev \
+  libjpeg-dev \
+  libpng-dev \
+  libswscale-dev \
+  libtbb2 \
+  libtbb-dev \
+  libtiff-dev \
+  libtinyxml2-dev \
+  libxml2-utils \
+  locales \
+  lsb-core \
+  lsb-release \
+  make \
+  manpages-dev \
+  manpages-posix-dev \
+  minicom \
+  nano \
+  neofetch \
+  ninja-build \
+  openssh-client \
+  pkg-config \
+  python-dev-is-python3 \
+  python-is-python3 \
+  python3 \
+  python3-argcomplete \
+  python3-autopep8 \
+  python3-dev \
+  python3-numpy \
+  python3-pip \
+  python3-pygments \
+  python3-pytest-pylint \
+  python3-vcstools \
+  screen \
+  shellcheck \
+  software-properties-common \
+  sudo \
+  uncrustify \
+  unzip \
+  valgrind \
+  vim \
+  wget \
+  zip \
+  zsh \
+  zsh-doc && \
+  add-apt-repository universe && \
+  apt-get remove -y modemmanager && \
+  apt-get autoremove -y && \
+  apt-get autoclean && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# Install Java 11
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  ant \
+  openjdk-11-jre \
+  openjdk-11-jdk \
+  libvecmath-java && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
+  update-alternatives --set java $(update-alternatives --list java | grep "java-11")
+
+# Install Python 3 tools and dependencies
+# These include:
+# - Argument parsers
+# - Testers
+# - YAML, TOML parsers
+# - Package managers
+# - Code formatters
+# - Code coverage testers
+# - Code linters
+# - Template engines
+# - Scientific libraries
+# - transitions library for FSM software
+RUN yes | pip3 install -U \
+  argcomplete \
+  argparse \
+  cerberus \
+  coverage \
+  empy \
+  flake8 \
+  flake8-blind-except \
+  flake8-builtins \
+  flake8-class-newline \
+  flake8-comprehensions \
+  flake8-deprecated \
+  flake8-docstrings \
+  flake8-import-order \
+  flake8-quotes \
+  flask \
+  matplotlib \
+  numpy \
+  nunavut \
+  packaging \
+  pandas \
+  pkgconfig \
+  pyserial \
+  pyros-genmsg \
+  pytest \
+  pytest-cov \
+  python-dateutil \
+  pytest-repeat \
+  pytest-runner \
+  pytest-rerunfailures \
+  pyyaml \
+  requests \
+  setuptools \
+  six \
+  testresources \
+  toml \
+  transitions \
+  wheel
+
+# Configure language and locale
+RUN locale-gen en_US.UTF-8 && \
+  update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ENV LANG en_US.UTF-8
+
+# Build and install Eigen3
+WORKDIR /opt
+RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libeigen/eigen.git && \
+  cd eigen && \
+  mkdir build && \
+  cd build && \
+  cmake .. && \
+  make -j$(nproc --all) && \
+  make install
+WORKDIR /root
+
+# Build and install OpenCV (with extra modules aka "contrib") with CUDA support
+WORKDIR /opt
+RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv.git && \
+  git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv_contrib.git && \
+  cd opencv && \
+  mkdir build && \
+  cd build && \
+  cmake \
+    -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D CUDA_ARCH_BIN="${CUDA_ARCH_BIN}" \
+    -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
+    -D EIGEN_INCLUDE_PATH=/usr/include/eigen3 \
+    -D OPENCV_GENERATE_PKGCONFIG=ON \
+    -D OPENCV_ENABLE_NONFREE=ON \
+    -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
+    -D WITH_CUBLAS=ON \
+    -D WITH_CUDA=ON \
+    -D WITH_CUDNN=ON \
+    -D WITH_EIGEN=ON \
+    -D WITH_OPENCL=OFF \
+    -D WITH_QT=OFF \
+    -D WITH_TBB=ON \
+    -D WITH_V4L=ON \
+    -D ENABLE_FAST_MATH=ON \
+    -D CUDA_FAST_MATH=ON \
+    -D OPENCV_DNN_CUDA=ON \
+    -D BUILD_TBB=ON \
+    -D BUILD_EXAMPLES=OFF \
+    -D BUILD_TESTS=OFF \
+    -D BUILD_opencv_python2=OFF \
+    -D BUILD_opencv_python3=ON \
+    -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D INSTALL_C_EXAMPLES=OFF \
+    -D PYTHON_EXECUTABLE=$(which python2) \
+    -D PYTHON3_EXECUTABLE=$(which python3) \
+    -D PYTHON3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
+    -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+  .. && \
+  make -j$(nproc --all) && \
+  make install && \
+  ldconfig
+RUN yes | pip3 install -U -I \
+  opencv-python \
+  opencv-contrib-python
+WORKDIR /root
+
+# Install ROS 2 Humble Hawksbill desktop
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+RUN  apt-get update && apt-get install -y --no-install-recommends \
+  python3-colcon-argcomplete \
+  python3-colcon-common-extensions \
+  python3-rosdep \
+  ros-humble-ament-lint \
+  ros-humble-angles \
+  ros-humble-cv-bridge \
+  ros-humble-desktop \
+  ros-humble-diagnostic-msgs \
+  ros-humble-diagnostic-updater \
+  ros-humble-eigen3-cmake-module \
+  ros-humble-gazebo-ros-pkgs \
+  ros-humble-gazebo-ros2-control \
+  ros-humble-geographic-msgs \
+  ros-humble-image-common \
+  ros-humble-image-geometry \
+  ros-humble-image-pipeline \
+  ros-humble-image-transport \
+  ros-humble-image-transport-plugins \
+  ros-humble-joint-state-publisher \
+  ros-humble-launch-testing \
+  ros-humble-launch-testing-ament-cmake \
+  ros-humble-launch-testing-ros \
+  ros-humble-ros2-control \
+  ros-humble-ros2-controllers \
+  ros-humble-rqt-robot-steering \
+  ros-humble-vision-msgs \
+  ros-humble-vision-opencv \
+  ros-humble-xacro && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# Configure ROS Middleware implementation to use
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+
+# Build and install dua-utils
+WORKDIR /opt
+RUN git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-utils && \
+  cd ros/dua-utils && \
+  . /opt/ros/humble/setup.sh && \
+  colcon build --event-handlers console_direct+ --symlink-install
+WORKDIR /root
+
+ENV DEBIAN_FRONTEND=dialog
+
+# Finalize image
+LABEL author.name="Roberto Masocco"
+LABEL author.email="robmasocco@gmail.com"
+LABEL organization="Intelligent Systems Lab"
+LABEL description="x86 development DUA base unit with Nvidia GPU/CUDA support"
+LABEL platform="linux/amd64"
+CMD ["bash"]
