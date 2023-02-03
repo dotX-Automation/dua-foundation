@@ -5,6 +5,10 @@ Dockerfiles and build configurations for the base units of the Distributed Unifi
 ## Currently supported images
 
 - [x] [`x86-base`](Dockerfile.x86-base)
+- [x] [`x86-dev`](Dockerfile.x86-dev)
+- [x] ['x86-cudev`](Dockerfile.x86-cudev)
+- [ ] `armv8-base`
+- [ ] `armv8-jetson-base`
 
 See the individual Dockerfiles for more information, build steps, and image contents.
 
