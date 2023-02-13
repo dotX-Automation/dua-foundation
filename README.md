@@ -6,7 +6,7 @@ Dockerfiles and build configurations for the base units of the Distributed Unifi
 
 - [x] [`x86-base`](Dockerfile.x86-base)
 - [x] [`x86-dev`](Dockerfile.x86-dev)
-- [x] ['x86-cudev`](Dockerfile.x86-cudev)
+- [x] [`x86-cudev`](Dockerfile.x86-cudev)
 - [ ] `armv8-base`
 - [ ] `armv8-jetson-base`
 
@@ -29,6 +29,23 @@ Dockefiles are independent and can be built separately. This is to ensure that e
 [`build_images.sh`](build_images.sh) is a helper script to build all images.
 
 [`save_images.sh`](save_images.sh) is a helper script to save all images to a compressed archive (requires `pigz`).
+
+### Host system requirements
+
+#### For all base units
+
+- Docker
+- `docker-compose` (V2 is preferred, since V1 is going to be deprecated)
+- `nvidia-container-toolkit` (optional, for `x86-cudev`)
+- `pigz` (optional, for `save_images.sh`)
+
+#### For `x86-*` base units
+
+- Ubuntu 22.04 is preferred (but other distros should work too)
+
+#### For `armv8-jetson-base` base unit
+
+- JetPack 5.0.2, since the base image is also based on JetPack 5.0.2
 
 ---
 
