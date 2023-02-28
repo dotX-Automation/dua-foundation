@@ -28,6 +28,7 @@ services:
       - /sys:/sys
       - ~/.Xauthority:/root/.Xauthority:rw
       - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - type: bind
         source: ./
         target: /root/workspace
@@ -52,6 +53,7 @@ services:
       - /sys:/sys
       - ~/.Xauthority:/root/.Xauthority:rw
       - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - type: bind
         source: ./
         target: /root/workspace
@@ -76,6 +78,7 @@ services:
       - /sys:/sys
       - ~/.Xauthority:/root/.Xauthority:rw
       - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - type: bind
         source: ./
         target: /root/workspace
