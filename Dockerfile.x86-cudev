@@ -186,6 +186,7 @@ RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libe
 WORKDIR /root
 
 # Build and install OpenCV (with extra modules aka "contrib") with CUDA support
+# NOTE: Currently, CUDA support is based on Compute Capability 8.6 (Ampere)
 WORKDIR /opt
 RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv.git && \
   git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv_contrib.git && \
@@ -195,7 +196,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   cmake \
     -D CMAKE_BUILD_TYPE=RELEASE \
     -D CMAKE_INSTALL_PREFIX=/usr/local \
-    -D CUDA_ARCH_BIN="${CUDA_ARCH_BIN}" \
+    -D CUDA_ARCH_BIN="8.6" \
     -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
     -D EIGEN_INCLUDE_PATH=/usr/include/eigen3 \
     -D OPENCV_GENERATE_PKGCONFIG=ON \

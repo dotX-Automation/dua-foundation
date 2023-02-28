@@ -8,7 +8,7 @@ Dockerfiles and build configurations for the base units of the Distributed Unifi
 - [x] [`x86-dev`](Dockerfile.x86-dev)
 - [x] [`x86-cudev`](Dockerfile.x86-cudev)
 - [ ] `armv8-base`
-- [ ] `armv8-jetson5-base`
+- [ ] `armv8-jetson5c7-base`
 
 See the individual Dockerfiles for more information, build steps, and image contents.
 
@@ -43,7 +43,7 @@ Dockefiles are independent and can be built separately. This is to ensure that e
 
 - Ubuntu 22.04 is preferred (but other distros should work too)
 
-#### For `armv8-jetson-base` base unit
+#### For `armv8-jetson5c7-base` base unit
 
 - JetPack 5.0.2, since the base image is also based on JetPack 5.0.2
 
