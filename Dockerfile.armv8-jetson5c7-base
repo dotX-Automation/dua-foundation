@@ -180,7 +180,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # - Template engines
 # - Scientific libraries
 # - transitions library for FSM software
-# - Jetson stats software
+# - Jetson stats software (v. 4.0.0 because of a bug affecting pip installation)
 RUN yes | pip3 install -U \
   argcomplete \
   argparse \
@@ -197,7 +197,7 @@ RUN yes | pip3 install -U \
   flake8-import-order \
   flake8-quotes \
   flask \
-  jetson-stats \
+  jetson-stats==4.0.0 \
   matplotlib \
   numpy \
   nunavut \
