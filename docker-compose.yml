@@ -115,7 +115,7 @@ services:
     environment:
       TERM: xterm-256color
       DISPLAY:
-      # TODO SHELL: /usr/bin/zsh
+      SHELL: /usr/bin/zsh
     privileged: true
     stdin_open: false
     tty: true

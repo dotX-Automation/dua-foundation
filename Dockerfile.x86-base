@@ -210,9 +210,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   make -j$(nproc --all) && \
   make install && \
   ldconfig
-RUN yes | pip3 install -U -I \
-  opencv-python \
-  opencv-contrib-python
+ENV PYTHONPATH=/usr/lib/python3/dist-packages${PYTHONPATH:+:${PYTHONPATH}}
 WORKDIR /root
 
 # Install ROS 2 Humble Hawksbill base

@@ -276,7 +276,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   make -j$(nproc --all) && \
   make install && \
   ldconfig
-# TODO Python packages from pip needed here?
+ENV PYTHONPATH=/usr/lib/python3.8/site-packages${PYTHONPATH:+:${PYTHONPATH}}
 WORKDIR /root
 
 ENV DEBIAN_FRONTEND=dialog
