@@ -46,8 +46,8 @@ ENV PATH="/usr/local/cuda/bin:${PATH}"
 ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
 
 # Configure ROS 2 repository
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  curl && \
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends curl && \
   curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
@@ -108,8 +108,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libmp3lame-dev \
   libopenblas-dev \
   libopencore-amrnb-dev \
-  libopencv \
-  libopencv-dev \
   libpng-dev \
   libprotobuf-dev \
   libswscale-dev \
@@ -132,7 +130,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   manpages-posix-dev \
   minicom \
   nano \
-  neofetch \
   ninja-build \
   openssh-client \
   pkg-config \
@@ -142,6 +139,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3 \
   python3-argcomplete \
   python3-autopep8 \
+  python3-colcon-clean \
   python3-dev \
   python3-numpy \
   python3-pip \
@@ -226,6 +224,7 @@ RUN yes | pip3 install -U \
   pytest-rerunfailures \
   pyyaml \
   requests \
+  scipy \
   setuptools \
   six \
   testresources \
@@ -233,21 +232,39 @@ RUN yes | pip3 install -U \
   transitions \
   wheel
 
+# Ensure that the Python environment is correctly sourced
+# NOTE: Set this to the output of:
+# python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
+ENV PYTHONPATH=/usr/lib/python3.8/site-packages${PYTHONPATH:+:${PYTHONPATH}}
+
 # Configure language and locale
 RUN locale-gen en_US.UTF-8 && \
   update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ENV LANG en_US.UTF-8
 
 # Build ROS 2 Humble Hawksbill from source
-# TODO Merge steps
+# NOTE: The procedure is not obvious, so here is a brief explanation:
+# 1. Create a workspace
+# 2. Clone the repos file, containing the default plus some extras
+# 3. Initialize rosdep
+# 4. Update rosdep
+# 5. Install dependencies via rosdep
+# 6. Install OpenCV 4.2.0 with development files, which may have been deleted by rosdep
+# 7. Build the workspace
+# 8. Remove log/, but build/ and src/ are required for stuff to work
+# 9. Simlink the setup.* files to /opt/ros/humble, as those of a binary install
+# Step 7 highly depends on the platform and build environment.
+# In this case, we need to:
+# - Install a version of OpenCV that is compatible with this codebase, hence 4.2.0
+# - Ensure that the Python 3.8.0 environment is found by CMake (it's the one preinstalled by Nvidia)
+# - Ensure that OpenCV 4.2.0 is found by CMake
 WORKDIR /opt
-RUN mkdir -p ros/src
-RUN --mount=type=bind,source=ros2_humble_repos.yml,target=/opt/ros/repos.yml \
-  cd ros && \
-  vcs import --input repos.yml src && \
+RUN --mount=type=bind,source=ros2_humble_repos.yml,target=/opt/repos.yml \
+  mkdir -p ros/humble/src && \
+  cd ros/humble && \
+  vcs import --input /opt/repos.yml src && \
   rosdep init && \
-  rosdep update --rosdistro=humble
-RUN cd ros && \
+  rosdep update --rosdistro=humble && \
   apt-get update && \
   rosdep install \
     --rosdistro=humble \
@@ -255,68 +272,109 @@ RUN cd ros && \
     --ignore-src \
     -y \
     --skip-keys="fastcdr rti-connext-dds-6.0.1 urdfdom_headers" && \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
-#RUN cd ros && \
-#  colcon build --symlink-install
-# colcon build --symlink-install --cmake-args -DPython3_EXECUTABLE=/usr/bin/python3.8 -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so -DPython3_INCLUDE_DIR=/usr/include/python3.8 --ament-cmake-args -DPython3_EXECUTABLE=/usr/bin/python3.8 -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so -DPython3_INCLUDE_DIR=/usr/include/python3.8
+  apt-get install -y --no-install-recommends libopencv-dev && \
+  colcon build \
+    --symlink-install \
+    --cmake-args \
+      -DPython3_EXECUTABLE=/usr/bin/python3.8 \
+      -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
+      -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
+      -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 \
+    --ament-cmake-args \
+      -DPython3_EXECUTABLE=/usr/bin/python3.8 \
+      -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
+      -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
+      -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 && \
+  rm -rf log && \
+  ln -s /opt/ros/humble/install/setup.sh /opt/ros/humble/setup.sh && \
+  ln -s /opt/ros/humble/install/setup.bash /opt/ros/humble/setup.bash && \
+  ln -s /opt/ros/humble/install/setup.zsh /opt/ros/humble/setup.zsh && \
+  ln -s /opt/ros/humble/install/local_setup.sh /opt/ros/humble/local_setup.sh && \
+  ln -s /opt/ros/humble/install/local_setup.bash /opt/ros/humble/local_setup.bash && \
+  ln -s /opt/ros/humble/install/local_setup.zsh /opt/ros/humble/local_setup.zsh && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
+  chgrp -R internal /opt/ros
+WORKDIR /root
+
+# Configure ROS Middleware implementation to use
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+
+# Build and install dua-utils
+WORKDIR /opt
+RUN git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-utils && \
+  cd ros/dua-utils && \
+  . /opt/ros/humble/setup.sh && \
+  colcon build --symlink-install && \
+  rm -rf log && \
+  chgrp -R internal /opt/ros/dua-utils
 WORKDIR /root
 
 # Build and install Eigen3
-#WORKDIR /opt
-#RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libeigen/eigen.git && \
-#  cd eigen && \
-#  mkdir build && \
-#  cd build && \
-#  cmake .. && \ # TODO Check CMAKE_INSTALL_PREFIX setting
-#  make -j$(nproc --all) && \
-#  make install
-#WORKDIR /root
-#
-## Build and install OpenCV (with extra modules aka "contrib") with CUDA support
-#WORKDIR /opt
-#RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv.git && \
-#  git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv_contrib.git && \
-#  cd opencv && \
-#  mkdir build && \
-#  cd build && \
-#  cmake \
-#  -D CMAKE_BUILD_TYPE=RELEASE \
-#  -D CMAKE_INSTALL_PREFIX=/usr/local \
-#  -D CUDA_ARCH_BIN="7.2" \
-#  -D CUDA_ARCH_PTX="" \
-#  -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
-#  -D EIGEN_INCLUDE_PATH=/usr/include/eigen3 \ # TODO Check, should be /usr/local/include/eigen3
-#  -D OPENCV_GENERATE_PKGCONFIG=ON \
-#  -D OPENCV_ENABLE_NONFREE=ON \
-#  -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
-#  -D WITH_CUBLAS=ON \
-#  -D WITH_CUDA=ON \
-#  -D WITH_CUDNN=ON \
-#  -D WITH_EIGEN=ON \
-#  -D WITH_OPENCL=OFF \
-#  -D WITH_QT=OFF \
-#  -D WITH_TBB=ON \
-#  -D WITH_V4L=ON \
-#  -D ENABLE_FAST_MATH=ON \
-#  -D ENABLE_NEON=ON \
-#  -D CUDA_FAST_MATH=ON \
-#  -D OPENCV_DNN_CUDA=ON \
-#  -D BUILD_TBB=ON \
-#  -D BUILD_EXAMPLES=OFF \
-#  -D BUILD_TESTS=OFF \
-#  -D BUILD_opencv_python2=OFF \
-#  -D BUILD_opencv_python3=ON \
-#  -D INSTALL_PYTHON_EXAMPLES=OFF \
-#  -D INSTALL_C_EXAMPLES=OFF \
-#  -D PYTHON_EXECUTABLE=$(which python2) \
-#  -D PYTHON3_EXECUTABLE=$(which python3) \
-#  -D PYTHON3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
-#  -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
-#  .. && \
-#  make -j$(nproc --all) && \
-#  make install && \
-#  ldconfig
-#ENV PYTHONPATH=/usr/lib/python3.8/site-packages${PYTHONPATH:+:${PYTHONPATH}}
-#WORKDIR /root
+WORKDIR /opt
+RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libeigen/eigen.git && \
+  cd eigen && \
+  mkdir build && \
+  cd build && \
+  cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
+  make -j$(nproc --all) && \
+  make install && \
+  chgrp -R internal /opt/eigen
+WORKDIR /root
+
+# Build and install OpenCV (with extra modules aka "contrib") with CUDA support
+WORKDIR /opt
+RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv.git && \
+  git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv_contrib.git && \
+  cd opencv && \
+  mkdir build && \
+  cd build && \
+  cmake \
+  -D CMAKE_BUILD_TYPE=RELEASE \
+  -D CMAKE_INSTALL_PREFIX=/usr/local \
+  -D CUDA_ARCH_BIN="7.2" \
+  -D CUDA_ARCH_PTX="" \
+  -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
+  -D EIGEN_INCLUDE_PATH=/usr/local/include/eigen3 \
+  -D OPENCV_GENERATE_PKGCONFIG=ON \
+  -D OPENCV_ENABLE_NONFREE=ON \
+  -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
+  -D WITH_CUBLAS=ON \
+  -D WITH_CUDA=ON \
+  -D WITH_CUDNN=ON \
+  -D WITH_EIGEN=ON \
+  -D WITH_OPENCL=OFF \
+  -D WITH_QT=OFF \
+  -D WITH_TBB=ON \
+  -D WITH_V4L=ON \
+  -D ENABLE_FAST_MATH=ON \
+  -D ENABLE_NEON=ON \
+  -D CUDA_FAST_MATH=ON \
+  -D OPENCV_DNN_CUDA=ON \
+  -D BUILD_TBB=ON \
+  -D BUILD_EXAMPLES=OFF \
+  -D BUILD_TESTS=OFF \
+  -D BUILD_opencv_python2=OFF \
+  -D BUILD_opencv_python3=ON \
+  -D INSTALL_PYTHON_EXAMPLES=OFF \
+  -D INSTALL_C_EXAMPLES=OFF \
+  -D PYTHON_EXECUTABLE=$(which python2) \
+  -D PYTHON3_EXECUTABLE=$(which python3) \
+  -D PYTHON3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
+  -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+  .. && \
+  make -j$(nproc --all) && \
+  make install && \
+  ldconfig && \
+  chgrp -R internal /opt/opencv && \
+  chgrp -R internal /opt/opencv_contrib
+WORKDIR /root
 
 ENV DEBIAN_FRONTEND=dialog
+
+# Finalize image
+LABEL author.name="Roberto Masocco"
+LABEL author.email="robmasocco@gmail.com"
+LABEL organization="Intelligent Systems Lab"
+LABEL description="DUA base unit for Nvidia Jetson platforms (JetPack 5, CUDA cap. 7.2)"
+LABEL platform="linux/arm64"
+CMD ["bash"]
