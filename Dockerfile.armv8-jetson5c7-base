@@ -108,6 +108,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libmp3lame-dev \
   libopenblas-dev \
   libopencore-amrnb-dev \
+  libopencv-dev \
   libpng-dev \
   libprotobuf-dev \
   libswscale-dev \
