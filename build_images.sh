@@ -16,8 +16,9 @@ if [[ "${TRACE-0}" == "1" ]]; then set -o xtrace; fi
 
 if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
   echo >&2 "Usage:"
-  echo >&2 "    build_images.sh IMAGE [IMAGE ...] [OPTIONS]"
+  echo >&2 "    build_images.sh [OPTIONS] -a | --all | IMAGE [IMAGE ...]"
   echo >&2 "OPTIONS refer to docker-compose build options."
+  echo >&2 "-a | --all triggers a build of all images."
   exit 1
 fi
 
@@ -31,14 +32,17 @@ fi
 for ARG in "$@"
 do
   case $ARG in
-    x86-base)
-      TARGETS+=("$ARG")
+    -a|--all)
+      TARGETS+=("x86-base")
+      TARGETS+=("x86-dev")
+      TARGETS+=("x86-cudev")
+      TARGETS+=("jetson5c7")
+      ALL_FOUND=1
       ;;
-    x86-dev)
-      TARGETS+=("$ARG")
-      ;;
-    x86-cudev)
-      TARGETS+=("$ARG")
+    x86-base|x86-dev|x86-cudev|jetson5c7)
+      if [[ "${ALL_FOUND-0}" != "1" ]]; then
+        TARGETS+=("$ARG")
+      fi
       ;;
     --*)
       BUILD_FLAGS+=("$ARG")
