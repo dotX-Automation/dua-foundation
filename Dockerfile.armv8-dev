@@ -1,22 +1,15 @@
-# x86 development DUA base unit with Nvidia GPU/CUDA support.
+# ARMv8 development DUA base unit.
 #
 # Roberto Masocco <robmasocco@gmail.com>
 # Intelligent Systems Lab <isl.torvergata@gmail.com>
 #
-# February 2, 2023
+# March 4, 2023
 
 # BUILD THIS WITH:
 # --network host
 
-# Start from an Nvidia CUDA+cuDNN image based on Ubuntu 22.04
-# NOTE: The correct version of the CUDA image must be chosen according to:
-# - The driver version installed on the host systems this image will be run on.
-# - The CUDA version required by the software to be run on this image.
-# - The cuDNN version required by the software to be run on this image.
-# - The Ubuntu version required by the software to be run on this image.
-# - The Ubuntu version of the CUDA image.
-# Please open an issue if you require a different version.
-FROM --platform=linux/amd64 nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
+# Start from an arm64 Ubuntu 22.04 image
+FROM --platform=linux/arm64 ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -32,7 +25,6 @@ RUN groupadd -r internal
 # - Boost C++ libraries
 # - System utilities
 # - Zsh shell
-# - Nvidia VPI libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-utils \
   build-essential \
@@ -51,26 +43,46 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   gdb \
   git \
   gnupg2 \
+  gstreamer1.0-tools \
   htop \
   iproute2 \
   less \
   lcov \
   libasio-dev \
+  libatlas-base-dev \
   libavcodec-dev \
   libavformat-dev \
+  libavresample-dev \
+  libblas-dev \
   libboost-all-dev \
-  libdc1394-dev \
+  libcanberra-gtk* \
+  libdc1394-22-dev \
+  libfaac-dev \
+  libgflags-dev \
   libgeographic-dev \
+  libgstreamer1.0-dev \
+  libgstreamer-plugins-base1.0-dev \
   libgtk2.0-dev \
+  libgtk-3-dev \
+  libhdf5-dev \
   libjpeg-dev \
+  liblapack-dev \
+  libmp3lame-dev \
+  libopenblas-dev \
+  libopencore-amrnb-dev \
   libpng-dev \
+  libprotobuf-dev \
   libswscale-dev \
   libtbb2 \
   libtbb-dev \
+  libtheora-dev \
   libtiff-dev \
   libtinyxml2-dev \
-  libnvvpi2 \
+  libv4l-dev \
+  libvorbis-dev \
+  libx264-dev \
   libxml2-utils \
+  libxvidcore-dev \
   locales \
   lsb-core \
   lsb-release \
@@ -94,16 +106,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3-pytest-pylint \
   python3-vcstool \
   python3-vcstools \
+  qt5-default \
   screen \
   shellcheck \
   software-properties-common \
   sudo \
   uncrustify \
   unzip \
+  v4l-utils \
   valgrind \
   vim \
-  vpi2-dev \
-  vpi2-samples \
   wget \
   zip \
   zsh \
@@ -236,8 +248,7 @@ RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libe
   chgrp -R internal /opt/eigen
 WORKDIR /root
 
-# Build and install OpenCV (with extra modules aka "contrib") with CUDA support
-# NOTE: Currently, CUDA support is based on Compute Capability 8.6 (Ampere)
+# Build and install OpenCV (with extra modules aka "contrib")
 WORKDIR /opt
 RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv.git && \
   git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv_contrib.git && \
@@ -247,23 +258,17 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   cmake \
     -D CMAKE_BUILD_TYPE=RELEASE \
     -D CMAKE_INSTALL_PREFIX=/usr/local \
-    -D CUDA_ARCH_BIN="8.6" \
-    -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
     -D EIGEN_INCLUDE_PATH=/usr/include/eigen3 \
+    -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
     -D OPENCV_GENERATE_PKGCONFIG=ON \
     -D OPENCV_ENABLE_NONFREE=ON \
-    -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
-    -D WITH_CUBLAS=ON \
-    -D WITH_CUDA=ON \
-    -D WITH_CUDNN=ON \
+    -D WITH_TBB=ON \
     -D WITH_EIGEN=ON \
+    -D WITH_V4L=ON \
     -D WITH_OPENCL=OFF \
     -D WITH_QT=OFF \
-    -D WITH_TBB=ON \
-    -D WITH_V4L=ON \
     -D ENABLE_FAST_MATH=ON \
-    -D CUDA_FAST_MATH=ON \
-    -D OPENCV_DNN_CUDA=ON \
+    -D ENABLE_NEON=ON \
     -D BUILD_TBB=ON \
     -D BUILD_EXAMPLES=OFF \
     -D BUILD_TESTS=OFF \
@@ -275,7 +280,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
     -D PYTHON3_EXECUTABLE=$(which python3) \
     -D PYTHON3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
     -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
-  .. && \
+    .. && \
   make -j$(nproc --all) && \
   make install && \
   ldconfig && \
@@ -301,6 +306,6 @@ ENV DEBIAN_FRONTEND=dialog
 LABEL author.name="Roberto Masocco"
 LABEL author.email="robmasocco@gmail.com"
 LABEL organization="Intelligent Systems Lab"
-LABEL description="x86 development DUA base unit with Nvidia GPU/CUDA support"
+LABEL description="x86 development DUA base unit"
 LABEL platform="linux/amd64"
 CMD ["bash"]

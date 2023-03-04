@@ -36,10 +36,12 @@ do
       TARGETS+=("x86-base")
       TARGETS+=("x86-dev")
       TARGETS+=("x86-cudev")
+      TARGETS+=("armv8-base")
+      TARGETS+=("armv8-dev")
       TARGETS+=("jetson5c7")
       ALL_FOUND=1
       ;;
-    x86-base|x86-dev|x86-cudev|jetson5c7)
+    x86-base|x86-dev|x86-cudev|armv8-base|armv8-dev|jetson5c7)
       if [[ "${ALL_FOUND-0}" != "1" ]]; then
         TARGETS+=("$ARG")
       fi
