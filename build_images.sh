@@ -40,6 +40,7 @@ do
       TARGETS+=("armv8-dev")
       TARGETS+=("jetson5c7")
       ALL_FOUND=1
+      echo "Building all images..."
       ;;
     x86-base|x86-dev|x86-cudev|armv8-base|armv8-dev|jetson5c7)
       if [[ "${ALL_FOUND-0}" != "1" ]]; then
@@ -55,7 +56,12 @@ do
       ;;
   esac
 done
-echo "Build options: " "${BUILD_FLAGS[@]}"
+if [[ ${#BUILD_FLAGS[@]} -gt 0 ]]; then
+  echo "Build options:" "${BUILD_FLAGS[@]}"
+else
+  echo "No build options specified"
+fi
+echo "Images to be built:" "${TARGETS[@]}"
 
 # Log in as ISL
 docker login -u intelligentsystemslabutv
