@@ -32,7 +32,6 @@ RUN groupadd -r internal
 # - Boost C++ libraries
 # - System utilities
 # - Zsh shell
-# - Nvidia VPI libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-utils \
   build-essential \
@@ -69,7 +68,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libtbb-dev \
   libtiff-dev \
   libtinyxml2-dev \
-  libnvvpi2 \
   libxml2-utils \
   locales \
   lsb-core \
@@ -101,8 +99,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   unzip \
   valgrind \
   vim \
-  vpi2-dev \
-  vpi2-samples \
   wget \
   zip \
   zsh \
