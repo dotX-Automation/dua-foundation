@@ -211,6 +211,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ros-humble-launch-testing-ament-cmake \
   ros-humble-launch-testing-ros \
   ros-humble-robot-state-publisher \
+  ros-humble-ros-gz \
   ros-humble-rqt-robot-steering \
   ros-humble-vision-msgs \
   ros-humble-vision-opencv \
