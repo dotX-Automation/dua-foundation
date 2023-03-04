@@ -40,6 +40,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   cmake \
   cppcheck \
   curl \
+  dialog \
   dirmngr \
   dmidecode \
   file \
@@ -67,6 +68,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libtbb-dev \
   libtiff-dev \
   libtinyxml2-dev \
+  libnvvpi2 \
   libxml2-utils \
   locales \
   lsb-core \
@@ -76,7 +78,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   manpages-posix-dev \
   minicom \
   nano \
-  neofetch \
   ninja-build \
   openssh-client \
   pkg-config \
@@ -90,6 +91,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3-pip \
   python3-pygments \
   python3-pytest-pylint \
+  python3-vcstool \
   python3-vcstools \
   screen \
   shellcheck \
@@ -99,12 +101,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   unzip \
   valgrind \
   vim \
+  vpi2-dev \
+  vpi2-samples \
   wget \
   zip \
   zsh \
   zsh-doc && \
   add-apt-repository universe && \
-  apt-get remove -y modemmanager && \
   apt-get autoremove -y && \
   apt-get autoclean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
@@ -146,7 +149,10 @@ RUN yes | pip3 install -U \
   flake8-import-order \
   flake8-quotes \
   flask \
+  ipython \
+  jupyterlab \
   matplotlib \
+  notebook \
   numpy \
   nunavut \
   packaging \
@@ -162,6 +168,7 @@ RUN yes | pip3 install -U \
   pytest-rerunfailures \
   pyyaml \
   requests \
+  scipy \
   setuptools \
   six \
   testresources \
@@ -169,10 +176,52 @@ RUN yes | pip3 install -U \
   transitions \
   wheel
 
+# Ensure that the Python environment is correctly sourced
+# NOTE: Set this to the output of:
+# python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
+ENV PYTHONPATH=/usr/lib/python3/dist-packages${PYTHONPATH:+:${PYTHONPATH}}
+
 # Configure language and locale
 RUN locale-gen en_US.UTF-8 && \
   update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ENV LANG en_US.UTF-8
+
+# Install ROS 2 Humble Hawksbill desktop
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  python3-colcon-argcomplete \
+  python3-colcon-common-extensions \
+  python3-rosdep \
+  ros-humble-ament-lint \
+  ros-humble-angles \
+  ros-humble-cv-bridge \
+  ros-humble-desktop \
+  ros-humble-diagnostic-msgs \
+  ros-humble-diagnostic-updater \
+  ros-humble-eigen3-cmake-module \
+  ros-humble-gazebo-ros-pkgs \
+  ros-humble-gazebo-ros2-control \
+  ros-humble-geographic-msgs \
+  ros-humble-geographic-info \
+  ros-humble-image-common \
+  ros-humble-image-geometry \
+  ros-humble-image-pipeline \
+  ros-humble-image-transport \
+  ros-humble-image-transport-plugins \
+  ros-humble-joint-state-publisher \
+  ros-humble-launch-testing \
+  ros-humble-launch-testing-ament-cmake \
+  ros-humble-launch-testing-ros \
+  ros-humble-robot-state-publisher \
+  ros-humble-rqt-robot-steering \
+  ros-humble-vision-msgs \
+  ros-humble-vision-opencv \
+  ros-humble-xacro && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# Configure ROS Middleware implementation to use
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
 # Build and install Eigen3
 WORKDIR /opt
@@ -180,9 +229,10 @@ RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libe
   cd eigen && \
   mkdir build && \
   cd build && \
-  cmake .. && \
+  cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
   make -j$(nproc --all) && \
-  make install
+  make install && \
+  chgrp -R internal /opt/eigen
 WORKDIR /root
 
 # Build and install OpenCV (with extra modules aka "contrib") with CUDA support
@@ -227,53 +277,21 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   .. && \
   make -j$(nproc --all) && \
   make install && \
-  ldconfig
-ENV PYTHONPATH=/usr/lib/python3/dist-packages${PYTHONPATH:+:${PYTHONPATH}}
+  ldconfig && \
+  chgrp -R internal /opt/opencv && \
+  chgrp -R internal /opt/opencv_contrib
 WORKDIR /root
 
-# Install ROS 2 Humble Hawksbill desktop
-RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg
-RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  python3-colcon-argcomplete \
-  python3-colcon-common-extensions \
-  python3-rosdep \
-  ros-humble-ament-lint \
-  ros-humble-angles \
-  ros-humble-cv-bridge \
-  ros-humble-desktop \
-  ros-humble-diagnostic-msgs \
-  ros-humble-diagnostic-updater \
-  ros-humble-eigen3-cmake-module \
-  ros-humble-gazebo-ros-pkgs \
-  ros-humble-gazebo-ros2-control \
-  ros-humble-geographic-msgs \
-  ros-humble-image-common \
-  ros-humble-image-geometry \
-  ros-humble-image-pipeline \
-  ros-humble-image-transport \
-  ros-humble-image-transport-plugins \
-  ros-humble-joint-state-publisher \
-  ros-humble-launch-testing \
-  ros-humble-launch-testing-ament-cmake \
-  ros-humble-launch-testing-ros \
-  ros-humble-ros2-control \
-  ros-humble-ros2-controllers \
-  ros-humble-rqt-robot-steering \
-  ros-humble-vision-msgs \
-  ros-humble-vision-opencv \
-  ros-humble-xacro && \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
-
-# Configure ROS Middleware implementation to use
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-
 # Build and install dua-utils
+# The ARG allows us to break cache and rebuild from here upon each new version
 WORKDIR /opt
+ARG DUA_UTILS_VERSION=unknown
 RUN git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-utils && \
   cd ros/dua-utils && \
   . /opt/ros/humble/setup.sh && \
-  colcon build --event-handlers console_direct+ --symlink-install
+  colcon build --symlink-install && \
+  rm -rf log && \
+  chgrp -R internal /opt/ros/dua-utils
 WORKDIR /root
 
 ENV DEBIAN_FRONTEND=dialog

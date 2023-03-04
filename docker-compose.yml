@@ -13,6 +13,8 @@ services:
       context: .
       network: host
       dockerfile: Dockerfile.x86-base
+      args:
+        - DUA_UTILS_VERSION=20230304-1247
     image: intelligentsystemslabutv/dua-foundation:x86-base
     network_mode: "host"
     environment:
@@ -43,6 +45,8 @@ services:
       context: .
       network: host
       dockerfile: Dockerfile.x86-dev
+      args:
+        - DUA_UTILS_VERSION=20230304-1247
     image: intelligentsystemslabutv/dua-foundation:x86-dev
     network_mode: "host"
     environment:
@@ -73,6 +77,8 @@ services:
       context: .
       network: host
       dockerfile: Dockerfile.x86-cudev
+      args:
+        - DUA_UTILS_VERSION=20230304-1247
     image: intelligentsystemslabutv/dua-foundation:x86-cudev
     network_mode: "host"
     environment:
