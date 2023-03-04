@@ -110,6 +110,8 @@ services:
       context: .
       network: host
       dockerfile: Dockerfile.armv8-jetson5c7-base
+      args:
+        - DUA_UTILS_VERSION=20230304-1247
     image: intelligentsystemslabutv/dua-foundation:armv8-jetson5c7-base
     network_mode: "host"
     environment:
