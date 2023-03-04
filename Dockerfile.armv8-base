@@ -250,7 +250,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   cmake \
     -D CMAKE_BUILD_TYPE=RELEASE \
     -D CMAKE_INSTALL_PREFIX=/usr/local \
-    -D EIGEN_INCLUDE_PATH=/usr/include/eigen3 \
+    -D EIGEN_INCLUDE_PATH=/usr/local/include/eigen3 \
     -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
     -D OPENCV_GENERATE_PKGCONFIG=ON \
     -D OPENCV_ENABLE_NONFREE=ON \
