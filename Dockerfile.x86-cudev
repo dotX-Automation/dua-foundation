@@ -92,7 +92,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3-pip \
   python3-pygments \
   python3-pytest-pylint \
-  python3-vcstool \
   python3-vcstools \
   screen \
   shellcheck \
@@ -175,6 +174,7 @@ RUN yes | pip3 install -U \
   testresources \
   toml \
   transitions \
+  vcstool \
   wheel
 
 # Ensure that the Python environment is correctly sourced
