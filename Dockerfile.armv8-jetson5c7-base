@@ -252,7 +252,6 @@ ENV LANG en_US.UTF-8
 # 6. Install OpenCV 4.2.0 with development files, which may have been deleted by rosdep
 # 7. Build the workspace
 # 8. Remove log/, but build/ and src/ are required for stuff to work
-# 9. Simlink the setup.* files to /opt/ros/humble, as those of a binary install
 # Step 7 highly depends on the platform and build environment.
 # In this case, we need to:
 # - Install a version of OpenCV that is compatible with this codebase, hence 4.2.0
@@ -286,12 +285,6 @@ RUN --mount=type=bind,source=ros2_humble_repos.yml,target=/opt/repos.yml \
       -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
       -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 && \
   rm -rf log && \
-  ln -s /opt/ros/humble/install/setup.sh /opt/ros/humble/setup.sh && \
-  ln -s /opt/ros/humble/install/setup.bash /opt/ros/humble/setup.bash && \
-  ln -s /opt/ros/humble/install/setup.zsh /opt/ros/humble/setup.zsh && \
-  ln -s /opt/ros/humble/install/local_setup.sh /opt/ros/humble/local_setup.sh && \
-  ln -s /opt/ros/humble/install/local_setup.bash /opt/ros/humble/local_setup.bash && \
-  ln -s /opt/ros/humble/install/local_setup.zsh /opt/ros/humble/local_setup.zsh && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
   chgrp -R internal /opt/ros
 WORKDIR /root
