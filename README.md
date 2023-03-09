@@ -49,12 +49,15 @@ Helper script to save all images to a compressed archive (requires `pigz`).
 
 - Docker
 - Docker Compose V2
-- `nvidia-container-toolkit` (optional, for `x86-cudev`)
 - `pigz`
 
 #### For `x86-*` base units
 
 - Ubuntu 22.04 is preferred (but other distros should work too)
+
+#### For `x86-cudev` base unit
+
+- `nvidia-container-toolkit` (optional, for `x86-cudev`)
 
 #### For `armv8-*` base units
 
@@ -63,6 +66,22 @@ Helper script to save all images to a compressed archive (requires `pigz`).
 #### For `jetson5c7` base unit
 
 - JetPack 5.0.2, since the base image is also based on JetPack 5.0.2
+- Nvidia Container Runtime configured as the one and only Docker runtime
+- Running Docker on an NVMe SSD mounted on the carrier board is also suggested to improve performance and reduce wear on the eMMC, as well as I/O bottlenecks
+
+It is suggested to enter configurations similar to the following in `/etc/docker/daemon.json`:
+
+```json
+{
+    "data-root": "/mnt/NX_NVME/docker",
+    "runtimes": {
+        "nvidia": {
+            "path": "nvidia-container-runtime",
+            "runtimeArgs": []
+        }
+    }
+}
+```
 
 ---
 
