@@ -297,7 +297,8 @@ ENV DEBIAN_FRONTEND=dialog
 # Finalize image
 LABEL author.name="Roberto Masocco"
 LABEL author.email="robmasocco@gmail.com"
-LABEL organization="Intelligent Systems Lab"
+LABEL organization.name="Intelligent Systems Lab"
+LABEL organization.email="isl.torvergata@gmail.com"
 LABEL description="x86 development DUA base unit with Nvidia GPU/CUDA support"
 LABEL platform="linux/amd64"
 CMD ["bash"]

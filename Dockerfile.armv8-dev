@@ -302,7 +302,8 @@ ENV DEBIAN_FRONTEND=dialog
 # Finalize image
 LABEL author.name="Roberto Masocco"
 LABEL author.email="robmasocco@gmail.com"
-LABEL organization="Intelligent Systems Lab"
+LABEL organization.name="Intelligent Systems Lab"
+LABEL organization.email="isl.torvergata@gmail.com"
 LABEL description="ARMv8 development DUA base unit"
 LABEL platform="linux/arm64"
 CMD ["bash"]
