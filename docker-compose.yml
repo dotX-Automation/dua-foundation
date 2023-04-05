@@ -207,3 +207,10 @@ services:
       - type: bind
         source: ./
         target: /root/workspace
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
