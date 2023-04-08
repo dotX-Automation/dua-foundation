@@ -36,9 +36,7 @@ services:
       - ~/.Xauthority:/root/.Xauthority:rw
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - type: bind
-        source: ./
-        target: /root/workspace
+      - ./:/root/workspace
 
   x86-dev:
     build:
@@ -68,9 +66,7 @@ services:
       - ~/.Xauthority:/root/.Xauthority:rw
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - type: bind
-        source: ./
-        target: /root/workspace
+      - ./:/root/workspace
 
   x86-cudev:
     build:
@@ -100,9 +96,7 @@ services:
       - ~/.Xauthority:/root/.Xauthority:rw
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - type: bind
-        source: ./
-        target: /root/workspace
+      - ./:/root/workspace
     deploy:
       resources:
         reservations:
@@ -139,9 +133,7 @@ services:
       - ~/.Xauthority:/root/.Xauthority:rw
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - type: bind
-        source: ./
-        target: /root/workspace
+      - ./:/root/workspace
 
   armv8-dev:
     build:
@@ -171,9 +163,7 @@ services:
       - ~/.Xauthority:/root/.Xauthority:rw
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - type: bind
-        source: ./
-        target: /root/workspace
+      - ./:/root/workspace
 
   jetson5c7:
     build:
@@ -204,6 +194,4 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - /run/jtop.sock:/run/jtop.sock
-      - type: bind
-        source: ./
-        target: /root/workspace
+      - ./:/root/workspace
