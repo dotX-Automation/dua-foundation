@@ -171,7 +171,7 @@ ENV PYTHONPATH=/usr/lib/python3/dist-packages${PYTHONPATH:+:${PYTHONPATH}}
 # Configure language and locale
 RUN locale-gen en_US.UTF-8 && \
   update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-ENV LANG en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 # Install ROS 2 Humble Hawksbill base
 RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg

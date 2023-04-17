@@ -166,13 +166,13 @@ RUN chmod 644 /etc/apt/trusted.gpg.d/jetson-ota-public.asc && \
   ldconfig
 
 # Set environment variables for L4T
-ENV PATH /usr/local/cuda-$CUDA/bin:/usr/local/cuda/bin:${PATH}
+ENV PATH=/usr/local/cuda-$CUDA/bin:/usr/local/cuda/bin:${PATH}
 ENV LD_LIBRARY_PATH=/usr/local/cuda-$CUDA/targets/aarch64-linux/lib:${LD_LIBRARY_PATH}
 ENV LD_LIBRARY_PATH=/opt/nvidia/vpi1/lib64:${LD_LIBRARY_PATH}
 ENV LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/tegra:${LD_LIBRARY_PATH}
 ENV LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/tegra-egl:${LD_LIBRARY_PATH}
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES all
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=all
 ENV OPENBLAS_CORETYPE=ARMV8
 
 # Install and set GCC 8 as default (required by NVCC)
@@ -261,7 +261,7 @@ ENV PYTHONPATH=/usr/lib/python3.8/site-packages${PYTHONPATH:+:${PYTHONPATH}}
 # Configure language and locale
 RUN locale-gen en_US.UTF-8 && \
   update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-ENV LANG en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 # Build ROS 2 Humble Hawksbill from source
 # NOTE: The procedure is not obvious, so here is a brief explanation:
