@@ -23,6 +23,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Create internal users group
 RUN groupadd -r internal
 
+# Configure environment variables to expose Nvidia GPUs
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES all
+
 # Install basic utilities, dependencies, and development tools
 # These include:
 # - C/C++ toolchain and debuggers
