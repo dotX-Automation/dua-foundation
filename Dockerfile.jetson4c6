@@ -1,0 +1,397 @@
+# Base unit for Nvidia Jetson ARMv8 platforms based on JetPack 4.6.3, CUDA cap. 6.2.
+#
+# Roberto Masocco <robmasocco@gmail.com>
+# Intelligent Systems Lab <isl.torvergata@gmail.com>
+#
+# April 27, 2023
+
+# BUILD THIS WITH:
+# --network host
+
+# Start from a Ubuntu 20.04 base image for linux/arm64/v8
+FROM --platform=linux/arm64/v8 ubuntu:20.04
+
+# SoC and Linux4Tegra versions
+ARG L4T_RELEASE_MAJOR=32.7
+ARG L4T_RELEASE_MINOR=3
+ARG L4T_RELEASE=$L4T_RELEASE_MAJOR.$L4T_RELEASE_MINOR
+ARG CUDA=10.2
+ARG SOC="t186"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Create internal users group
+RUN groupadd -r internal
+
+# Configure ROS 2 repository
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends ca-certificates curl && \
+  curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# Install basic utilities, dependencies, and development tools
+# These include:
+# - C/C++ toolchain and debuggers
+# - Python 3 interpreter, testers, basic modules and scientific libraries
+# - Linters
+# - OpenCV dependencies for ARMv8 systems
+# - Boost C++ libraries
+# - System utilities
+# - Zsh shell
+# - ROS 2 Humble Hawksbill development tools and dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  apt-utils \
+  build-essential \
+  ccache \
+  cmake \
+  cppcheck \
+  dialog \
+  dirmngr \
+  dmidecode \
+  file \
+  freeglut3 \
+  freeglut3-dev \
+  fuse \
+  g++ \
+  gcc \
+  gdb \
+  gfortran \
+  git \
+  gnupg2 \
+  gstreamer1.0-tools \
+  htop \
+  iproute2 \
+  less \
+  lcov \
+  libasio-dev \
+  libatlas-base-dev \
+  libavcodec-dev \
+  libavformat-dev \
+  libavresample-dev \
+  libblas-dev \
+  libboost-all-dev \
+  libcanberra-gtk* \
+  libdc1394-22-dev \
+  libfaac-dev \
+  libgeographic-dev \
+  libgflags-dev \
+  libglu1-mesa-dev \
+  libgoogle-glog-dev \
+  libgstreamer1.0-dev \
+  libgstreamer-plugins-base1.0-dev \
+  libgtk2.0-dev \
+  libgtk-3-dev \
+  libhdf5-dev \
+  libjpeg-dev \
+  liblapack-dev \
+  libmp3lame-dev \
+  libopenblas-dev \
+  libopencore-amrnb-dev \
+  libopencv-dev \
+  libpng-dev \
+  libprotobuf-dev \
+  libswscale-dev \
+  libtbb2 \
+  libtbb-dev \
+  libtheora-dev \
+  libtiff-dev \
+  libtinyxml2-dev \
+  libv4l-dev \
+  libvorbis-dev \
+  libx264-dev \
+  libxine2-dev \
+  libxml2-utils \
+  libxvidcore-dev \
+  locales \
+  lsb-core \
+  lsb-release \
+  make \
+  manpages-dev \
+  manpages-posix-dev \
+  minicom \
+  nano \
+  ninja-build \
+  openssh-client \
+  pkg-config \
+  protobuf-compiler \
+  python-dev-is-python3 \
+  python-is-python3 \
+  python3 \
+  python3-argcomplete \
+  python3-autopep8 \
+  python3-dev \
+  python3-numpy \
+  python3-pip \
+  python3-pygments \
+  python3-pytest-cov \
+  python3-pytest-pylint \
+  python3-vcstool \
+  python3-vcstools \
+  qt5-default \
+  ros-dev-tools \
+  screen \
+  shellcheck \
+  software-properties-common \
+  sudo \
+  uncrustify \
+  unzip \
+  v4l-utils \
+  valgrind \
+  vim \
+  wget \
+  zip \
+  zsh \
+  zsh-doc && \
+  add-apt-repository universe && \
+  apt-get autoremove -y && \
+  apt-get autoclean && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# Configure system for L4T
+# NOTE: This is old stuff: it requires us to place environment variables and
+# files that can be hooked in by the Nvidia runtime.
+ADD --chown=root:root https://repo.download.nvidia.com/jetson/jetson-ota-public.asc /etc/apt/trusted.gpg.d/jetson-ota-public.asc
+RUN chmod 644 /etc/apt/trusted.gpg.d/jetson-ota-public.asc && \
+  echo "deb https://repo.download.nvidia.com/jetson/common r$L4T_RELEASE_MAJOR main" > /etc/apt/sources.list.d/nvidia-l4t-apt-source.list && \
+  echo "deb https://repo.download.nvidia.com/jetson/${SOC} r$L4T_RELEASE_MAJOR main" >> /etc/apt/sources.list.d/nvidia-l4t-apt-source.list && \
+  echo "/usr/lib/aarch64-linux-gnu/tegra" >> /etc/ld.so.conf.d/nvidia-tegra.conf && \
+  echo "/usr/lib/aarch64-linux-gnu/tegra-egl" >> /etc/ld.so.conf.d/nvidia-tegra.conf && \
+  rm /usr/share/glvnd/egl_vendor.d/50_mesa.json && \
+  mkdir -p /usr/share/glvnd/egl_vendor.d/ && \
+  echo '{"file_format_version" : "1.0.0" , "ICD" : { "library_path" : "libEGL_nvidia.so.0" }}' > /usr/share/glvnd/egl_vendor.d/10_nvidia.json && \
+  mkdir -p /usr/share/egl/egl_external_platform.d/ && \
+  echo '{"file_format_version" : "1.0.0" , "ICD" : { "library_path" : "libnvidia-egl-wayland.so.1" }}' > /usr/share/egl/egl_external_platform.d/nvidia_wayland.json && \
+  echo "/usr/local/cuda-$CUDA/targets/aarch64-linux/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
+  ldconfig
+
+# Set environment variables for L4T
+ENV PATH=/usr/local/cuda-$CUDA/bin:/usr/local/cuda/bin:${PATH}
+ENV LD_LIBRARY_PATH=/usr/local/cuda-$CUDA/targets/aarch64-linux/lib:${LD_LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=/opt/nvidia/vpi1/lib64:${LD_LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/tegra:${LD_LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/tegra-egl:${LD_LIBRARY_PATH}
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=all
+ENV OPENBLAS_CORETYPE=ARMV8
+
+# Install and set GCC 8 as default (required by NVCC)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  gcc-8 \
+  g++-8 && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
+  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8 && \
+  update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 8
+
+# Install CUDA Toolkit 10.2 with cuDNN 8
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  cuda-toolkit-10-2 \
+  libcudnn8 \
+  libcudnn8-dev && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# Install Java 11
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  ant \
+  openjdk-11-jre \
+  openjdk-11-jdk \
+  libvecmath-java && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
+  update-alternatives --set java $(update-alternatives --list java | grep "java-11")
+
+# Install Python 3 tools and dependencies
+# These include:
+# - Argument parsers
+# - Testers
+# - YAML, TOML parsers
+# - Package managers
+# - Code formatters
+# - Code coverage testers
+# - Code linters
+# - Template engines
+# - Scientific libraries
+# - transitions library for FSM software
+# - Jetson stats software (with some black magic)
+RUN yes | pip3 install -U \
+  argcomplete \
+  argparse \
+  cerberus \
+  coverage \
+  empy \
+  flake8 \
+  flake8-blind-except \
+  flake8-builtins \
+  flake8-class-newline \
+  flake8-comprehensions \
+  flake8-deprecated \
+  flake8-docstrings \
+  flake8-import-order \
+  flake8-quotes \
+  flask \
+  matplotlib \
+  numpy \
+  nunavut \
+  packaging \
+  pandas \
+  pkgconfig \
+  pyserial \
+  pyros-genmsg \
+  pytest \
+  pytest-cov \
+  python-dateutil \
+  pytest-repeat \
+  pytest-runner \
+  pytest-rerunfailures \
+  pyyaml \
+  requests \
+  scipy \
+  setuptools \
+  six \
+  testresources \
+  toml \
+  transitions \
+  wheel
+RUN yes | sudo pip3 install -U jetson-stats
+
+# Ensure that the Python environment is correctly sourced
+# NOTE: Set this to the output of:
+# python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
+ENV PYTHONPATH=/usr/lib/python3.8/site-packages${PYTHONPATH:+:${PYTHONPATH}}
+
+# Configure language and locale
+RUN locale-gen en_US.UTF-8 && \
+  update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+
+# Build ROS 2 Humble Hawksbill from source
+# NOTE: The procedure is not obvious, so here is a brief explanation:
+# 1. Create a workspace
+# 2. Clone the repos file, containing the default plus some extras
+# 3. Initialize rosdep
+# 4. Update rosdep
+# 5. Install dependencies via rosdep
+# 6. Install OpenCV 4.2.0 with development files, which may have been deleted by rosdep
+# 7. Build the workspace
+# 8. Remove log/, but build/ and src/ are required for stuff to work
+# Step 7 highly depends on the platform and build environment.
+# In this case, we need to:
+# - Install a version of OpenCV that is compatible with this codebase, hence 4.2.0
+# - Ensure that the Python 3.8.0 environment is found by CMake (it's the one preinstalled by Nvidia)
+# - Ensure that OpenCV 4.2.0 is found by CMake
+WORKDIR /opt
+RUN --mount=type=bind,source=ros2_humble_repos.yml,target=/opt/repos.yml \
+  mkdir -p ros/humble/src && \
+  cd ros/humble && \
+  vcs import --input /opt/repos.yml src && \
+  rosdep init && \
+  rosdep update --rosdistro=humble && \
+  apt-get update && \
+  rosdep install \
+    --rosdistro=humble \
+    --from-paths src \
+    --ignore-src \
+    -y \
+    --skip-keys="fastcdr rti-connext-dds-6.0.1 urdfdom_headers" && \
+  apt-get install -y --no-install-recommends libopencv-dev && \
+  colcon build \
+    --symlink-install \
+    --cmake-args \
+      -DPython3_EXECUTABLE=/usr/bin/python3.8 \
+      -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
+      -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
+      -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 \
+    --ament-cmake-args \
+      -DPython3_EXECUTABLE=/usr/bin/python3.8 \
+      -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
+      -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
+      -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 && \
+  rm -rf log && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
+  chgrp -R internal /opt/ros
+WORKDIR /root
+
+# Configure ROS Middleware implementation to use
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+
+# Build and install Eigen3
+WORKDIR /opt
+RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libeigen/eigen.git && \
+  cd eigen && \
+  mkdir build && \
+  cd build && \
+  cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
+  make -j$(nproc --all) && \
+  make install && \
+  chgrp -R internal /opt/eigen
+WORKDIR /root
+
+# Build and install OpenCV (with extra modules aka "contrib") with CUDA support
+WORKDIR /opt
+RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv.git && \
+  git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv_contrib.git && \
+  cd opencv && \
+  mkdir build && \
+  cd build && \
+  cmake \
+    -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D CUDA_ARCH_BIN="6.2" \
+    -D CUDA_ARCH_PTX="" \
+    -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
+    -D EIGEN_INCLUDE_PATH=/usr/local/include/eigen3 \
+    -D OPENCV_GENERATE_PKGCONFIG=ON \
+    -D OPENCV_ENABLE_NONFREE=ON \
+    -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
+    -D WITH_CUBLAS=ON \
+    -D WITH_CUDA=ON \
+    -D WITH_CUDNN=ON \
+    -D WITH_EIGEN=ON \
+    -D WITH_OPENCL=OFF \
+    -D WITH_QT=OFF \
+    -D WITH_TBB=ON \
+    -D WITH_V4L=ON \
+    -D ENABLE_FAST_MATH=ON \
+    -D ENABLE_NEON=ON \
+    -D CUDA_FAST_MATH=ON \
+    -D OPENCV_DNN_CUDA=ON \
+    -D BUILD_TBB=ON \
+    -D BUILD_EXAMPLES=OFF \
+    -D BUILD_TESTS=OFF \
+    -D BUILD_opencv_python2=OFF \
+    -D BUILD_opencv_python3=ON \
+    -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D INSTALL_C_EXAMPLES=OFF \
+    -D PYTHON_EXECUTABLE=$(which python2) \
+    -D PYTHON3_EXECUTABLE=$(which python3) \
+    -D PYTHON3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
+    -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+    .. && \
+  make -j$(nproc --all) && \
+  make install && \
+  ldconfig && \
+  chgrp -R internal /opt/opencv && \
+  chgrp -R internal /opt/opencv_contrib
+WORKDIR /root
+
+# Build and install dua-utils
+# The ARG allows us to break cache and rebuild from here upon each new version
+WORKDIR /opt
+ARG DUA_UTILS_VERSION=unknown
+RUN git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-utils && \
+  cd ros/dua-utils && \
+  . /opt/ros/humble/install/setup.sh && \
+  colcon build --symlink-install && \
+  rm -rf log && \
+  chgrp -R internal /opt/ros/dua-utils
+WORKDIR /root
+
+ENV DEBIAN_FRONTEND=dialog
+
+# Finalize image
+LABEL author.name="Roberto Masocco"
+LABEL author.email="robmasocco@gmail.com"
+LABEL organization.name="Intelligent Systems Lab"
+LABEL organization.email="isl.torvergata@gmail.com"
+LABEL description="DUA base unit for Nvidia Jetson platforms (JetPack 4, CUDA cap. 5.3)"
+LABEL platform="linux/arm64/v8"
+CMD ["bash"]

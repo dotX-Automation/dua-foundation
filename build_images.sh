@@ -40,10 +40,11 @@ do
       TARGETS+=("armv8-dev")
       TARGETS+=("jetson5c7")
       TARGETS+=("jetson4c5")
+      TARGETS+=("jetson4c6")
       ALL_FOUND=1
       echo "Building all images..."
       ;;
-    x86-base|x86-dev|x86-cudev|armv8-base|armv8-dev|jetson5c7|jetson4c5)
+    x86-base|x86-dev|x86-cudev|armv8-base|armv8-dev|jetson5c7|jetson4c5|jetson4c6)
       if [[ "${ALL_FOUND-0}" != "1" ]]; then
         TARGETS+=("$ARG")
       fi
