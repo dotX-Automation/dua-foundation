@@ -1,4 +1,4 @@
-# Base unit for Nvidia Jetson ARMv8 platforms based on JetPack 4, CUDA cap. 5.3.
+# Base unit for Nvidia Jetson ARMv8 platforms based on JetPack 4.6.1, CUDA cap. 5.3.
 #
 # Roberto Masocco <robmasocco@gmail.com>
 # Intelligent Systems Lab <isl.torvergata@gmail.com>
@@ -12,11 +12,11 @@
 FROM --platform=linux/arm64/v8 ubuntu:20.04
 
 # SoC and Linux4Tegra versions
-ARG L4T_RELEASE_MAJOR=32.6
+ARG L4T_RELEASE_MAJOR=32.7
 ARG L4T_RELEASE_MINOR=1
 ARG L4T_RELEASE=$L4T_RELEASE_MAJOR.$L4T_RELEASE_MINOR
 ARG CUDA=10.2
-ARG SOC="t194"
+ARG SOC="t210"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
