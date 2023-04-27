@@ -240,3 +240,42 @@ services:
             - driver: nvidia
               count: all
               capabilities: [ gpu ]
+
+  jetson4c6:
+    build:
+      context: .
+      network: host
+      dockerfile: Dockerfile.jetson4c6
+      args:
+        - DUA_UTILS_VERSION=20230416-1800
+    image: intelligentsystemslabutv/dua-foundation:jetson4c6
+    network_mode: "host"
+    environment:
+      TERM: xterm-256color
+      DISPLAY:
+      SHELL: /usr/bin/zsh
+    privileged: true
+    ipc: host
+    stdin_open: false
+    tty: true
+    command:
+      [
+        "/bin/bash",
+        "-c",
+        "trap 'exit 0' TERM; sleep infinity & wait"
+      ]
+    volumes:
+      - /dev:/dev
+      - /sys:/sys
+      - ~/.Xauthority:/root/.Xauthority:rw
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /run/jtop.sock:/run/jtop.sock
+      - ./:/root/workspace
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
