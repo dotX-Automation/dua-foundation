@@ -241,7 +241,8 @@ RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libe
   cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
   make -j$(nproc --all) && \
   make install && \
-  chgrp -R internal /opt/eigen
+  chgrp -R internal /opt/eigen && \
+  chmod -R g+rw /opt/eigen
 WORKDIR /root
 
 # Build and install OpenCV (with extra modules aka "contrib")
@@ -281,7 +282,9 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   make install && \
   ldconfig && \
   chgrp -R internal /opt/opencv && \
-  chgrp -R internal /opt/opencv_contrib
+  chmod -R g+rw /opt/opencv && \
+  chgrp -R internal /opt/opencv_contrib && \
+  chmod -R g+rw /opt/opencv_contrib
 WORKDIR /root
 
 # Build and install dua-utils
@@ -293,7 +296,8 @@ RUN git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-
   . /opt/ros/humble/setup.sh && \
   colcon build --symlink-install && \
   rm -rf log && \
-  chgrp -R internal /opt/ros/dua-utils
+  chgrp -R internal /opt/ros/dua-utils && \
+  chmod -R g+rw /opt/ros/dua-utils
 WORKDIR /root
 
 ENV DEBIAN_FRONTEND=dialog

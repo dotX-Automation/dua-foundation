@@ -307,7 +307,8 @@ RUN --mount=type=bind,source=ros2_humble_repos.yml,target=/opt/repos.yml \
       -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 && \
   rm -rf log && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
-  chgrp -R internal /opt/ros
+  chgrp -R internal /opt/ros && \
+  chmod -R g+rw /opt/ros
 WORKDIR /root
 
 # Configure ROS Middleware implementation to use
@@ -322,7 +323,8 @@ RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libe
   cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
   make -j$(nproc --all) && \
   make install && \
-  chgrp -R internal /opt/eigen
+  chgrp -R internal /opt/eigen && \
+  chmod -R g+rw /opt/eigen
 WORKDIR /root
 
 # Build and install OpenCV (with extra modules aka "contrib") with CUDA support
@@ -370,7 +372,9 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   make install && \
   ldconfig && \
   chgrp -R internal /opt/opencv && \
-  chgrp -R internal /opt/opencv_contrib
+  chmod -R g+rw /opt/opencv && \
+  chgrp -R internal /opt/opencv_contrib && \
+  chmod -R g+rw /opt/opencv_contrib
 WORKDIR /root
 
 # Build and install dua-utils
@@ -382,7 +386,8 @@ RUN git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-
   . /opt/ros/humble/install/setup.sh && \
   colcon build --symlink-install && \
   rm -rf log && \
-  chgrp -R internal /opt/ros/dua-utils
+  chgrp -R internal /opt/ros/dua-utils && \
+  chmod -R g+rw /opt/ros/dua-utils
 WORKDIR /root
 
 ENV DEBIAN_FRONTEND=dialog
