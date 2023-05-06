@@ -278,6 +278,7 @@ RUN mkdir -p gazebo/fortress/src && \
   apt-get update && \
   apt-get install --no-install-recommends -y $(sort -u $(find . -iname 'packages-'`lsb_release -cs`'.apt' -o -iname 'packages.apt' | grep -v '/\.git/') | sed '/ignition\|sdf/d' | tr '\n' ' ') && \
   colcon build --cmake-args -DBUILD_TESTING=OFF --merge-install && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
   chgrp -R internal /opt/gazebo && \
   chmod -R g+rw /opt/gazebo
 ENV GZ_VERSION=fortress
