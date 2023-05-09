@@ -312,6 +312,7 @@ WORKDIR /opt
 RUN mkdir ros/ros_gz && \
   cd ros/ros_gz && \
   git clone --depth 1 --single-branch --branch 'humble' https://github.com/gazebosim/ros_gz.git src && \
+  . /opt/gazebo/fortress/install/setup.sh && \
   . /opt/ros/humble/setup.sh && \
   colcon build && \
   chgrp -R internal /opt/ros/ros_gz && \
