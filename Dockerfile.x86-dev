@@ -259,9 +259,9 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   make install && \
   ldconfig && \
   chgrp -R internal /opt/opencv && \
-  chown -R g+rw /opt/opencv && \
+  chmod -R g+rw /opt/opencv && \
   chgrp -R internal /opt/opencv_contrib && \
-  chown -R g+rw /opt/opencv_contrib
+  chmod -R g+rw /opt/opencv_contrib
 WORKDIR /root
 
 # Build and install Gazebo Fortress
