@@ -161,6 +161,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   valgrind \
   vim \
   wget \
+  whois \
   zip \
   zsh \
   zsh-doc && \
