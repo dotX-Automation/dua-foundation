@@ -289,6 +289,19 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   chmod -R g+rw /opt/opencv_contrib
 WORKDIR /root
 
+# Build and install our fork of rmw_fastrtps
+# NOTE: This is needed to fix a bug in the original rmw_fastrtps, regarding
+# service servers not tracing client timeout exceptions.
+WORKDIR /opt
+RUN git clone --single-branch --branch 'humble' --depth 1 https://github.com/IntelligentSystemsLabUTV/rmw_fastrtps.git ros/rmw_fastrtps && \
+  cd ros/rmw_fastrtps && \
+  . /opt/ros/humble/setup.sh && \
+  colcon build --symlink-install --ament-cmake-args -DBUILD_TESTING=OFF && \
+  rm -rf log && \
+  chgrp -R internal /opt/ros/rmw_fastrtps && \
+  chmod -R g+rw /opt/ros/rmw_fastrtps
+WORKDIR /root
+
 # Build and install dua-utils
 # The ARG allows us to break cache and rebuild from here upon each new version
 WORKDIR /opt
