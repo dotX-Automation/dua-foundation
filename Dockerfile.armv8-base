@@ -221,7 +221,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ros-humble-launch-testing-ros \
   ros-humble-ros-base \
   ros-humble-vision-msgs \
-  ros-humble-vision-opencv && \
+  ros-humble-vision-opencv \
+  ros-humble-xacro && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 
 # Configure ROS Middleware implementation to use
