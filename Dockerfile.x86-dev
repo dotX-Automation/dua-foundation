@@ -194,6 +194,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ros-humble-eigen3-cmake-module \
   ros-humble-gazebo-ros-pkgs \
   ros-humble-gazebo-ros2-control \
+  ros-humble-gazebo-ros2-control-demos \
   ros-humble-geographic-msgs \
   ros-humble-geographic-info \
   ros-humble-image-common \
