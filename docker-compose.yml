@@ -14,7 +14,7 @@ services:
       network: host
       dockerfile: Dockerfile.x86-base
       args:
-        - DUA_UTILS_VERSION=20230612-1833
+        - DUA_UTILS_VERSION=20230617-0020
     image: intelligentsystemslabutv/dua-foundation:x86-base
     network_mode: "host"
     environment:
@@ -45,7 +45,7 @@ services:
       network: host
       dockerfile: Dockerfile.x86-dev
       args:
-        - DUA_UTILS_VERSION=20230612-1833
+        - DUA_UTILS_VERSION=20230617-0020
     image: intelligentsystemslabutv/dua-foundation:x86-dev
     network_mode: "host"
     environment:
@@ -76,7 +76,7 @@ services:
       network: host
       dockerfile: Dockerfile.x86-cudev
       args:
-        - DUA_UTILS_VERSION=20230612-1833
+        - DUA_UTILS_VERSION=20230617-0020
     image: intelligentsystemslabutv/dua-foundation:x86-cudev
     network_mode: "host"
     environment:
@@ -114,7 +114,7 @@ services:
       network: host
       dockerfile: Dockerfile.armv8-base
       args:
-        - DUA_UTILS_VERSION=20230612-1833
+        - DUA_UTILS_VERSION=20230617-0020
     image: intelligentsystemslabutv/dua-foundation:armv8-base
     network_mode: "host"
     environment:
@@ -145,7 +145,7 @@ services:
       network: host
       dockerfile: Dockerfile.armv8-dev
       args:
-        - DUA_UTILS_VERSION=20230612-1833
+        - DUA_UTILS_VERSION=20230617-0020
     image: intelligentsystemslabutv/dua-foundation:armv8-dev
     network_mode: "host"
     environment:
@@ -176,7 +176,7 @@ services:
       network: host
       dockerfile: Dockerfile.jetson5c7
       args:
-        - DUA_UTILS_VERSION=20230612-1833
+        - DUA_UTILS_VERSION=20230617-0020
     image: intelligentsystemslabutv/dua-foundation:jetson5c7
     network_mode: "host"
     environment:
@@ -208,7 +208,7 @@ services:
       network: host
       dockerfile: Dockerfile.jetson4c5
       args:
-        - DUA_UTILS_VERSION=20230612-1833
+        - DUA_UTILS_VERSION=20230617-0020
     image: intelligentsystemslabutv/dua-foundation:jetson4c5
     network_mode: "host"
     environment:
@@ -247,7 +247,7 @@ services:
       network: host
       dockerfile: Dockerfile.jetson4c6
       args:
-        - DUA_UTILS_VERSION=20230612-1833
+        - DUA_UTILS_VERSION=20230617-0020
     image: intelligentsystemslabutv/dua-foundation:jetson4c6
     network_mode: "host"
     environment:
