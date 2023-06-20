@@ -381,8 +381,9 @@ WORKDIR /root
 # Build and install dua-utils
 # The ARG allows us to break cache and rebuild from here upon each new version
 WORKDIR /opt
-ARG DUA_UTILS_VERSION=unknown
-RUN git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-utils && \
+ARG DUA_UTILS_VERSION=20230620-0719
+RUN echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
+  git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-utils && \
   cd ros/dua-utils && \
   . /opt/ros/humble/install/setup.sh && \
   colcon build --symlink-install && \
