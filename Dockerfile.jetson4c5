@@ -184,11 +184,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8 && \
   update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 8
 
-# Install CUDA Toolkit 10.2 with cuDNN 8
+# Install CUDA Toolkit 10.2
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  cuda-toolkit-10-2 \
-  libcudnn8 \
-  libcudnn8-dev && \
+  cuda-toolkit-10-2 && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 
 # Install Java 11
@@ -273,14 +271,14 @@ ENV LANG=en_US.UTF-8
 # 5. Install dependencies via rosdep
 # 6. Install OpenCV 4.2.0 with development files, which may have been deleted by rosdep
 # 7. Build the workspace
-# 8. Remove log/, but build/ and src/ are required for stuff to work
+# 8. Remove build and log files
 # Step 7 highly depends on the platform and build environment.
 # In this case, we need to:
 # - Install a version of OpenCV that is compatible with this codebase, hence 4.2.0
 # - Ensure that the Python 3.8.0 environment is found by CMake (it's the one preinstalled by Nvidia)
 # - Ensure that OpenCV 4.2.0 is found by CMake
 WORKDIR /opt
-RUN --mount=type=bind,source=ros2_humble_repos.yml,target=/opt/repos.yml \
+RUN --mount=type=bind,source=ros2_humble_repos_base.yml,target=/opt/repos.yml \
   mkdir -p ros/humble/src && \
   cd ros/humble && \
   vcs import --input /opt/repos.yml src && \
@@ -295,7 +293,7 @@ RUN --mount=type=bind,source=ros2_humble_repos.yml,target=/opt/repos.yml \
     --skip-keys="fastcdr rti-connext-dds-6.0.1 urdfdom_headers" && \
   apt-get install -y --no-install-recommends libopencv-dev && \
   colcon build \
-    --symlink-install \
+    --merge-install \
     --cmake-args \
       -DPython3_EXECUTABLE=/usr/bin/python3.8 \
       -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
@@ -306,7 +304,7 @@ RUN --mount=type=bind,source=ros2_humble_repos.yml,target=/opt/repos.yml \
       -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
       -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
       -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 && \
-  rm -rf log && \
+  rm -rf build log src && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
   chgrp -R internal /opt/ros && \
   chmod -R g+rw /opt/ros
@@ -347,7 +345,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
     -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
     -D WITH_CUBLAS=ON \
     -D WITH_CUDA=ON \
-    -D WITH_CUDNN=ON \
+    -D WITH_CUDNN=OFF \
     -D WITH_EIGEN=ON \
     -D WITH_OPENCL=OFF \
     -D WITH_QT=OFF \
@@ -356,7 +354,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
     -D ENABLE_FAST_MATH=ON \
     -D ENABLE_NEON=ON \
     -D CUDA_FAST_MATH=ON \
-    -D OPENCV_DNN_CUDA=ON \
+    -D OPENCV_DNN_CUDA=OFF \
     -D BUILD_TBB=ON \
     -D BUILD_EXAMPLES=OFF \
     -D BUILD_TESTS=OFF \
