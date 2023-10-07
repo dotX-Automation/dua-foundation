@@ -267,7 +267,7 @@ RUN --mount=type=bind,source=ros2_humble_repos_base.yml,target=/opt/repos.yml \
     --from-paths src \
     --ignore-src \
     -y \
-    --skip-keys="fastcdr rti-connext-dds-6.0.1 urdfdom_headers" && \
+    --skip-keys="fastcdr rti-connext-dds-6.0.1 rviz2 rviz_common rviz_default_plugins rviz_rendering urdfdom_headers" && \
   apt-get install -y --no-install-recommends libopencv-dev && \
   colcon build \
     --merge-install \
@@ -280,7 +280,8 @@ RUN --mount=type=bind,source=ros2_humble_repos_base.yml,target=/opt/repos.yml \
       -DPython3_EXECUTABLE=/usr/bin/python3.8 \
       -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
       -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
-      -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 && \
+      -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 \
+    --packages-ignore vision_msgs_rviz_plugins && \
   rm -rf build log src && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
   chgrp -R internal /opt/ros && \
