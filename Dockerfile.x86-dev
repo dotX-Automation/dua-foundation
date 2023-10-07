@@ -225,6 +225,7 @@ RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libe
   cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
   make -j$(nproc --all) && \
   make install && \
+  rm -rf build && \
   chgrp -R internal /opt/eigen && \
   chmod -R g+rw /opt/eigen
 WORKDIR /root
@@ -261,6 +262,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   make -j$(nproc --all) && \
   make install && \
   ldconfig && \
+  rm -rf build && \
   chgrp -R internal /opt/opencv && \
   chmod -R g+rw /opt/opencv && \
   chgrp -R internal /opt/opencv_contrib && \
@@ -281,6 +283,7 @@ RUN mkdir -p gazebo/fortress/src && \
   apt-get update && \
   apt-get install --no-install-recommends -y $(sort -u $(find . -iname 'packages-'`lsb_release -cs`'.apt' -o -iname 'packages.apt' | grep -v '/\.git/') | sed '/ignition\|sdf/d' | tr '\n' ' ') && \
   colcon build --cmake-args -DBUILD_TESTING=OFF --merge-install && \
+  rm -rf build log src && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
   chgrp -R internal /opt/gazebo && \
   chmod -R g+rw /opt/gazebo
@@ -295,7 +298,8 @@ RUN mkdir ros/ros_gz && \
   git clone --depth 1 --single-branch --branch 'humble' https://github.com/gazebosim/ros_gz.git src && \
   . /opt/gazebo/fortress/install/setup.sh && \
   . /opt/ros/humble/setup.sh && \
-  colcon build && \
+  colcon build --merge-install && \
+  rm -rf build log src && \
   chgrp -R internal /opt/ros/ros_gz && \
   chmod -R g+rw /opt/ros/ros_gz
 WORKDIR /root
@@ -307,8 +311,8 @@ WORKDIR /opt
 RUN git clone --single-branch --branch 'humble' --depth 1 https://github.com/IntelligentSystemsLabUTV/rmw_fastrtps.git ros/rmw_fastrtps && \
   cd ros/rmw_fastrtps && \
   . /opt/ros/humble/setup.sh && \
-  colcon build --symlink-install --ament-cmake-args -DBUILD_TESTING=OFF && \
-  rm -rf log && \
+  colcon build --merge-install --ament-cmake-args -DBUILD_TESTING=OFF && \
+  rm -rf build log && \
   chgrp -R internal /opt/ros/rmw_fastrtps && \
   chmod -R g+rw /opt/ros/rmw_fastrtps
 WORKDIR /root
@@ -322,8 +326,8 @@ RUN echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
   cd ros/dua-utils && \
   . /opt/ros/humble/setup.sh && \
   . /opt/ros/rmw_fastrtps/install/local_setup.sh && \
-  colcon build --symlink-install && \
-  rm -rf log && \
+  colcon build --merge-install && \
+  rm -rf build log && \
   chgrp -R internal /opt/ros/dua-utils && \
   chmod -R g+rw /opt/ros/dua-utils
 WORKDIR /root
