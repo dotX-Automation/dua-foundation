@@ -8,15 +8,14 @@
 # BUILD THIS WITH:
 # --network host
 
-# Start from an Nvidia CUDA+cuDNN image based on Ubuntu 22.04
+# Start from an Nvidia CUDA image based on Ubuntu 22.04
 # NOTE: The correct version of the CUDA image must be chosen according to:
 # - The driver version installed on the host systems this image will be run on.
 # - The CUDA version required by the software to be run on this image.
-# - The cuDNN version required by the software to be run on this image.
 # - The Ubuntu version required by the software to be run on this image.
 # - The Ubuntu version of the CUDA image.
 # Please open an issue if you require a different version.
-FROM --platform=linux/amd64 nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
+FROM --platform=linux/amd64 nvidia/cuda:11.7.1-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -242,7 +241,7 @@ RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libe
 WORKDIR /root
 
 # Build and install OpenCV (with extra modules aka "contrib") with CUDA support
-# NOTE: Currently, CUDA support is based on Compute Capability 8.6 (Ampere)
+# NOTE: Currently, CUDA support is up to Compute Capability 8.6 (Ampere)
 WORKDIR /opt
 RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv.git && \
   git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv_contrib.git && \
@@ -260,7 +259,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
     -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
     -D WITH_CUBLAS=ON \
     -D WITH_CUDA=ON \
-    -D WITH_CUDNN=ON \
+    -D WITH_CUDNN=OFF \
     -D WITH_EIGEN=ON \
     -D WITH_OPENCL=OFF \
     -D WITH_QT=OFF \
@@ -268,7 +267,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
     -D WITH_V4L=ON \
     -D ENABLE_FAST_MATH=ON \
     -D CUDA_FAST_MATH=ON \
-    -D OPENCV_DNN_CUDA=ON \
+    -D OPENCV_DNN_CUDA=OFF \
     -D BUILD_TBB=ON \
     -D BUILD_EXAMPLES=OFF \
     -D BUILD_TESTS=OFF \
