@@ -54,7 +54,7 @@ do
       ;;
     *)
       echo >&2 "ERROR: Invalid argument $ARG"
-      return 1
+      exit 1
       ;;
   esac
 done
