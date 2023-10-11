@@ -21,16 +21,12 @@ RUN groupadd -r internal
 
 # Install the following Nvidia tools for Jetson platforms:
 # - CUDA developer packages
-# - cuDNN developer packages
-# - TensorRT developer packages
 # - Vision Programming Interface (VPI) developer packages
 # - Multimedia API (MMAPI) developer packages
 # Then, update libraries and environment variables to expose Nvidia GPUs.
 # Ref.: https://gitlab.com/nvidia/container-images/l4t-jetpack/-/blob/master/Dockerfile.jetpack
 RUN apt-get update && apt-get install -y --no-install-recommends \
   nvidia-cuda-dev \
-  nvidia-cudnn8-dev \
-  nvidia-tensorrt-dev \
   nvidia-vpi-dev && \
   apt-get autoclean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
@@ -252,14 +248,14 @@ ENV LANG=en_US.UTF-8
 # 5. Install dependencies via rosdep
 # 6. Install OpenCV 4.2.0 with development files, which may have been deleted by rosdep
 # 7. Build the workspace
-# 8. Remove log/, but build/ and src/ are required for stuff to work
+# 8. Remove build and log files
 # Step 7 highly depends on the platform and build environment.
 # In this case, we need to:
 # - Install a version of OpenCV that is compatible with this codebase, hence 4.2.0
 # - Ensure that the Python 3.8.0 environment is found by CMake (it's the one preinstalled by Nvidia)
 # - Ensure that OpenCV 4.2.0 is found by CMake
 WORKDIR /opt
-RUN --mount=type=bind,source=ros2_humble_repos.yml,target=/opt/repos.yml \
+RUN --mount=type=bind,source=ros2_humble_repos_base.yml,target=/opt/repos.yml \
   mkdir -p ros/humble/src && \
   cd ros/humble && \
   vcs import --input /opt/repos.yml src && \
@@ -271,10 +267,10 @@ RUN --mount=type=bind,source=ros2_humble_repos.yml,target=/opt/repos.yml \
     --from-paths src \
     --ignore-src \
     -y \
-    --skip-keys="fastcdr rti-connext-dds-6.0.1 urdfdom_headers" && \
+    --skip-keys="fastcdr rti-connext-dds-6.0.1 rviz2 rviz_common rviz_default_plugins rviz_rendering urdfdom_headers" && \
   apt-get install -y --no-install-recommends libopencv-dev && \
   colcon build \
-    --symlink-install \
+    --merge-install \
     --cmake-args \
       -DPython3_EXECUTABLE=/usr/bin/python3.8 \
       -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
@@ -284,8 +280,9 @@ RUN --mount=type=bind,source=ros2_humble_repos.yml,target=/opt/repos.yml \
       -DPython3_EXECUTABLE=/usr/bin/python3.8 \
       -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
       -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
-      -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 && \
-  rm -rf log && \
+      -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 \
+    --packages-ignore vision_msgs_rviz_plugins && \
+  rm -rf build log src && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
   chgrp -R internal /opt/ros && \
   chmod -R g+rw /opt/ros
@@ -303,6 +300,7 @@ RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libe
   cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
   make -j$(nproc --all) && \
   make install && \
+  rm -rf build && \
   chgrp -R internal /opt/eigen && \
   chmod -R g+rw /opt/eigen
 WORKDIR /root
@@ -326,7 +324,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
     -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
     -D WITH_CUBLAS=ON \
     -D WITH_CUDA=ON \
-    -D WITH_CUDNN=ON \
+    -D WITH_CUDNN=OFF \
     -D WITH_EIGEN=ON \
     -D WITH_OPENCL=OFF \
     -D WITH_QT=OFF \
@@ -335,7 +333,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
     -D ENABLE_FAST_MATH=ON \
     -D ENABLE_NEON=ON \
     -D CUDA_FAST_MATH=ON \
-    -D OPENCV_DNN_CUDA=ON \
+    -D OPENCV_DNN_CUDA=OFF \
     -D BUILD_TBB=ON \
     -D BUILD_EXAMPLES=OFF \
     -D BUILD_TESTS=OFF \
@@ -351,6 +349,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   make -j$(nproc --all) && \
   make install && \
   ldconfig && \
+  rm -rf build && \
   chgrp -R internal /opt/opencv && \
   chmod -R g+rw /opt/opencv && \
   chgrp -R internal /opt/opencv_contrib && \
@@ -360,13 +359,13 @@ WORKDIR /root
 # Build and install dua-utils
 # The ARG allows us to break cache and rebuild from here upon each new version
 WORKDIR /opt
-ARG DUA_UTILS_VERSION=20230925-1905
+ARG DUA_UTILS_VERSION=20231010-2355
 RUN echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
   git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-utils && \
   cd ros/dua-utils && \
   . /opt/ros/humble/install/setup.sh && \
-  colcon build --symlink-install && \
-  rm -rf log && \
+  colcon build --merge-install && \
+  rm -rf build log && \
   chgrp -R internal /opt/ros/dua-utils && \
   chmod -R g+rw /opt/ros/dua-utils
 WORKDIR /root
