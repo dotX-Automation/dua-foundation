@@ -70,7 +70,7 @@ fi
 echo "Images to be built:" "${TARGETS[@]}"
 
 # Log in as ISL
-if [[ ${SKIP_LOGIN-0} == 1 ]]; then
+if [[ ${SKIP_LOGIN-0} -eq 0 ]]; then
   docker login -u intelligentsystemslabutv
 fi
 
