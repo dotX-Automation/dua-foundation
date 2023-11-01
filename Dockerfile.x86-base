@@ -275,7 +275,7 @@ WORKDIR /root
 # Build and install dua-utils
 # The ARG allows us to break cache and rebuild from here upon each new version
 WORKDIR /opt
-ARG DUA_UTILS_VERSION=20231020-1606
+ARG DUA_UTILS_VERSION=20231101-1208
 RUN echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
   git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-utils && \
   cd ros/dua-utils && \
