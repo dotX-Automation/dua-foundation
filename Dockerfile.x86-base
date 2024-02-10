@@ -272,6 +272,13 @@ RUN git clone --single-branch --branch 'humble' --depth 1 https://github.com/Int
   chmod -R g+rw /opt/ros/rmw_fastrtps
 WORKDIR /root
 
+# Install zenoh-bridge-ros2dds
+# NOTE: Version 0.10.1-rc.2.
+WORKDIR /usr/local/bin
+RUN wget -O - https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds/releases/download/0.10.1-rc.2/zenoh-bridge-ros2dds-0.10.1-rc.2-x86_64-unknown-linux-gnu.zip | funzip > zenoh-bridge-ros2dds && \
+  chmod a+x zenoh-bridge-ros2dds
+WORKDIR /root
+
 # Build and install dua-utils
 # The ARG allows us to break cache and rebuild from here upon each new version
 WORKDIR /opt
