@@ -189,6 +189,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ros-humble-eigen3-cmake-module \
   ros-humble-geographic-msgs \
   ros-humble-geographic-info \
+  ros-humble-gps-msgs \
+  ros-humble-gps-tools \
+  ros-humble-gps-umd \
+  ros-humble-gpsd-client \
   ros-humble-image-common \
   ros-humble-image-geometry \
   ros-humble-image-pipeline \
