@@ -216,7 +216,7 @@ RUN yes | pip3 install -U \
   argparse \
   cerberus \
   coverage \
-  empy \
+  empy==3.3.4 \
   flake8 \
   flake8-blind-except \
   flake8-builtins \
