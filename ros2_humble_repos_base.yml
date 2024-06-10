@@ -250,7 +250,7 @@ repositories:
     version: humble
   ros2/ros2cli:
     type: git
-    url: https://github.com/ros2/ros2cli.git
+    url: https://github.com/IntelligentSystemsLabUTV/ros2cli.git
     version: humble
   ros2/ros2cli_common_extensions:
     type: git
