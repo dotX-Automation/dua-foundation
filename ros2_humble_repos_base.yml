@@ -238,7 +238,7 @@ repositories:
     version: humble
   ros2/rmw_fastrtps:
     type: git
-    url: https://github.com/IntelligentSystemsLabUTV/rmw_fastrtps.git
+    url: https://github.com/dotX-Automation/rmw_fastrtps.git
     version: humble
   ros2/rmw_implementation:
     type: git
@@ -250,7 +250,7 @@ repositories:
     version: humble
   ros2/ros2cli:
     type: git
-    url: https://github.com/IntelligentSystemsLabUTV/ros2cli.git
+    url: https://github.com/dotX-Automation/ros2cli.git
     version: humble
   ros2/ros2cli_common_extensions:
     type: git

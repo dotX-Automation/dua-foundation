@@ -1,9 +1,22 @@
 # ARMv8 development DUA base unit.
 #
-# Roberto Masocco <robmasocco@gmail.com>
-# Intelligent Systems Lab <isl.torvergata@gmail.com>
+# Roberto Masocco <r.masocco@dotxautomation.com>
 #
 # March 4, 2023
+
+# Copyright 2024 dotX Automation s.r.l.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # BUILD THIS WITH:
 # --network host
@@ -301,7 +314,7 @@ WORKDIR /root
 # NOTE: This is needed to fix a bug in the original rmw_fastrtps, regarding
 # service servers not tracing client timeout exceptions.
 WORKDIR /opt
-RUN git clone --single-branch --branch 'humble' --depth 1 https://github.com/IntelligentSystemsLabUTV/rmw_fastrtps.git ros/rmw_fastrtps && \
+RUN git clone --single-branch --branch 'humble' --depth 1 https://github.com/dotX-Automation/rmw_fastrtps.git ros/rmw_fastrtps && \
   cd ros/rmw_fastrtps && \
   . /opt/ros/humble/setup.sh && \
   colcon build --merge-install --ament-cmake-args -DBUILD_TESTING=OFF && \
@@ -322,7 +335,7 @@ WORKDIR /root
 WORKDIR /opt
 ARG DUA_UTILS_VERSION=20240210-1422
 RUN echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
-  git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-utils && \
+  git clone https://github.com/dotX-Automation/dua-utils.git ros/dua-utils && \
   cd ros/dua-utils && \
   . /opt/ros/humble/setup.sh && \
   colcon build --merge-install && \
@@ -334,10 +347,6 @@ WORKDIR /root
 ENV DEBIAN_FRONTEND=dialog
 
 # Finalize image
-LABEL author.name="Roberto Masocco"
-LABEL author.email="robmasocco@gmail.com"
-LABEL organization.name="Intelligent Systems Lab"
-LABEL organization.email="isl.torvergata@gmail.com"
 LABEL description="ARMv8 development DUA base unit"
 LABEL platform="linux/arm64/v8"
 CMD ["bash"]

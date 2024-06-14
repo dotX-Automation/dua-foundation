@@ -1,49 +1,40 @@
-# Base unit for Nvidia Jetson ARMv8 platforms based on JetPack 5.
+# Base unit for Nvidia Jetson Nano platforms based on JetPack 4.6.1.
 #
-# Roberto Masocco <robmasocco@gmail.com>
-# Intelligent Systems Lab <isl.torvergata@gmail.com>
+# Roberto Masocco <r.masocco@dotxautomation.com>
 #
-# February 28, 2023
+# April 15, 2023
+
+# Copyright 2024 dotX Automation s.r.l.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # BUILD THIS WITH:
 # --network host
 
-# Start from a JetPack 5 base image based on Ubuntu 20.04
-# NOTE: The correct version of the JetPack image must be chosen according to
-# the JetPack version running on the host/target device.
-FROM --platform=linux/arm64 nvcr.io/nvidia/l4t-base:35.4.1
+# Start from a Ubuntu 20.04 base image for linux/arm64/v8
+FROM --platform=linux/arm64/v8 ubuntu:20.04
+
+# SoC and Linux4Tegra versions
+ARG L4T_RELEASE_MAJOR=32.7
+ARG L4T_RELEASE_MINOR=1
+ARG L4T_RELEASE=$L4T_RELEASE_MAJOR.$L4T_RELEASE_MINOR
+ARG CUDA=10.2
+ARG SOC="t210"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Create internal users group
 RUN groupadd -r internal
-
-# Fix pva_allow absence error during setup of libnvvpi (still bugged in this tag)
-RUN mkdir -p /lib/firmware && touch /lib/firmware/pva_auth_allowlist
-
-# Install the following Nvidia tools for Jetson platforms:
-# - CUDA developer packages
-# - Vision Programming Interface (VPI) developer packages
-# - Multimedia API (MMAPI) developer packages
-# Then, update libraries and environment variables to expose Nvidia GPUs.
-# Ref.: https://gitlab.com/nvidia/container-images/l4t-jetpack/-/blob/master/Dockerfile.jetpack
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  nvidia-cuda-dev \
-  nvidia-vpi-dev && \
-  apt-get autoclean && \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
-RUN apt-get update && apt-get download nvidia-l4t-jetson-multimedia-api && \
-  dpkg-deb -R ./nvidia-l4t-jetson-multimedia-api_*_arm64.deb ./mm-api && \
-  cp -r ./mm-api/usr/src/jetson_multimedia_api /usr/src/jetson_multimedia_api && \
-  ./mm-api/DEBIAN/postinst && \
-  rm -rf ./nvidia-l4t-jetson-multimedia-api_*_arm64.deb ./mm-api && \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
-RUN ldconfig
-ENV CUDA_HOME="/usr/local/cuda"
-ENV PATH="/usr/local/cuda/bin:${PATH}"
-ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=all
 
 # Configure ROS 2 repository
 RUN apt-get update && \
@@ -72,6 +63,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   dirmngr \
   dmidecode \
   file \
+  freeglut3 \
+  freeglut3-dev \
   fuse \
   g++ \
   gcc \
@@ -96,6 +89,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libfaac-dev \
   libgeographic-dev \
   libgflags-dev \
+  libglu1-mesa-dev \
   libgoogle-glog-dev \
   libgstreamer1.0-dev \
   libgstreamer-plugins-base1.0-dev \
@@ -168,6 +162,46 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-get autoclean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 
+# Configure system for L4T
+# NOTE: This is old stuff: it requires us to place environment variables and
+# files that can be hooked in by the Nvidia runtime.
+ADD --chown=root:root https://repo.download.nvidia.com/jetson/jetson-ota-public.asc /etc/apt/trusted.gpg.d/jetson-ota-public.asc
+RUN chmod 644 /etc/apt/trusted.gpg.d/jetson-ota-public.asc && \
+  echo "deb https://repo.download.nvidia.com/jetson/common r$L4T_RELEASE_MAJOR main" > /etc/apt/sources.list.d/nvidia-l4t-apt-source.list && \
+  echo "deb https://repo.download.nvidia.com/jetson/${SOC} r$L4T_RELEASE_MAJOR main" >> /etc/apt/sources.list.d/nvidia-l4t-apt-source.list && \
+  echo "/usr/lib/aarch64-linux-gnu/tegra" >> /etc/ld.so.conf.d/nvidia-tegra.conf && \
+  echo "/usr/lib/aarch64-linux-gnu/tegra-egl" >> /etc/ld.so.conf.d/nvidia-tegra.conf && \
+  rm /usr/share/glvnd/egl_vendor.d/50_mesa.json && \
+  mkdir -p /usr/share/glvnd/egl_vendor.d/ && \
+  echo '{"file_format_version" : "1.0.0" , "ICD" : { "library_path" : "libEGL_nvidia.so.0" }}' > /usr/share/glvnd/egl_vendor.d/10_nvidia.json && \
+  mkdir -p /usr/share/egl/egl_external_platform.d/ && \
+  echo '{"file_format_version" : "1.0.0" , "ICD" : { "library_path" : "libnvidia-egl-wayland.so.1" }}' > /usr/share/egl/egl_external_platform.d/nvidia_wayland.json && \
+  echo "/usr/local/cuda-$CUDA/targets/aarch64-linux/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
+  ldconfig
+
+# Set environment variables for L4T
+ENV PATH=/usr/local/cuda-$CUDA/bin:/usr/local/cuda/bin:${PATH}
+ENV LD_LIBRARY_PATH=/usr/local/cuda-$CUDA/targets/aarch64-linux/lib:${LD_LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=/opt/nvidia/vpi1/lib64:${LD_LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/tegra:${LD_LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/tegra-egl:${LD_LIBRARY_PATH}
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=all
+ENV OPENBLAS_CORETYPE=ARMV8
+
+# Install and set GCC 8 as default (required by NVCC)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  gcc-8 \
+  g++-8 && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
+  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8 && \
+  update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 8
+
+# Install CUDA Toolkit 10.2
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  cuda-toolkit-10-2 && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
 # Install Java 11
 RUN apt-get update && apt-get install -y --no-install-recommends \
   ant \
@@ -190,7 +224,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # - Scientific libraries
 # - transitions library for FSM software
 # - Jetson stats software (with some black magic)
-# NOTE: EmPy 3.3.4 is required to avoid an incompatibility with colcon.
 RUN yes | pip3 install -U \
   argcomplete \
   argparse \
@@ -318,7 +351,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   cmake \
     -D CMAKE_BUILD_TYPE=RELEASE \
     -D CMAKE_INSTALL_PREFIX=/usr/local \
-    -D CUDA_ARCH_BIN="7.2 8.7" \
+    -D CUDA_ARCH_BIN="5.3" \
     -D CUDA_ARCH_PTX="" \
     -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
     -D EIGEN_INCLUDE_PATH=/usr/local/include/eigen3 \
@@ -371,7 +404,7 @@ WORKDIR /root
 WORKDIR /opt
 ARG DUA_UTILS_VERSION=20240210-1422
 RUN echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
-  git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-utils && \
+  git clone https://github.com/dotX-Automation/dua-utils.git ros/dua-utils && \
   cd ros/dua-utils && \
   . /opt/ros/humble/install/setup.sh && \
   colcon build --merge-install && \
@@ -383,10 +416,6 @@ WORKDIR /root
 ENV DEBIAN_FRONTEND=dialog
 
 # Finalize image
-LABEL author.name="Roberto Masocco"
-LABEL author.email="robmasocco@gmail.com"
-LABEL organization.name="Intelligent Systems Lab"
-LABEL organization.email="isl.torvergata@gmail.com"
-LABEL description="DUA base unit for Nvidia Jetson platforms (JetPack 5)"
-LABEL platform="linux/arm64"
+LABEL description="DUA base unit for Nvidia Jetson Nano platforms"
+LABEL platform="linux/arm64/v8"
 CMD ["bash"]

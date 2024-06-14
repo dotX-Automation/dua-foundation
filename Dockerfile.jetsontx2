@@ -1,9 +1,22 @@
-# Base unit for Nvidia Jetson ARMv8 platforms based on JetPack 4.6.1, CUDA cap. 5.3.
+# Base unit for Nvidia Jetson TX2 platforms based on JetPack 4.6.3.
 #
-# Roberto Masocco <robmasocco@gmail.com>
-# Intelligent Systems Lab <isl.torvergata@gmail.com>
+# Roberto Masocco <r.masocco@dotxautomation.com>
 #
-# April 15, 2023
+# April 27, 2023
+
+# Copyright 2024 dotX Automation s.r.l.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # BUILD THIS WITH:
 # --network host
@@ -13,10 +26,10 @@ FROM --platform=linux/arm64/v8 ubuntu:20.04
 
 # SoC and Linux4Tegra versions
 ARG L4T_RELEASE_MAJOR=32.7
-ARG L4T_RELEASE_MINOR=1
+ARG L4T_RELEASE_MINOR=3
 ARG L4T_RELEASE=$L4T_RELEASE_MAJOR.$L4T_RELEASE_MINOR
 ARG CUDA=10.2
-ARG SOC="t210"
+ARG SOC="t186"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -338,7 +351,7 @@ RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/open
   cmake \
     -D CMAKE_BUILD_TYPE=RELEASE \
     -D CMAKE_INSTALL_PREFIX=/usr/local \
-    -D CUDA_ARCH_BIN="5.3" \
+    -D CUDA_ARCH_BIN="6.2" \
     -D CUDA_ARCH_PTX="" \
     -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
     -D EIGEN_INCLUDE_PATH=/usr/local/include/eigen3 \
@@ -391,7 +404,7 @@ WORKDIR /root
 WORKDIR /opt
 ARG DUA_UTILS_VERSION=20240210-1422
 RUN echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
-  git clone https://github.com/IntelligentSystemsLabUTV/dua-utils.git ros/dua-utils && \
+  git clone https://github.com/dotX-Automation/dua-utils.git ros/dua-utils && \
   cd ros/dua-utils && \
   . /opt/ros/humble/install/setup.sh && \
   colcon build --merge-install && \
@@ -403,10 +416,6 @@ WORKDIR /root
 ENV DEBIAN_FRONTEND=dialog
 
 # Finalize image
-LABEL author.name="Roberto Masocco"
-LABEL author.email="robmasocco@gmail.com"
-LABEL organization.name="Intelligent Systems Lab"
-LABEL organization.email="isl.torvergata@gmail.com"
-LABEL description="DUA base unit for Nvidia Jetson platforms (JetPack 4, CUDA cap. 5.3)"
+LABEL description="DUA base unit for Nvidia Jetson TX2 platforms"
 LABEL platform="linux/arm64/v8"
 CMD ["bash"]

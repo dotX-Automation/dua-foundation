@@ -11,9 +11,9 @@ The following images contain the base units of the Distributed Unified Architect
 - [x] [`x86-cudev`](Dockerfile.x86-cudev) As above, but with CUDA support and packages; based on official Nvidia images.
 - [x] [`armv8-base`](Dockerfile.armv8-base) Basic ARMv8 deployment environment.
 - [x] [`armv8-dev`](Dockerfile.armv8-dev) Development environment for ARMv8 systems, including Apple Silicon Macs.
-- [x] [`jetson5c7`](Dockerfile.jetson5c7) Full environment based on JetPack 5.0.2, Compute Capabilities 7.2; intended for Jetson Xavier NX/AGX Xavier.
-- [x] [`jetson4c5`](Dockerfile.jetson4c5) Full environment based on JetPack 4.6.1, Compute Capabilities 5.3; intended for Jetson Nano.
-- [x] [`jetson4c6`](Dockerfile.jetson4c6) Full environment based on JetPack 4.6.3, Compute Capabilities 6.2; intended for Jetson TX2.
+- [x] [`jetson5`](Dockerfile.jetson5) Full environment based on JetPack 5, for Nvidia Jetson devices.
+- [x] [`jetsontx2`](Dockerfile.jetsontx2) Full environment based on JetPack 4.6.3; intended for Jetson TX2.
+- [x] [`jetsonnano`](Dockerfile.jetsonnano) Full environment based on JetPack 4.6.1; intended for Jetson Nano.
 
 See the individual Dockerfiles for more information, build steps, and image contents.
 
