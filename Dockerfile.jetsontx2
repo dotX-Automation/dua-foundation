@@ -162,6 +162,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-get autoclean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 
+# Configure Git to accept different ownerships for local repository clones
+RUN git config --system --add safe.directory '*'
+
 # Configure system for L4T
 # NOTE: This is old stuff: it requires us to place environment variables and
 # files that can be hooked in by the Nvidia runtime.
