@@ -1,0 +1,48 @@
+# Python basic tools and dependencies:
+# - Testers
+# - YAML, TOML parsers
+# - Package managers
+# - Code formatters
+# - Code coverage testers
+# - Code linters
+# - Template engines
+# - Scientific libraries
+# - transitions library for FSM software
+cerberus
+coverage
+empy==3.3.4
+flake8
+flake8-blind-except
+flake8-builtins
+flake8-class-newline
+flake8-comprehensions
+flake8-deprecated
+flake8-docstrings
+flake8-import-order
+flake8-quotes
+flask
+matplotlib
+numpy
+nunavut
+packaging
+pandas
+pkgconfig
+pyserial
+pyros-genmsg
+pytest
+pytest-cov
+python-dateutil
+pytest-repeat
+pytest-runner
+pytest-rerunfailures
+pyyaml
+requests
+scipy
+setuptools
+six
+testresources
+toml
+tqdm
+transitions
+vcstool
+wheel

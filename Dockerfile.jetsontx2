@@ -141,6 +141,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3-pytest-pylint \
   python3-vcstool \
   python3-vcstools \
+  python3-venv \
   qt5-default \
   ros-dev-tools \
   screen \
@@ -214,64 +215,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
   update-alternatives --set java $(update-alternatives --list java | grep "java-11")
 
-# Install Python 3 tools and dependencies
-# These include:
-# - Argument parsers
-# - Testers
-# - YAML, TOML parsers
-# - Package managers
-# - Code formatters
-# - Code coverage testers
-# - Code linters
-# - Template engines
-# - Scientific libraries
-# - transitions library for FSM software
-# - Jetson stats software (with some black magic)
-RUN yes | pip3 install -U \
-  argcomplete \
-  argparse \
-  cerberus \
-  coverage \
-  empy==3.3.4 \
-  flake8 \
-  flake8-blind-except \
-  flake8-builtins \
-  flake8-class-newline \
-  flake8-comprehensions \
-  flake8-deprecated \
-  flake8-docstrings \
-  flake8-import-order \
-  flake8-quotes \
-  flask \
-  matplotlib \
-  numpy \
-  nunavut \
-  packaging \
-  pandas \
-  pkgconfig \
-  pyserial \
-  pyros-genmsg \
-  pytest \
-  pytest-cov \
-  python-dateutil \
-  pytest-repeat \
-  pytest-runner \
-  pytest-rerunfailures \
-  pyyaml \
-  requests \
-  scipy \
-  setuptools \
-  six \
-  testresources \
-  toml \
-  transitions \
-  wheel
+# Create a Python virtual environment and install packages in it
+WORKDIR /opt
+RUN --mount=type=bind,source=requirements_jetson.txt,target=/opt/requirements_jetson.txt \
+  python3 -m venv --system-site-packages dua-venv && \
+  . dua-venv/bin/activate && \
+  pip install -U -r requirements_jetson.txt && \
+  chgrp -R internal /opt/dua-venv && \
+  chmod -R g+rw /opt/dua-venv
+WORKDIR /root
+
+# Install jetson-stats in the system environment (as it requires)
 RUN yes | sudo pip3 install -U jetson-stats
 
 # Ensure that the Python environment is correctly sourced
-# NOTE: Set this to the output of:
+# NOTE: System path is the output of:
 # python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
-ENV PYTHONPATH=/usr/lib/python3.8/site-packages${PYTHONPATH:+:${PYTHONPATH}}
+ENV PYTHONPATH=/opt/dua-venv/lib/python3.8/site-packages:/usr/lib/python3.8/site-packages${PYTHONPATH:+:${PYTHONPATH}}
 
 # Configure language and locale
 RUN locale-gen en_US.UTF-8 && \
@@ -346,7 +306,8 @@ WORKDIR /root
 
 # Build and install OpenCV (with extra modules aka "contrib") with CUDA support
 WORKDIR /opt
-RUN git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv.git && \
+RUN . dua-venv/bin/activate && \
+  git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv.git && \
   git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv_contrib.git && \
   cd opencv && \
   mkdir build && \
@@ -406,7 +367,8 @@ WORKDIR /root
 # The ARG allows us to break cache and rebuild from here upon each new version
 WORKDIR /opt
 ARG DUA_UTILS_VERSION=20240210-1422
-RUN echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
+RUN . dua-venv/bin/activate && \
+  echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
   git clone https://github.com/dotX-Automation/dua-utils.git ros/dua-utils && \
   cd ros/dua-utils && \
   . /opt/ros/humble/install/setup.sh && \
