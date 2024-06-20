@@ -1,0 +1,14 @@
+# Python AI libraries
+--extra-index-url https://download.pytorch.org/whl/cu118
+gradio
+keras
+onnx
+onnxsim
+onnxruntime
+onnxruntime-gpu
+pycocotools
+supervision
+tensorflow
+torch
+torchvision
+ultralytics

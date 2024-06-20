@@ -1,0 +1,51 @@
+# NOTE: Scientific and AI libraries not included here are supposed to be
+# included in the base l4t-ml image.
+
+# Python basic tools and dependencies:
+# - Testers
+# - YAML, TOML parsers
+# - Package managers
+# - Code formatters
+# - Code coverage testers
+# - Code linters
+# - Template engines
+# - transitions library for FSM software
+cerberus
+coverage
+empy==3.3.4
+flake8
+flake8-blind-except
+flake8-builtins
+flake8-class-newline
+flake8-comprehensions
+flake8-deprecated
+flake8-docstrings
+flake8-import-order
+flake8-quotes
+flask
+nunavut
+packaging
+pkgconfig
+pyserial
+pyros-genmsg
+pytest
+pytest-cov
+python-dateutil
+pytest-repeat
+pytest-runner
+pytest-rerunfailures
+pyyaml
+requests
+setuptools
+six
+testresources
+toml
+tqdm
+transitions
+wheel
+
+# Python AI libraries
+# NOTE: ultralytics must be installed manually to avoid dependency conflicts
+gradio
+pycocotools
+supervision
