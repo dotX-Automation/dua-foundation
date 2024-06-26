@@ -163,8 +163,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   update-alternatives --set java $(update-alternatives --list java | grep "java-11")
 
 # Create a Python virtual environment and install packages in it
+# NOTE: We need to clean some packages from the system environment first
 WORKDIR /opt
 RUN --mount=type=bind,source=requirements_jetson5_ai.txt,target=/opt/requirements_jetson5_ai.txt \
+  apt-get remove -y python3-matplotlib && \
   python3 -m venv --system-site-packages dua-venv && \
   . dua-venv/bin/activate && \
   pip install -U -r requirements_jetson5_ai.txt && \
