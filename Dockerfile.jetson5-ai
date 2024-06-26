@@ -169,6 +169,7 @@ RUN --mount=type=bind,source=requirements_jetson5_ai.txt,target=/opt/requirement
   . dua-venv/bin/activate && \
   pip install -U -r requirements_jetson5_ai.txt && \
   pip install ultralytics --no-dependencies && \
+  pip install ultralytics-thop && \
   chgrp -R internal /opt/dua-venv && \
   chmod -R g+rw /opt/dua-venv
 WORKDIR /root
@@ -251,6 +252,7 @@ RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libe
   cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
   make -j$(nproc --all) && \
   make install && \
+  cd .. && \
   rm -rf build && \
   chgrp -R internal /opt/eigen && \
   chmod -R g+rw /opt/eigen
@@ -297,10 +299,12 @@ RUN . dua-venv/bin/activate && \
     -D PYTHON3_EXECUTABLE=$(which python3) \
     -D PYTHON3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
     -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+    -D OPENCV_PYTHON3_INSTALL_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
     .. && \
   make -j$(nproc --all) && \
   make install && \
   ldconfig && \
+  cd .. && \
   rm -rf build && \
   chgrp -R internal /opt/opencv && \
   chmod -R g+rw /opt/opencv && \

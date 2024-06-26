@@ -23,9 +23,11 @@ flake8-docstrings
 flake8-import-order
 flake8-quotes
 flask
+matplotlib==3.5.0
 nunavut
 packaging
 pkgconfig
+py-cpuinfo
 pyserial
 pyros-genmsg
 pytest
@@ -36,6 +38,7 @@ pytest-runner
 pytest-rerunfailures
 pyyaml
 requests
+seaborn
 setuptools
 six
 testresources
