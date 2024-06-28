@@ -2,4 +2,5 @@
 # - More scientific libraries
 ipython
 jupyterlab
+matplotlib
 notebook

@@ -38,7 +38,6 @@ pytest-runner
 pytest-rerunfailures
 pyyaml
 requests
-seaborn
 setuptools
 six
 testresources
@@ -51,4 +50,5 @@ wheel
 # NOTE: ultralytics must be installed manually to avoid dependency conflicts
 gradio
 pycocotools
+seaborn
 supervision

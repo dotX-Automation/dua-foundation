@@ -163,10 +163,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   update-alternatives --set java $(update-alternatives --list java | grep "java-11")
 
 # Create a Python virtual environment and install packages in it
-# NOTE: We need to clean some packages from the system environment first
 WORKDIR /opt
 RUN --mount=type=bind,source=requirements_jetson5_ai.txt,target=/opt/requirements_jetson5_ai.txt \
-  apt-get remove -y python3-matplotlib && \
   python3 -m venv --system-site-packages dua-venv && \
   . dua-venv/bin/activate && \
   pip install -U -r requirements_jetson5_ai.txt && \
@@ -313,6 +311,13 @@ RUN . dua-venv/bin/activate && \
   chgrp -R internal /opt/opencv_contrib && \
   chmod -R g+rw /opt/opencv_contrib
 WORKDIR /root
+
+# Remove matplotlib from apt and reinstall it with pip
+# This is necessary to avoid an incompatibility of matplotlib with the extension
+# of the Python 3 system environment.
+RUN apt-get remove python3-matplotlib && \
+  . dua-venv/bin/activate && \
+  pip install matplotlib==3.5.0
 
 # Install zenoh-bridge-ros2dds
 # NOTE: Version 0.10.1-rc.2.
