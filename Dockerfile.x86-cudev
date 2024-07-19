@@ -194,6 +194,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ros-humble-launch-testing-ros \
   ros-humble-perception \
   ros-humble-perception-pcl \
+  ros-humble-rmw-cyclonedds-cpp \
   ros-humble-robot-state-publisher \
   ros-humble-rqt-robot-steering \
   ros-humble-vision-msgs \

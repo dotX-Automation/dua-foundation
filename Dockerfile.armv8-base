@@ -201,6 +201,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ros-humble-launch-testing-ament-cmake \
   ros-humble-launch-testing-ros \
   ros-humble-perception-pcl \
+  ros-humble-rmw-cyclonedds-cpp \
   ros-humble-ros-base \
   ros-humble-vision-msgs \
   ros-humble-vision-opencv \
