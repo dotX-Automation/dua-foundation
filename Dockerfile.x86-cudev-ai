@@ -194,7 +194,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ros-humble-launch-testing-ros \
   ros-humble-perception \
   ros-humble-perception-pcl \
-  ros-humble-rmw-cyclonedds-cpp \
   ros-humble-robot-state-publisher \
   ros-humble-rqt-robot-steering \
   ros-humble-vision-msgs \
@@ -323,6 +322,11 @@ RUN . dua-venv/bin/activate && \
   chgrp -R internal /opt/ros/rmw_fastrtps && \
   chmod -R g+rw /opt/ros/rmw_fastrtps
 WORKDIR /root
+
+# Install Cyclone DDS
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  ros-humble-rmw-cyclonedds-cpp && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 
 # Install zenoh-bridge-ros2dds
 # NOTE: Version 0.10.1-rc.2.
