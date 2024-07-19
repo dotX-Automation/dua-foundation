@@ -176,6 +176,7 @@ RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/r
 RUN apt-get update && apt-get install -y --no-install-recommends \
   python3-colcon-argcomplete \
   python3-colcon-common-extensions \
+  python3-colcon-mixin \
   python3-rosdep \
   ros-humble-ament-lint \
   ros-humble-angles \
