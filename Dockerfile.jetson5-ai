@@ -315,8 +315,8 @@ WORKDIR /root
 # Remove matplotlib from apt and reinstall it with pip
 # This is necessary to avoid an incompatibility of matplotlib with the extension
 # of the Python 3 system environment.
-RUN apt-get remove python3-matplotlib && \
-  . dua-venv/bin/activate && \
+RUN apt-get remove -y python3-matplotlib && \
+  . /opt/dua-venv/bin/activate && \
   pip install matplotlib==3.5.0
 
 # Install zenoh-bridge-ros2dds
