@@ -303,7 +303,7 @@ WORKDIR /opt
 ARG DUA_UTILS_VERSION=20240722-1957
 RUN . dua-venv/bin/activate && \
   echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
-  git clone https://github.com/dotX-Automation/dua-utils.git ros/dua-utils && \
+  git clone --recursive https://github.com/dotX-Automation/dua-utils.git ros/dua-utils && \
   cd ros/dua-utils && \
   . /opt/ros/humble/setup.sh && \
   colcon build --merge-install && \
