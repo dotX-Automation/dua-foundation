@@ -317,7 +317,7 @@ WORKDIR /root
 # Build and install dua-utils
 # The ARG allows us to break cache and rebuild from here upon each new version
 WORKDIR /opt
-ARG DUA_UTILS_VERSION=20240723-1724
+ARG DUA_UTILS_VERSION=20240724-1140
 RUN . dua-venv/bin/activate && \
   echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
   git clone --recursive https://github.com/dotX-Automation/dua-utils.git ros/dua-utils && \
