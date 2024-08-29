@@ -359,6 +359,27 @@ RUN . dua-venv/bin/activate && \
   chmod -R g+rw /opt/opencv_contrib
 WORKDIR /root
 
+# Install PCL v1.12.1
+# NOTE: This would be installed by rosdep but the version would be 1.10,
+# which would be incompatible with the one found in other base units.
+WORKDIR /tmp
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  libusb-1.0-0 \
+  libusb-1.0-0-dev && \
+  wget https://github.com/PointCloudLibrary/pcl/archive/refs/tags/pcl-1.12.1.tar.gz && \
+  tar xvf pcl-1.12.1.tar.gz && \
+  cd pcl-pcl-1.12.1 && \
+  mkdir build && \
+  cd build && \
+  cmake -DCMAKE_BUILD_TYPE=Release .. && \
+  make -j$(nproc --all) && \
+  make install && \
+  ldconfig && \
+  cd /tmp && \
+  rm -rf pcl-1.12.1.tar.gz pcl-pcl-1.12.1 && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+WORKDIR /root
+
 # Install zenoh-bridge-ros2dds
 # NOTE: Version 0.10.1-rc.2.
 WORKDIR /usr/local/bin
