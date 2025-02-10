@@ -1,8 +1,8 @@
-# x86 development DUA base unit with Nvidia GPU/CUDA support.
+# x86 development DUA base unit with Nvidia GPU/CUDA support for AI.
 #
 # Roberto Masocco <r.masocco@dotxautomation.com>
 #
-# February 2, 2023
+# June 18, 2024
 
 # Copyright 2024 dotX Automation s.r.l.
 #
@@ -21,14 +21,14 @@
 # BUILD THIS WITH:
 # --network host
 
-# Start from an Nvidia CUDA image based on Ubuntu 22.04
+# Start from an Nvidia CUDA+cuDNN image based on Ubuntu 22.04
 # NOTE: The correct version of the CUDA image must be chosen according to:
 # - The driver version installed on the host systems this image will be run on.
 # - The CUDA version required by the software to be run on this image.
 # - The Ubuntu version required by the software to be run on this image.
 # - The Ubuntu version of the CUDA image.
 # Please open an issue if you require a different version.
-FROM --platform=linux/amd64 nvidia/cuda:11.7.1-devel-ubuntu22.04
+FROM --platform=linux/amd64 nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -140,10 +140,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Create a Python virtual environment and install packages in it
 WORKDIR /opt
-RUN --mount=type=bind,source=requirements.txt,target=/opt/requirements.txt --mount=type=bind,source=requirements_dev.txt,target=/opt/requirements_dev.txt \
+RUN --mount=type=bind,source=requirements.txt,target=/opt/requirements.txt --mount=type=bind,source=requirements_dev.txt,target=/opt/requirements_dev.txt --mount=type=bind,source=requirements_ai.txt,target=/opt/requirements_ai.txt \
   python3 -m venv --system-site-packages dua-venv && \
   . dua-venv/bin/activate && \
-  pip install -U -r requirements.txt -r requirements_dev.txt && \
+  pip install -U -r requirements.txt -r requirements_dev.txt -r requirements_ai.txt && \
   chgrp -R internal /opt/dua-venv && \
   chmod -R g+rw /opt/dua-venv
 WORKDIR /root
@@ -239,7 +239,7 @@ RUN . dua-venv/bin/activate && \
     -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
     -D WITH_CUBLAS=ON \
     -D WITH_CUDA=ON \
-    -D WITH_CUDNN=OFF \
+    -D WITH_CUDNN=ON \
     -D WITH_EIGEN=ON \
     -D WITH_OPENCL=OFF \
     -D WITH_QT=OFF \
@@ -247,7 +247,7 @@ RUN . dua-venv/bin/activate && \
     -D WITH_V4L=ON \
     -D ENABLE_FAST_MATH=ON \
     -D CUDA_FAST_MATH=ON \
-    -D OPENCV_DNN_CUDA=OFF \
+    -D OPENCV_DNN_CUDA=ON \
     -D BUILD_TBB=ON \
     -D BUILD_EXAMPLES=OFF \
     -D BUILD_TESTS=OFF \
