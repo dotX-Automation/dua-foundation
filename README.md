@@ -12,10 +12,15 @@ The following images contain the base units of the Distributed Unified Architect
 - [x] [`armv8-base`](Dockerfile.armv8-base) Basic ARMv8 deployment environment.
 - [x] [`armv8-dev`](Dockerfile.armv8-dev) Development environment for ARMv8 systems, including Apple Silicon Macs.
 - [x] [`jetson5`](Dockerfile.jetson5) Full environment based on JetPack 5, for Nvidia Jetson devices, based on ML JetPack 5 base image with additional libraries and frameworks for AI and ML.
-- [x] [`jetsontx2`](Dockerfile.jetsontx2) Full environment based on JetPack 4.6.3; intended for Jetson TX2.
-- [x] [`jetsonnano`](Dockerfile.jetsonnano) Full environment based on JetPack 4.6.1; intended for Jetson Nano.
 
 See the individual Dockerfiles for more information, build steps, and image contents.
+
+### Legacy images
+
+The following images are still available but continuous support for them has been dropped and, as such, they are not rebuilt regularly and they do not get new features. They are still available for backwards compatibility but they are not recommended for new projects.
+
+- [x] [`jetsontx2`](Dockerfile.jetsontx2) Full environment based on JetPack 4.6.3; intended for Jetson TX2.
+- [x] [`jetsonnano`](Dockerfile.jetsonnano) Full environment based on JetPack 4.6.1; intended for Jetson Nano.
 
 ---
 
