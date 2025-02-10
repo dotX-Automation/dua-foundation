@@ -174,9 +174,6 @@ RUN --mount=type=bind,source=requirements_jetson5_ai.txt,target=/opt/requirement
   chmod -R g+rw /opt/dua-venv
 WORKDIR /root
 
-# Install jetson-stats in the system environment (as it requires)
-RUN yes | sudo pip3 install -U jetson-stats
-
 # Ensure that the Python environment is correctly sourced
 # NOTE: System path is the output of:
 # python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
