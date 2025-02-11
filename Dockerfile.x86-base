@@ -78,6 +78,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libxml2-utils \
   locales \
   lsb-release \
+  lsof \
   make \
   minicom \
   nano \
@@ -148,7 +149,7 @@ ENV CMAKE_PREFIX_PATH=/usr/local:${CMAKE_PREFIX_PATH}
 WORKDIR /opt
 COPY scripts/eigen/build_eigen.sh /opt/build_eigen.sh
 RUN . dua-venv/bin/activate && \
-  /opt/build_eigen.sh && \
+  /opt/build_eigen.sh 3.4.0 && \
   chgrp internal /opt/build_eigen.sh && \
   chmod g+rwx /opt/build_eigen.sh && \
   chgrp -R internal /opt/eigen && \
@@ -159,7 +160,7 @@ WORKDIR /root
 WORKDIR /opt
 COPY scripts/opencv/build_opencv.sh /opt/build_opencv.sh
 RUN . dua-venv/bin/activate && \
-  /opt/build_opencv.sh x86-base && \
+  /opt/build_opencv.sh 4.11.0 x86-base && \
   chgrp internal /opt/build_opencv.sh && \
   chmod g+rwx /opt/build_opencv.sh && \
   chgrp -R internal /opt/opencv && \
@@ -168,7 +169,25 @@ RUN . dua-venv/bin/activate && \
   chmod -R g+rw /opt/opencv_contrib
 WORKDIR /root
 
-# TODO PCL
+# Install Rust toolchain
+ENV RUSTUP_HOME=/opt/rust
+ENV CARGO_HOME=/opt/rust
+WORKDIR /opt
+COPY scripts/rust/install_rust.sh /opt/install_rust.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_rust.sh 1.75.0 && \
+  chgrp internal /opt/install_rust.sh && \
+  chmod g+rwx /opt/install_rust.sh
+WORKDIR /root
+
+# Install Zenoh
+WORKDIR /opt
+COPY scripts/zenoh/install_zenoh.sh /opt/install_zenoh.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_zenoh.sh 1.2.1 x86-base && \
+  chgrp internal /opt/install_zenoh.sh && \
+  chmod g+rwx /opt/install_zenoh.sh
+WORKDIR /root
 
 # Install ROS 2
 WORKDIR /opt
@@ -190,7 +209,6 @@ WORKDIR /opt
 COPY scripts/ros2/build_dua_utils.sh /opt/build_dua_utils.sh
 ARG DUA_UTILS_VERSION=20241022-1746
 RUN . dua-venv/bin/activate && \
-  echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
   /opt/build_dua_utils.sh jazzy && \
   chgrp internal /opt/build_dua_utils.sh && \
   chmod g+rwx /opt/build_dua_utils.sh && \

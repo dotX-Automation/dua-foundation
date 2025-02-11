@@ -88,8 +88,10 @@ if [ "$TARGET" = "x86-base" ]; then
     ros-$ROS_DISTRO-vision-opencv \
     ros-$ROS_DISTRO-xacro
 
-  wget -O /usr/local/bin/zenoh-bridge-ros2dds http://160.80.97.139:8087/Software/DUA/zenoh-plugin-ros2dds-1.2.1-x86_64-unknown-linux-gnu-standalone/zenoh-bridge-ros2dds
-  chmod a+x /usr/local/bin/zenoh-bridge-ros2dds
+  # Install rmw_zenoh sample configuration files
+  mkdir -p /etc/zenoh/rmw
+  cp /opt/ros/$ROS_DISTRO/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_ROUTER_CONFIG.json5 /etc/zenoh/rmw/DEFAULT_RMW_ZENOH_ROUTER_CONFIG.json5
+  cp /opt/ros/$ROS_DISTRO/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5 /etc/zenoh/rmw/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5
 else
   # Should not happen at this point
   echo "Invalid target: $TARGET"

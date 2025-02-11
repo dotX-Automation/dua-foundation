@@ -20,9 +20,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Get requested Eigen version
+EIGEN_VERSION="${1-}"
+
 # Clone and build Eigen
 git clone --single-branch --depth 1 \
-  --branch '3.4.0' \
+  --branch "$EIGEN_VERSION" \
   https://gitlab.com/libeigen/eigen.git
 cd eigen
 mkdir build

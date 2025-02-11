@@ -20,8 +20,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Get the requested OpenCV version
+OPENCV_VERSION="${1-}"
+
 # Get the requested target
-TARGET="${1-}"
+TARGET="${2-}"
 
 # Check that the target is valid
 if [ -z "$TARGET" ]; then
@@ -40,7 +43,6 @@ fi
 echo "Building OpenCV for target: $TARGET"
 
 # Clone OpenCV and OpenCV contrib
-OPENCV_VERSION="4.11.0"
 git clone --single-branch --depth 1 \
   --branch "$OPENCV_VERSION" \
   https://github.com/opencv/opencv.git
