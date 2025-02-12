@@ -6,7 +6,7 @@
 #
 # February 10, 2025
 
-# Copyright 2024 dotX Automation s.r.l.
+# Copyright 2025 dotX Automation s.r.l.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,8 +26,9 @@ EIGEN_VERSION="${1-}"
 # Clone and build Eigen
 git clone --single-branch --depth 1 \
   --branch "$EIGEN_VERSION" \
-  https://gitlab.com/libeigen/eigen.git
-cd eigen
+  https://gitlab.com/libeigen/eigen.git \
+  /opt/eigen
+cd /opt/eigen
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..

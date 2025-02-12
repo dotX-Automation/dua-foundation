@@ -4,7 +4,7 @@
 #
 # February 1, 2023
 
-# Copyright 2024 dotX Automation s.r.l.
+# Copyright 2025 dotX Automation s.r.l.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 # BUILD THIS WITH:
 # --network host
 
-# Start from an amd64 Ubuntu 22.04 image
+# Start from an amd64 Ubuntu 24.04 image
 FROM --platform=linux/amd64 ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -71,6 +71,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libgtk2.0-dev \
   libjpeg-dev \
   libpng-dev \
+  libssl-dev \
   libswscale-dev \
   libtbb-dev \
   libtiff-dev \
@@ -84,6 +85,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   nano \
   ninja-build \
   openssh-client \
+  openssl \
   pkg-config \
   python3 \
   python3-argcomplete \
@@ -158,9 +160,9 @@ WORKDIR /root
 
 # Build and install OpenCV
 WORKDIR /opt
-COPY scripts/opencv/build_opencv.sh /opt/build_opencv.sh
+COPY scripts/opencv/build_opencv.x86-base.sh /opt/build_opencv.sh
 RUN . dua-venv/bin/activate && \
-  /opt/build_opencv.sh 4.11.0 x86-base && \
+  /opt/build_opencv.sh 4.11.0 && \
   chgrp internal /opt/build_opencv.sh && \
   chmod g+rwx /opt/build_opencv.sh && \
   chgrp -R internal /opt/opencv && \
@@ -177,23 +179,49 @@ COPY scripts/rust/install_rust.sh /opt/install_rust.sh
 RUN . dua-venv/bin/activate && \
   /opt/install_rust.sh 1.75.0 && \
   chgrp internal /opt/install_rust.sh && \
-  chmod g+rwx /opt/install_rust.sh
+  chmod g+rwx /opt/install_rust.sh && \
+  chgrp -R internal /opt/rust && \
+  chmod -R g+rw /opt/rust
+WORKDIR /root
+
+# Install DDS implementations:
+# - Fast DDS
+# - Cyclone DDS
+# NOTES
+# - Only C/C++ libraries and support is installed.
+# - The versions are fixed to the closest ones supported by ROS 2 Jazzy (below).
+# - None of these installations goes to system paths, they remain confined
+#   within subdirectories of /opt/dds; see the scripts for details.
+#   In case you would like to use these libraries in your projects, you
+#   should configure CMake or whatever you use accordingly.
+#   This is to enable development with standalone DDS implementations while
+#   avoiding to create conflicts with the ROS 2 installation.
+WORKDIR /opt
+COPY scripts/dds/install_dds.x86-base.sh /opt/install_dds.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_dds.sh 2.14.4 2.1.0 && \
+  chgrp internal /opt/install_dds.sh && \
+  chmod g+rwx /opt/install_dds.sh && \
+  chgrp -R internal /opt/dds && \
+  chmod -R g+rw /opt/dds
 WORKDIR /root
 
 # Install Zenoh
 WORKDIR /opt
-COPY scripts/zenoh/install_zenoh.sh /opt/install_zenoh.sh
+COPY scripts/zenoh/install_zenoh.x86-base.sh /opt/install_zenoh.sh
 RUN . dua-venv/bin/activate && \
-  /opt/install_zenoh.sh 1.2.1 x86-base && \
+  /opt/install_zenoh.sh 1.2.1 && \
   chgrp internal /opt/install_zenoh.sh && \
-  chmod g+rwx /opt/install_zenoh.sh
+  chmod g+rwx /opt/install_zenoh.sh && \
+  chgrp -R internal /opt/zenoh && \
+  chmod -R g+rw /opt/zenoh
 WORKDIR /root
 
 # Install ROS 2
 WORKDIR /opt
-COPY scripts/ros2/install_ros2.sh /opt/install_ros2.sh
+COPY scripts/ros2/install_ros2.x86-base.sh /opt/install_ros2.sh
 RUN . dua-venv/bin/activate && \
-  /opt/install_ros2.sh jazzy x86-base && \
+  /opt/install_ros2.sh jazzy && \
   chgrp internal /opt/install_ros2.sh && \
   chmod g+rwx /opt/install_ros2.sh && \
   chgrp -R internal /opt/ros && \

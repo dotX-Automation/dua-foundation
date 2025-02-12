@@ -50,6 +50,7 @@ RUN apt-get update && \
 # - System utilities
 # - Zsh shell
 # - ROS 2 Humble Hawksbill development tools and dependencies
+# Then, add universe repository
 RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-utils \
   build-essential \

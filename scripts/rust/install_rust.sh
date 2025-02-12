@@ -36,7 +36,7 @@ $RUSTUP_HOME/bin/rustup install $RUST_DEFAULT_VERSION
 $RUSTUP_HOME/bin/rustup default $RUST_DEFAULT_VERSION
 
 # Symlink all executables
-for f in /opt/rust/bin/*; do
+for f in $RUSTUP_HOME/bin/*; do
   echo "Symlinking $(basename $f) to /usr/local/bin/$(basename $f) ..."
   ln -s $f /usr/local/bin/$(basename $f)
 done
