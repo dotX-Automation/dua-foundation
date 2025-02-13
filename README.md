@@ -19,8 +19,8 @@ See the individual Dockerfiles for more information, build steps, and image cont
 
 The following images are still available but continuous support for them has been dropped and, as such, they are not rebuilt regularly and they do not get new features. They are still available for backwards compatibility but they are not recommended for new projects.
 
-- [x] [`jetsontx2`](Dockerfile.jetsontx2) Full environment based on JetPack 4.6.3; intended for Jetson TX2.
-- [x] [`jetsonnano`](Dockerfile.jetsonnano) Full environment based on JetPack 4.6.1; intended for Jetson Nano.
+- [x] [`jetsontx2`](legacy/Dockerfile.jetsontx2) Full environment based on JetPack 4.6.3; intended for Jetson TX2.
+- [x] [`jetsonnano`](legacy/Dockerfile.jetsonnano) Full environment based on JetPack 4.6.1; intended for Jetson Nano.
 
 ---
 
