@@ -155,7 +155,7 @@ WORKDIR /root
 # Ensure that the Python environment is correctly sourced
 # NOTE: System path is the output of:
 # python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
-ENV PYTHONPATH=/opt/dua-venv/lib/python3.12/site-packages:/usr/lib/python3/dist-packages${PYTHONPATH:+:${PYTHONPATH}}
+ENV PYTHONPATH=/opt/dua-venv/lib/python3.12/site-packages:/usr/lib/python3/dist-packages
 
 # Configure language and locale
 RUN locale-gen en_US.UTF-8 && \
@@ -163,7 +163,7 @@ RUN locale-gen en_US.UTF-8 && \
 ENV LANG=en_US.UTF-8
 
 # Configure CMake system-wide environment to detect our installations first
-ENV CMAKE_PREFIX_PATH=/usr/local:${CMAKE_PREFIX_PATH}
+ENV CMAKE_PREFIX_PATH=/usr/local
 
 # Install headers of the NVIDIA Video Codec SDK
 # NOTES
@@ -188,7 +188,7 @@ RUN . dua-venv/bin/activate && \
   chmod -R g+rw /opt/eigen
 WORKDIR /root
 
-# # Build and install OpenCV
+# Build and install OpenCV
 WORKDIR /opt
 COPY scripts/opencv/build_opencv.x86-cudev.sh /opt/build_opencv.sh
 RUN . dua-venv/bin/activate && \
@@ -201,183 +201,87 @@ RUN . dua-venv/bin/activate && \
   chmod -R g+rw /opt/opencv_contrib
 WORKDIR /root
 
-# # Install ROS 2 Humble Hawksbill desktop
-# RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg
-# RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#   python3-colcon-argcomplete \
-#   python3-colcon-common-extensions \
-#   python3-colcon-mixin \
-#   python3-rosdep \
-#   ros-humble-actuator-msgs \
-#   ros-humble-ament-lint \
-#   ros-humble-angles \
-#   ros-humble-cv-bridge \
-#   ros-humble-desktop \
-#   ros-humble-diagnostic-msgs \
-#   ros-humble-diagnostic-updater \
-#   ros-humble-eigen3-cmake-module \
-#   ros-humble-gazebo-ros-pkgs \
-#   ros-humble-gazebo-ros2-control \
-#   ros-humble-gazebo-ros2-control-demos \
-#   ros-humble-geographic-msgs \
-#   ros-humble-geographic-info \
-#   ros-humble-gps-msgs \
-#   ros-humble-gps-tools \
-#   ros-humble-gps-umd \
-#   ros-humble-gpsd-client \
-#   ros-humble-image-common \
-#   ros-humble-image-geometry \
-#   ros-humble-image-pipeline \
-#   ros-humble-image-transport \
-#   ros-humble-image-transport-plugins \
-#   ros-humble-joint-state-publisher \
-#   ros-humble-launch-testing \
-#   ros-humble-launch-testing-ament-cmake \
-#   ros-humble-launch-testing-ros \
-#   ros-humble-perception \
-#   ros-humble-perception-pcl \
-#   ros-humble-robot-state-publisher \
-#   ros-humble-rqt-robot-steering \
-#   ros-humble-vision-msgs \
-#   ros-humble-vision-opencv \
-#   ros-humble-xacro && \
-#   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+# Install Rust toolchain
+ENV RUSTUP_HOME=/opt/rust
+ENV CARGO_HOME=/opt/rust
+WORKDIR /opt
+COPY scripts/rust/install_rust.sh /opt/install_rust.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_rust.sh 1.75.0 && \
+  chgrp internal /opt/install_rust.sh && \
+  chmod g+rwx /opt/install_rust.sh && \
+  chgrp -R internal /opt/rust && \
+  chmod -R g+rw /opt/rust
+WORKDIR /root
 
-# # Configure ROS Middleware implementation to use
-# ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+# Install DDS implementations:
+# - Fast DDS
+# - Cyclone DDS
+# NOTES
+# - Only C/C++ libraries and support is installed.
+# - The versions are fixed to the closest ones supported by ROS 2 Jazzy (below).
+# - None of these installations goes to system paths, they remain confined
+#   within subdirectories of /opt/dds; see the scripts for details.
+#   In case you would like to use these libraries in your projects, you
+#   should configure CMake or whatever you use accordingly.
+#   This is to enable development with standalone DDS implementations while
+#   avoiding to create conflicts with the ROS 2 installation.
+WORKDIR /opt
+COPY scripts/dds/install_dds.x86-cudev.sh /opt/install_dds.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_dds.sh 2.14.4 0.10.5 && \
+  chgrp internal /opt/install_dds.sh && \
+  chmod g+rwx /opt/install_dds.sh && \
+  chgrp -R internal /opt/dds && \
+  chmod -R g+rw /opt/dds
+WORKDIR /root
 
-# # Build and install OpenCV (with extra modules aka "contrib") with CUDA support
-# # NOTE: Currently, CUDA support is up to Compute Capability 8.6 (Ampere)
-# WORKDIR /opt
-# RUN . dua-venv/bin/activate && \
-#   git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv.git && \
-#   git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv_contrib.git && \
-#   cd opencv && \
-#   mkdir build && \
-#   cd build && \
-#   cmake \
-#     -D CMAKE_BUILD_TYPE=RELEASE \
-#     -D CMAKE_INSTALL_PREFIX=/usr/local \
-#     -D CUDA_ARCH_BIN="6.1 7.5 8.6" \
-#     -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
-#     -D EIGEN_INCLUDE_PATH=/usr/local/include/eigen3 \
-#     -D OPENCV_GENERATE_PKGCONFIG=ON \
-#     -D OPENCV_ENABLE_NONFREE=ON \
-#     -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
-#     -D WITH_CUBLAS=ON \
-#     -D WITH_CUDA=ON \
-#     -D WITH_CUDNN=ON \
-#     -D WITH_EIGEN=ON \
-#     -D WITH_OPENCL=OFF \
-#     -D WITH_QT=OFF \
-#     -D WITH_TBB=ON \
-#     -D WITH_V4L=ON \
-#     -D ENABLE_FAST_MATH=ON \
-#     -D CUDA_FAST_MATH=ON \
-#     -D OPENCV_DNN_CUDA=ON \
-#     -D BUILD_TBB=ON \
-#     -D BUILD_EXAMPLES=OFF \
-#     -D BUILD_TESTS=OFF \
-#     -D BUILD_opencv_python2=OFF \
-#     -D BUILD_opencv_python3=ON \
-#     -D INSTALL_PYTHON_EXAMPLES=OFF \
-#     -D INSTALL_C_EXAMPLES=OFF \
-#     -D PYTHON_EXECUTABLE=$(which python2) \
-#     -D PYTHON3_EXECUTABLE=$(which python3) \
-#     -D PYTHON3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
-#     -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
-#     -D OPENCV_PYTHON3_INSTALL_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
-#   .. && \
-#   make -j$(nproc --all) && \
-#   make install && \
-#   ldconfig && \
-#   cd .. && \
-#   rm -rf build && \
-#   chgrp -R internal /opt/opencv && \
-#   chmod -R g+rw /opt/opencv && \
-#   chgrp -R internal /opt/opencv_contrib && \
-#   chmod -R g+rw /opt/opencv_contrib
-# WORKDIR /root
+# Install Zenoh
+WORKDIR /opt
+COPY scripts/zenoh/install_zenoh.x86-cudev.sh /opt/install_zenoh.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_zenoh.sh 1.2.1 && \
+  chgrp internal /opt/install_zenoh.sh && \
+  chmod g+rwx /opt/install_zenoh.sh && \
+  chgrp -R internal /opt/zenoh && \
+  chmod -R g+rw /opt/zenoh
+WORKDIR /root
 
-# # Build and install Gazebo Fortress
-# # As of now, we prefer this installation method over binary packages, since they
-# # appear to contain an old, bugged version.
-# WORKDIR /opt
-# RUN . dua-venv/bin/activate && \
-#   mkdir -p gazebo/fortress/src && \
-#   cd gazebo/fortress/src && \
-#   wget https://raw.githubusercontent.com/ignition-tooling/gazebodistro/master/collection-fortress.yaml && \
-#   vcs import < collection-fortress.yaml && \
-#   cd .. && \
-#   wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg && \
-#   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null && \
-#   apt-get update && \
-#   apt-get install --no-install-recommends -y $(sort -u $(find . -iname 'packages-'`lsb_release -cs`'.apt' -o -iname 'packages.apt' | grep -v '/\.git/') | sed '/ignition\|sdf/d' | tr '\n' ' ') && \
-#   colcon build --cmake-args -DBUILD_TESTING=OFF --merge-install && \
-#   rm -rf build log src && \
-#   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
-#   chgrp -R internal /opt/gazebo && \
-#   chmod -R g+rw /opt/gazebo
-# ENV GZ_VERSION=fortress
-# WORKDIR /root
+# Install ROS 2
+WORKDIR /opt
+COPY scripts/ros2/install_ros2.x86-cudev.sh /opt/install_ros2.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_ros2.sh jazzy && \
+  chgrp internal /opt/install_ros2.sh && \
+  chmod g+rwx /opt/install_ros2.sh && \
+  chgrp -R internal /opt/ros && \
+  chmod -R g+rw /opt/ros
+WORKDIR /root
 
-# # Build and install ros_gz, the Ignition Gazebo ROS 2 bridge
-# # From source as per the above
-# WORKDIR /opt
-# RUN . dua-venv/bin/activate && \
-#   mkdir ros/ros_gz && \
-#   cd ros/ros_gz && \
-#   git clone --depth 1 --single-branch --branch 'humble' https://github.com/gazebosim/ros_gz.git src && \
-#   . /opt/gazebo/fortress/install/setup.sh && \
-#   . /opt/ros/humble/setup.sh && \
-#   colcon build --merge-install && \
-#   rm -rf build log src && \
-#   chgrp -R internal /opt/ros/ros_gz && \
-#   chmod -R g+rw /opt/ros/ros_gz
-# WORKDIR /root
+# Configure default ROS MiddleWare implementation
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
-# # Build and install our fork of rmw_fastrtps
-# # NOTE: This is needed to fix a bug in the original rmw_fastrtps, regarding
-# # service servers not tracing client timeout exceptions.
-# WORKDIR /opt
-# RUN . dua-venv/bin/activate && \
-#   git clone --single-branch --branch 'humble' --depth 1 https://github.com/dotX-Automation/rmw_fastrtps.git ros/rmw_fastrtps && \
-#   cd ros/rmw_fastrtps && \
-#   . /opt/ros/humble/setup.sh && \
-#   colcon build --merge-install --ament-cmake-args -DBUILD_TESTING=OFF && \
-#   rm -rf build log && \
-#   chgrp -R internal /opt/ros/rmw_fastrtps && \
-#   chmod -R g+rw /opt/ros/rmw_fastrtps
-# WORKDIR /root
+# Install Gazebo
+WORKDIR /opt
+COPY scripts/ros2/install_gazebo.x86-cudev.sh /opt/install_gazebo.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_gazebo.sh harmonic jazzy && \
+  chgrp internal /opt/install_gazebo.sh && \
+  chmod g+rwx /opt/install_gazebo.sh
+WORKDIR /root
 
-# # Install Cyclone DDS
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#   ros-humble-rmw-cyclonedds-cpp && \
-#   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
-
-# # Install zenoh-bridge-ros2dds
-# # NOTE: Version 0.10.1-rc.2.
-# WORKDIR /usr/local/bin
-# RUN wget -O - https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds/releases/download/0.10.1-rc.2/zenoh-bridge-ros2dds-0.10.1-rc.2-x86_64-unknown-linux-gnu.zip | funzip > zenoh-bridge-ros2dds && \
-#   chmod a+x zenoh-bridge-ros2dds
-# WORKDIR /root
-
-# # Build and install dua-utils
-# # The ARG allows us to break cache and rebuild from here upon each new version
-# WORKDIR /opt
-# ARG DUA_UTILS_VERSION=20241022-1746
-# RUN . dua-venv/bin/activate && \
-#   echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
-#   git clone --recursive https://github.com/dotX-Automation/dua-utils.git ros/dua-utils && \
-#   cd ros/dua-utils && \
-#   . /opt/ros/humble/setup.sh && \
-#   . /opt/ros/rmw_fastrtps/install/local_setup.sh && \
-#   colcon build --merge-install && \
-#   rm -rf build log && \
-#   chgrp -R internal /opt/ros/dua-utils && \
-#   chmod -R g+rw /opt/ros/dua-utils
-# WORKDIR /root
+# Build and install dua-utils
+# The ARG allows us to break cache and rebuild from here upon each new version
+WORKDIR /opt
+COPY scripts/ros2/build_dua_utils.sh /opt/build_dua_utils.sh
+ARG DUA_UTILS_VERSION=20241022-1746
+RUN . dua-venv/bin/activate && \
+  /opt/build_dua_utils.sh jazzy && \
+  chgrp internal /opt/build_dua_utils.sh && \
+  chmod g+rwx /opt/build_dua_utils.sh && \
+  chgrp -R internal /opt/ros/dua-utils && \
+  chmod -R g+rw /opt/ros/dua-utils
+WORKDIR /root
 
 ENV DEBIAN_FRONTEND=dialog
 
