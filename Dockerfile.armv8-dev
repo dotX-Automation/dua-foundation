@@ -159,7 +159,7 @@ WORKDIR /root
 # Ensure that the Python environment is correctly sourced
 # NOTE: System path is the output of:
 # python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
-ENV PYTHONPATH=/opt/dua-venv/lib/python3.12/site-packages:/usr/lib/python3/dist-packages${PYTHONPATH:+:${PYTHONPATH}}
+ENV PYTHONPATH=/opt/dua-venv/lib/python3.12/site-packages:/usr/lib/python3/dist-packages
 
 # Configure language and locale
 RUN locale-gen en_US.UTF-8 && \
@@ -167,7 +167,7 @@ RUN locale-gen en_US.UTF-8 && \
 ENV LANG=en_US.UTF-8
 
 # Configure CMake system-wide environment to detect our installations first
-ENV CMAKE_PREFIX_PATH=/usr/local:${CMAKE_PREFIX_PATH}
+ENV CMAKE_PREFIX_PATH=/usr/local
 
 # Build and install Eigen
 WORKDIR /opt
