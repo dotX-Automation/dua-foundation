@@ -67,6 +67,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libatlas-base-dev \
   libavcodec-dev \
   libavformat-dev \
+  libavutil-dev \
   libblas-dev \
   libboost-all-dev \
   libcanberra-gtk* \
@@ -87,6 +88,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libpng-dev \
   libprotobuf-dev \
   libssl-dev \
+  libswresample-dev \
   libswscale-dev \
   libtheora-dev \
   libtiff-dev \

@@ -38,6 +38,7 @@ RUN groupadd -r internal
 # - Boost C++ libraries
 # - System utilities
 # - Zsh shell
+# - Nvidia video encode/decode libraries
 # Then, add universe repository
 RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-utils \
@@ -65,6 +66,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libasio-dev \
   libavcodec-dev \
   libavformat-dev \
+  libavutil-dev \
   libboost-all-dev \
   libdc1394-dev \
   libgeographiclib-dev \
@@ -72,6 +74,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libjpeg-dev \
   libpng-dev \
   libssl-dev \
+  libswresample-dev \
   libswscale-dev \
   libtbb-dev \
   libtiff-dev \

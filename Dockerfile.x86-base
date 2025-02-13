@@ -65,6 +65,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libasio-dev \
   libavcodec-dev \
   libavformat-dev \
+  libavutil-dev \
   libboost-all-dev \
   libdc1394-dev \
   libgeographiclib-dev \
@@ -72,6 +73,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libjpeg-dev \
   libpng-dev \
   libssl-dev \
+  libswresample-dev \
   libswscale-dev \
   libtbb-dev \
   libtiff-dev \
