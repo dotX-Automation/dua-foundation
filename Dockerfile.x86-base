@@ -201,7 +201,7 @@ WORKDIR /root
 WORKDIR /opt
 COPY scripts/dds/install_dds.x86-base.sh /opt/install_dds.sh
 RUN . dua-venv/bin/activate && \
-  /opt/install_dds.sh 2.14.4 2.1.0 && \
+  /opt/install_dds.sh 2.14.4 0.10.5 && \
   chgrp internal /opt/install_dds.sh && \
   chmod g+rwx /opt/install_dds.sh && \
   chgrp -R internal /opt/dds && \
