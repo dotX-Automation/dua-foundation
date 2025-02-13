@@ -76,13 +76,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libasio-dev \
   libavcodec-dev \
   libavformat-dev \
+  libavutil-dev \
   libboost-all-dev \
   libdc1394-dev \
   libgeographiclib-dev \
   libgtk2.0-dev \
   libjpeg-dev \
+  libnvidia-encode-560 \
+  libnvidia-decode-560 \
   libpng-dev \
   libssl-dev \
+  libswresample-dev \
   libswscale-dev \
   libtbb-dev \
   libtiff-dev \
@@ -161,6 +165,18 @@ ENV LANG=en_US.UTF-8
 # Configure CMake system-wide environment to detect our installations first
 ENV CMAKE_PREFIX_PATH=/usr/local:${CMAKE_PREFIX_PATH}
 
+# Install headers of the NVIDIA Video Codec SDK
+# NOTES
+# - Shared libraries are installed from the driver package above.
+WORKDIR /tmp
+RUN wget -O Video_Codec_SDK.zip http://160.80.97.139:8087/Software/DUA/NVIDIA/Video_Codec_SDK_12.2.72.zip && \
+  unzip Video_Codec_SDK.zip && \
+  cp Video_Codec_SDK_12.2.72/Interface/cuviddec.h /usr/local/cuda/include/cuviddec.h && \
+  cp Video_Codec_SDK_12.2.72/Interface/nvcuvid.h /usr/local/cuda/include/nvcuvid.h && \
+  cp Video_Codec_SDK_12.2.72/Interface/nvEncodeAPI.h /usr/local/cuda/include/nvEncodeAPI.h && \
+  rm -rf Video_Codec_SDK.zip Video_Codec_SDK_12.2.72
+WORKDIR /root
+
 # Build and install Eigen
 WORKDIR /opt
 COPY scripts/eigen/build_eigen.sh /opt/build_eigen.sh
@@ -173,17 +189,17 @@ RUN . dua-venv/bin/activate && \
 WORKDIR /root
 
 # # Build and install OpenCV
-# WORKDIR /opt
-# COPY scripts/opencv/build_opencv.x86-cudev.sh /opt/build_opencv.sh
-# RUN . dua-venv/bin/activate && \
-#   /opt/build_opencv.sh 4.11.0 && \
-#   chgrp internal /opt/build_opencv.sh && \
-#   chmod g+rwx /opt/build_opencv.sh && \
-#   chgrp -R internal /opt/opencv && \
-#   chmod -R g+rw /opt/opencv && \
-#   chgrp -R internal /opt/opencv_contrib && \
-#   chmod -R g+rw /opt/opencv_contrib
-# WORKDIR /root
+WORKDIR /opt
+COPY scripts/opencv/build_opencv.x86-cudev.sh /opt/build_opencv.sh
+RUN . dua-venv/bin/activate && \
+  /opt/build_opencv.sh 4.11.0 && \
+  chgrp internal /opt/build_opencv.sh && \
+  chmod g+rwx /opt/build_opencv.sh && \
+  chgrp -R internal /opt/opencv && \
+  chmod -R g+rw /opt/opencv && \
+  chgrp -R internal /opt/opencv_contrib && \
+  chmod -R g+rw /opt/opencv_contrib
+WORKDIR /root
 
 # # Install ROS 2 Humble Hawksbill desktop
 # RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg
