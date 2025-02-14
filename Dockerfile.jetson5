@@ -179,18 +179,6 @@ ENV LANG=en_US.UTF-8
 # Configure CMake system-wide environment to detect our installations first
 ENV CMAKE_PREFIX_PATH=/usr/local
 
-# Install headers of the NVIDIA Video Codec SDK
-# NOTES
-# - Shared libraries are installed from the driver package above.
-WORKDIR /tmp
-RUN wget -O Video_Codec_SDK.zip http://160.80.97.139:8087/Software/DUA/NVIDIA/Video_Codec_SDK_12.2.72.zip && \
-  unzip Video_Codec_SDK.zip && \
-  cp Video_Codec_SDK_12.2.72/Interface/cuviddec.h /usr/local/cuda/include/cuviddec.h && \
-  cp Video_Codec_SDK_12.2.72/Interface/nvcuvid.h /usr/local/cuda/include/nvcuvid.h && \
-  cp Video_Codec_SDK_12.2.72/Interface/nvEncodeAPI.h /usr/local/cuda/include/nvEncodeAPI.h && \
-  rm -rf Video_Codec_SDK.zip Video_Codec_SDK_12.2.72
-WORKDIR /root
-
 # Build and install Eigen
 WORKDIR /opt
 COPY scripts/eigen/build_eigen.sh /opt/build_eigen.sh
