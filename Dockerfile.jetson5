@@ -1,4 +1,4 @@
-# Base unit for Nvidia Jetson ARMv8 platforms based on JetPack 5, with AI tools.
+# Base unit for Nvidia Jetson platforms based on JetPack 5.
 #
 # Roberto Masocco <r.masocco@dotxautomation.com>
 #
@@ -22,23 +22,16 @@
 # --network host
 
 # Start from a JetPack 5 ML image based on Ubuntu 20.04
-# NOTE: The correct version of the JetPack image must be chosen according to
-# the JetPack version running on the host/target device.
-# NOTE: This image already incldues many things, compare this Dockerfile with
-# the jetson5 one.
+# NOTES
+# - The base image is Ubuntu 20.04.
+# - This image is based on L4T 35.2.1, JetPack 5.1.
+# - This image runs on JetPack 5 version 5.1 and later.
 FROM --platform=linux/arm64 nvcr.io/nvidia/l4t-ml:r35.2.1-py3
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Create internal users group
 RUN groupadd -r internal
-
-# Configure ROS 2 repository
-RUN apt-get update && \
-  apt-get install -y --no-install-recommends ca-certificates curl && \
-  curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null && \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 
 # Install basic utilities, dependencies, and development tools
 # These include:
@@ -65,6 +58,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   g++ \
   gcc \
   gdb \
+  gdbserver \
   gfortran \
   git \
   gnupg2 \
@@ -78,6 +72,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libavcodec-dev \
   libavformat-dev \
   libavresample-dev \
+  libavutil-dev \
   libboost-all-dev \
   libcanberra-gtk* \
   libdc1394-22-dev \
@@ -95,9 +90,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libopencore-amrnb-dev \
   libpng-dev \
   libprotobuf-dev \
+  libssl-dev \
+  libswresample-dev \
   libswscale-dev \
-  libtbb2 \
-  libtbb-dev \
   libtheora-dev \
   libtiff-dev \
   libtinyxml2-dev \
@@ -110,29 +105,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   locales \
   lsb-core \
   lsb-release \
+  lsof \
   make \
-  manpages-dev \
-  manpages-posix-dev \
   minicom \
   nano \
   ninja-build \
   openssh-client \
+  openssl \
   pkg-config \
   protobuf-compiler \
-  python-dev-is-python3 \
-  python-is-python3 \
   python3-argcomplete \
   python3-autopep8 \
   python3-dev \
   python3-pygments \
   python3-pytest-cov \
   python3-pytest-pylint \
-  python3-vcstool \
   python3-vcstools \
   python3-venv \
-  qt5-default \
-  ros-dev-tools \
-  screen \
   shellcheck \
   software-properties-common \
   sudo \
@@ -164,11 +153,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   update-alternatives --set java $(update-alternatives --list java | grep "java-11")
 
 # Create a Python virtual environment and install packages in it
+# NOTES
+# - ultralytics must be installed like this to avoid messing up the dependencies.
 WORKDIR /opt
-RUN --mount=type=bind,source=requirements_jetson5_ai.txt,target=/opt/requirements_jetson5_ai.txt \
+RUN --mount=type=bind,source=python/requirements_jetson5.txt,target=/opt/requirements_jetson5.txt \
   python3 -m venv --system-site-packages dua-venv && \
   . dua-venv/bin/activate && \
-  pip install -U -r requirements_jetson5_ai.txt && \
+  pip install -U -r requirements_jetson5.txt && \
   pip install ultralytics --no-dependencies && \
   pip install ultralytics-thop && \
   chgrp -R internal /opt/dua-venv && \
@@ -176,193 +167,189 @@ RUN --mount=type=bind,source=requirements_jetson5_ai.txt,target=/opt/requirement
 WORKDIR /root
 
 # Ensure that the Python environment is correctly sourced
-# NOTE: System path is the output of:
+# System path is the output of:
 # python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
-ENV PYTHONPATH=/opt/dua-venv/lib/python3.8/site-packages:/usr/lib/python3.8/site-packages${PYTHONPATH:+:${PYTHONPATH}}
+ENV PYTHONPATH=/opt/dua-venv/lib/python3.8/site-packages:/usr/lib/python3.8/site-packages
 
 # Configure language and locale
 RUN locale-gen en_US.UTF-8 && \
   update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 
-# Build ROS 2 Humble Hawksbill from source
-# NOTE: The procedure is not obvious, so here is a brief explanation:
-# 1.  Create a workspace
-# 2.  Clone the repos file, containing the default plus some extras
-# 3.  Initialize rosdep
-# 4.  Update rosdep
-# 5.  Remove opencv* packets preinstalled in the base image (should be version 4.5.x)
-# 6.  Install libopencv-dev (version 4.2.0) which is required for this build
-# 7.  Install dependencies via rosdep (but it can't handle libopencv-dev alone)
-# 8.  Reinstall libopencv-dev (version 4.2.0) which gets lost somehow
-# 9.  Build the workspace
-# 10. Remove build and log files
-# Step 9 highly depends on the platform and build environment.
-# In this case, we need to:
-# - Install a version of OpenCV that is compatible with this codebase, hence libopencv-dev
-# - Ensure that the Python 3.8.0 environment is found by CMake (it's the one preinstalled by Nvidia)
-# - Ensure that OpenCV 4.2.0 (from libopencv-dev) is found by CMake
-WORKDIR /opt
-RUN --mount=type=bind,source=ros2_humble_repos_base.yml,target=/opt/repos.yml \
-  mkdir -p ros/humble/src && \
-  cd ros/humble && \
-  vcs import --input /opt/repos.yml src && \
-  rosdep init && \
-  rosdep update --rosdistro=humble && \
-  apt-get update && \
-  apt-get remove -y opencv-dev opencv-libs && \
-  apt-get install -y --no-install-recommends libopencv-dev && \
-  rosdep install \
-    --rosdistro=humble \
-    --from-paths src \
-    --ignore-src \
-    -y \
-    --skip-keys="fastcdr python_qt_binding rti-connext-dds-6.0.1 rviz2 rviz_common rviz_default_plugins rviz_rendering urdfdom_headers" && \
-  apt-get install -y --no-install-recommends libopencv-dev && \
-  colcon build \
-    --merge-install \
-    --cmake-args \
-      -DPython3_EXECUTABLE=/usr/bin/python3.8 \
-      -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
-      -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
-      -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 \
-    --ament-cmake-args \
-      -DPython3_EXECUTABLE=/usr/bin/python3.8 \
-      -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
-      -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
-      -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 \
-    --packages-ignore joint_state_publisher_gui vision_msgs_rviz_plugins && \
-  rm -rf build log src && \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
-  chgrp -R internal /opt/ros && \
-  chmod -R g+rw /opt/ros
-WORKDIR /root
+# Configure CMake system-wide environment to detect our installations first
+ENV CMAKE_PREFIX_PATH=/usr/local
 
-# Configure ROS Middleware implementation to use
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-
-# Build and install Eigen3
+# Build and install Eigen
 WORKDIR /opt
-RUN git clone --single-branch --branch '3.4.0' --depth 1 https://gitlab.com/libeigen/eigen.git && \
-  cd eigen && \
-  mkdir build && \
-  cd build && \
-  cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
-  make -j$(nproc --all) && \
-  make install && \
-  cd .. && \
-  rm -rf build && \
+COPY scripts/eigen/build_eigen.sh /opt/build_eigen.sh
+RUN . dua-venv/bin/activate && \
+  /opt/build_eigen.sh 3.4.0 && \
+  chgrp internal /opt/build_eigen.sh && \
+  chmod g+rwx /opt/build_eigen.sh && \
   chgrp -R internal /opt/eigen && \
   chmod -R g+rw /opt/eigen
 WORKDIR /root
 
-# Build and install OpenCV (with extra modules aka "contrib") with CUDA support
+# # Build and install OpenCV
+# WORKDIR /opt
+# COPY scripts/opencv/build_opencv.jetson5.sh /opt/build_opencv.sh
+# RUN . dua-venv/bin/activate && \
+#   /opt/build_opencv.sh 4.11.0 && \
+#   chgrp internal /opt/build_opencv.sh && \
+#   chmod g+rwx /opt/build_opencv.sh && \
+#   chgrp -R internal /opt/opencv && \
+#   chmod -R g+rw /opt/opencv && \
+#   chgrp -R internal /opt/opencv_contrib && \
+#   chmod -R g+rw /opt/opencv_contrib
+# WORKDIR /root
+
+# Install Rust toolchain
+ENV RUSTUP_HOME=/opt/rust
+ENV CARGO_HOME=/opt/rust
 WORKDIR /opt
+COPY scripts/rust/install_rust.sh /opt/install_rust.sh
 RUN . dua-venv/bin/activate && \
-  git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv.git && \
-  git clone --single-branch --branch '4.7.0' --depth 1 https://github.com/opencv/opencv_contrib.git && \
-  cd opencv && \
-  mkdir build && \
-  cd build && \
-  cmake \
-    -D CMAKE_BUILD_TYPE=RELEASE \
-    -D CMAKE_INSTALL_PREFIX=/usr/local \
-    -D CUDA_ARCH_BIN="7.2 8.7" \
-    -D CUDA_ARCH_PTX="" \
-    -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
-    -D EIGEN_INCLUDE_PATH=/usr/local/include/eigen3 \
-    -D OPENCV_GENERATE_PKGCONFIG=ON \
-    -D OPENCV_ENABLE_NONFREE=ON \
-    -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
-    -D WITH_CUBLAS=ON \
-    -D WITH_CUDA=ON \
-    -D WITH_CUDNN=ON \
-    -D WITH_EIGEN=ON \
-    -D WITH_OPENCL=OFF \
-    -D WITH_QT=OFF \
-    -D WITH_TBB=ON \
-    -D WITH_V4L=ON \
-    -D ENABLE_FAST_MATH=ON \
-    -D ENABLE_NEON=ON \
-    -D CUDA_FAST_MATH=ON \
-    -D OPENCV_DNN_CUDA=ON \
-    -D BUILD_TBB=ON \
-    -D BUILD_EXAMPLES=OFF \
-    -D BUILD_TESTS=OFF \
-    -D BUILD_opencv_python2=OFF \
-    -D BUILD_opencv_python3=ON \
-    -D INSTALL_PYTHON_EXAMPLES=OFF \
-    -D INSTALL_C_EXAMPLES=OFF \
-    -D PYTHON_EXECUTABLE=$(which python2) \
-    -D PYTHON3_EXECUTABLE=$(which python3) \
-    -D PYTHON3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
-    -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
-    -D OPENCV_PYTHON3_INSTALL_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
-    .. && \
-  make -j$(nproc --all) && \
-  make install && \
-  ldconfig && \
-  cd .. && \
-  rm -rf build && \
-  chgrp -R internal /opt/opencv && \
-  chmod -R g+rw /opt/opencv && \
-  chgrp -R internal /opt/opencv_contrib && \
-  chmod -R g+rw /opt/opencv_contrib
+  /opt/install_rust.sh 1.75.0 && \
+  chgrp internal /opt/install_rust.sh && \
+  chmod g+rwx /opt/install_rust.sh && \
+  chgrp -R internal /opt/rust && \
+  chmod -R g+rw /opt/rust
 WORKDIR /root
 
-# Remove matplotlib from apt and reinstall it with pip
-# This is necessary to avoid an incompatibility of matplotlib with the extension
-# of the Python 3 system environment.
-RUN apt-get remove -y python3-matplotlib && \
-  . /opt/dua-venv/bin/activate && \
-  pip install matplotlib==3.5.0
-
-# Install PCL v1.12.1
-# NOTE: This would be installed by rosdep but the version would be 1.10,
-# which would be incompatible with the one found in other base units.
-WORKDIR /tmp
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  libusb-1.0-0 \
-  libusb-1.0-0-dev && \
-  wget https://github.com/PointCloudLibrary/pcl/archive/refs/tags/pcl-1.12.1.tar.gz && \
-  tar xvf pcl-1.12.1.tar.gz && \
-  cd pcl-pcl-1.12.1 && \
-  mkdir build && \
-  cd build && \
-  cmake -DCMAKE_BUILD_TYPE=Release .. && \
-  make -j$(nproc --all) && \
-  make install && \
-  ldconfig && \
-  cd /tmp && \
-  rm -rf pcl-1.12.1.tar.gz pcl-pcl-1.12.1 && \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
-WORKDIR /root
-
-# Install zenoh-bridge-ros2dds
-# NOTE: Version 0.10.1-rc.2.
-WORKDIR /usr/local/bin
-RUN wget -O - https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds/releases/download/0.10.1-rc.2/zenoh-bridge-ros2dds-0.10.1-rc.2-aarch64-unknown-linux-gnu.zip | funzip > zenoh-bridge-ros2dds && \
-  chmod a+x zenoh-bridge-ros2dds
-WORKDIR /root
-
-# Build and install dua-utils
-# The ARG allows us to break cache and rebuild from here upon each new version
+# Install DDS implementations:
+# - Fast DDS
+# - Cyclone DDS
+# NOTES
+# - Only C/C++ libraries and support is installed.
+# - The versions are fixed to the closest ones supported by ROS 2 Jazzy (below).
+# - None of these installations goes to system paths, they remain confined
+#   within subdirectories of /opt/dds; see the scripts for details.
+#   In case you would like to use these libraries in your projects, you
+#   should configure CMake or whatever you use accordingly.
+#   This is to enable development with standalone DDS implementations while
+#   avoiding to create conflicts with the ROS 2 installation.
 WORKDIR /opt
-ARG DUA_UTILS_VERSION=20241022-1746
+COPY scripts/dds/install_dds.jetson5.sh /opt/install_dds.sh
 RUN . dua-venv/bin/activate && \
-  echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
-  git clone --recursive https://github.com/dotX-Automation/dua-utils.git ros/dua-utils && \
-  cd ros/dua-utils && \
-  . /opt/ros/humble/install/setup.sh && \
-  colcon build --merge-install && \
-  rm -rf build log && \
-  chgrp -R internal /opt/ros/dua-utils && \
-  chmod -R g+rw /opt/ros/dua-utils
+  /opt/install_dds.sh 2.14.4 0.10.5 && \
+  chgrp internal /opt/install_dds.sh && \
+  chmod g+rwx /opt/install_dds.sh && \
+  chgrp -R internal /opt/dds && \
+  chmod -R g+rw /opt/dds
 WORKDIR /root
+
+# TODO Got up to here
+
+# # Configure ROS 2 repository
+# RUN apt-get update && \
+#   apt-get install -y --no-install-recommends ca-certificates curl && \
+#   curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+#   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null && \
+#   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# # Build ROS 2 Humble Hawksbill from source
+# # NOTE: The procedure is not obvious, so here is a brief explanation:
+# # 1.  Create a workspace
+# # 2.  Clone the repos file, containing the default plus some extras
+# # 3.  Initialize rosdep
+# # 4.  Update rosdep
+# # 5.  Remove opencv* packets preinstalled in the base image (should be version 4.5.x)
+# # 6.  Install libopencv-dev (version 4.2.0) which is required for this build
+# # 7.  Install dependencies via rosdep (but it can't handle libopencv-dev alone)
+# # 8.  Reinstall libopencv-dev (version 4.2.0) which gets lost somehow
+# # 9.  Build the workspace
+# # 10. Remove build and log files
+# # Step 9 highly depends on the platform and build environment.
+# # In this case, we need to:
+# # - Install a version of OpenCV that is compatible with this codebase, hence libopencv-dev
+# # - Ensure that the Python 3.8.0 environment is found by CMake (it's the one preinstalled by Nvidia)
+# # - Ensure that OpenCV 4.2.0 (from libopencv-dev) is found by CMake
+# WORKDIR /opt
+# RUN --mount=type=bind,source=ros2_humble_repos_base.yml,target=/opt/repos.yml \
+#   mkdir -p ros/humble/src && \
+#   cd ros/humble && \
+#   vcs import --input /opt/repos.yml src && \
+#   rosdep init && \
+#   rosdep update --rosdistro=humble && \
+#   apt-get update && \
+#   apt-get remove -y opencv-dev opencv-libs && \
+#   apt-get install -y --no-install-recommends libopencv-dev && \
+#   rosdep install \
+#     --rosdistro=humble \
+#     --from-paths src \
+#     --ignore-src \
+#     -y \
+#     --skip-keys="fastcdr python_qt_binding rti-connext-dds-6.0.1 rviz2 rviz_common rviz_default_plugins rviz_rendering urdfdom_headers" && \
+#   apt-get install -y --no-install-recommends libopencv-dev && \
+#   colcon build \
+#     --merge-install \
+#     --cmake-args \
+#       -DPython3_EXECUTABLE=/usr/bin/python3.8 \
+#       -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
+#       -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
+#       -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 \
+#     --ament-cmake-args \
+#       -DPython3_EXECUTABLE=/usr/bin/python3.8 \
+#       -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
+#       -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
+#       -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 \
+#     --packages-ignore joint_state_publisher_gui vision_msgs_rviz_plugins && \
+#   rm -rf build log src && \
+#   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
+#   chgrp -R internal /opt/ros && \
+#   chmod -R g+rw /opt/ros
+# WORKDIR /root
+
+# # Configure ROS Middleware implementation to use
+# ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+
+# TODO Might have to redo this in your ROS 2 build script
+# # Remove matplotlib from apt and reinstall it with pip
+# # This is necessary to avoid an incompatibility of matplotlib with the extension
+# # of the Python 3 system environment.
+# RUN apt-get remove -y python3-matplotlib && \
+#   . /opt/dua-venv/bin/activate && \
+#   pip install matplotlib==3.5.0
+
+# # Install PCL v1.12.1
+# # NOTE: This would be installed by rosdep but the version would be 1.10,
+# # which would be incompatible with the one found in other base units.
+# WORKDIR /tmp
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#   libusb-1.0-0 \
+#   libusb-1.0-0-dev && \
+#   wget https://github.com/PointCloudLibrary/pcl/archive/refs/tags/pcl-1.12.1.tar.gz && \
+#   tar xvf pcl-1.12.1.tar.gz && \
+#   cd pcl-pcl-1.12.1 && \
+#   mkdir build && \
+#   cd build && \
+#   cmake -DCMAKE_BUILD_TYPE=Release .. && \
+#   make -j$(nproc --all) && \
+#   make install && \
+#   ldconfig && \
+#   cd /tmp && \
+#   rm -rf pcl-1.12.1.tar.gz pcl-pcl-1.12.1 && \
+#   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+# WORKDIR /root
+
+# # Build and install dua-utils
+# # The ARG allows us to break cache and rebuild from here upon each new version
+# WORKDIR /opt
+# ARG DUA_UTILS_VERSION=20241022-1746
+# RUN . dua-venv/bin/activate && \
+#   echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
+#   git clone --recursive https://github.com/dotX-Automation/dua-utils.git ros/dua-utils && \
+#   cd ros/dua-utils && \
+#   . /opt/ros/humble/install/setup.sh && \
+#   colcon build --merge-install && \
+#   rm -rf build log && \
+#   chgrp -R internal /opt/ros/dua-utils && \
+#   chmod -R g+rw /opt/ros/dua-utils
+# WORKDIR /root
 
 ENV DEBIAN_FRONTEND=dialog
 
 # Finalize image
-LABEL description="DUA base unit for Nvidia Jetson platforms (JetPack 5)"
+LABEL description="DUA base unit for Nvidia Jetson systems (JetPack 5)"
 LABEL platform="linux/arm64"
 CMD ["bash"]

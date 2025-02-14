@@ -1,4 +1,4 @@
-# NOTE: Scientific and AI libraries not included here are supposed to be
+# Scientific and AI libraries not included here are supposed to be
 # included in the base l4t-ml image.
 
 # Python basic tools and dependencies:
@@ -10,6 +10,9 @@
 # - Code linters
 # - Template engines
 # - transitions library for FSM software
+# NOTES
+# - empy==3.3.4 is required since colcon is not compatible with newer versions.
+# - matplotlib==3.5.0 is required for further compatibility issues.
 cerberus
 coverage
 empy==3.3.4
@@ -47,7 +50,8 @@ transitions
 wheel
 
 # Python AI libraries
-# NOTE: ultralytics must be installed manually to avoid dependency conflicts
+# NOTES
+# - ultralytics must be installed manually to avoid dependency conflicts.
 gradio
 pycocotools
 seaborn

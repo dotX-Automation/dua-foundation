@@ -22,7 +22,7 @@
 # --network host
 
 # Start from an Nvidia CUDA+cuDNN image based on Ubuntu 24.04
-# NOTE: The correct version of the CUDA image must be chosen according to
+# The correct version of the CUDA image must be chosen according to
 # the following criteria, up to what constitutes an educated guess.
 # - The driver version installed on the host systems this image will be run on.
 # - The CUDA version required by the software to be run on this image.
@@ -153,7 +153,7 @@ RUN --mount=type=bind,source=python/requirements.txt,target=/opt/requirements.tx
 WORKDIR /root
 
 # Ensure that the Python environment is correctly sourced
-# NOTE: System path is the output of:
+# System path is the output of:
 # python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
 ENV PYTHONPATH=/opt/dua-venv/lib/python3.12/site-packages:/usr/lib/python3/dist-packages
 
