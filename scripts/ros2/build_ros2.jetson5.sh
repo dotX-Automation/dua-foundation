@@ -41,15 +41,16 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 
 # Install ROS development tools
 # NOTES
-# - There are also Python packages, but they should be installed as part of
-#   the Python environment setup.
-# - We could simply install ros-dev-tools but to not taint the system environment
-#   the many Python packages have been installed in the dua-venv.
+# - This will install many Python packages from apt. Since some are not available
+#   in the index, they will be installed like this in the system environment.
+# - There are also some other libraries that some packages depend on but that are
+#   inexplicably not installed by rosdep.
 apt-get update
 apt-get install -y --no-install-recommends \
   libacl1-dev \
   ros-dev-tools
 
+ # TODO Update docs, check and enable/remove stuff
 # Build ROS 2 Jazzy Jalisco from source
 # The procedure is not obvious, so here is a brief explanation.
 # 1.  Create a workspace.
