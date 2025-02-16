@@ -39,10 +39,16 @@ curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
 
 # Install ROS development tools
-# NOTE: There are also Python packages, but they should be installed as part of
-# the Python environment setup.
+# NOTES
+# - There are also Python packages, but they should be installed as part of
+#   the Python environment setup.
+# - We could simply install ros-dev-tools but to not taint the system environment
+#   the many Python packages have been installed in the dua-venv.
 apt-get update
-apt-get install -y --no-install-recommends ros-dev-tools
+apt-get install -y --no-install-recommends \
+  docutils-common \
+  sgml-base \
+  xml-core
 
 # Build ROS 2 Jazzy Jalisco from source
 # The procedure is not obvious, so here is a brief explanation.
@@ -92,12 +98,14 @@ colcon build \
     -DOpenCV_DIR=/usr/local/lib/cmake/opencv4 \
   --packages-ignore joint_state_publisher_gui vision_msgs_rviz_plugins
 
+# TODO Check
 # Remove matplotlib from apt and reinstall it with pip
 # This is necessary to avoid an incompatibility of matplotlib with the extension
 # of the Python 3 system environment.
 # apt-get remove -y python3-matplotlib
 # pip install matplotlib==3.5.0
 
+# TODO Enable
 # Cleanup
 # rm -rf build log src
 # rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*

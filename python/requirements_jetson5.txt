@@ -13,8 +13,37 @@
 # NOTES
 # - empy==3.3.4 is required since colcon is not compatible with newer versions.
 # - matplotlib==3.5.0 is required for further compatibility issues.
+bloom
+catkin-pkg
+catkin-pkg-modules
+colcon-argcomplete
+colcon-bash
+colcon-cd
+colcon-cmake
+colcon-common-extensions
+colcon-core
+colcon-defaults
+colcon-devtools
+colcon-library-path
+colcon-metadata
+colcon-mixin
+colcon-notification
+colcon-output
+colcon-package-information
+colcon-package-selection
+colcon-parallel-executor
+colcon-pkg
+colcon-powershell
+colcon-python-setup-py
+colcon-recursive-crawl
+colcon-ros
+colcon-test-result
+colcon-zsh
 cerberus
 coverage
+distlib
+distro
+docutils
 empy==3.3.4
 flake8
 flake8-blind-except
@@ -28,6 +57,7 @@ flake8-quotes
 flask
 matplotlib==3.5.0
 mypy
+notify2
 nunavut
 packaging
 pkgconfig
@@ -45,6 +75,12 @@ pytest-timeout
 python-dateutil
 pyyaml
 requests
+roman
+rosdep
+rosdep-modules
+rosdistro
+rosdistro-modules
+rospkg-modules
 setuptools
 six
 testresources
@@ -52,6 +88,7 @@ toml
 tqdm
 transitions
 urllib3==2.0.2
+vcstool
 wheel
 
 # Python AI libraries
