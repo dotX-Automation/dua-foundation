@@ -45,10 +45,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 # - We could simply install ros-dev-tools but to not taint the system environment
 #   the many Python packages have been installed in the dua-venv.
 apt-get update
-apt-get install -y --no-install-recommends \
-  docutils-common \
-  sgml-base \
-  xml-core
+apt-get install -y --no-install-recommends ros-dev-tools
 
 # Build ROS 2 Jazzy Jalisco from source
 # The procedure is not obvious, so here is a brief explanation.
