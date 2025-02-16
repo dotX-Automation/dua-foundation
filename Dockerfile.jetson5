@@ -33,6 +33,20 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Create internal users group
 RUN groupadd -r internal
 
+# Update CMake version to the latest available at Kitware
+RUN apt-get remove --purge --auto-remove -y cmake && \
+  wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg > /dev/null && \
+  echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main" | tee /etc/apt/sources.list.d/kitware.list && \
+  apt-get update && \
+  apt-get install -y --no-install-recommends cmake && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# Purge existing OpenCV installation
+RUN apt-get update && apt-get remove --purge --auto-remove -y \
+  libopencv* \
+  opencv* && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
 # Install basic utilities, dependencies, and development tools
 # These include:
 # - C/C++ toolchain and debuggers
@@ -224,6 +238,17 @@ RUN . dua-venv/bin/activate && \
   chmod -R g+rw /opt/dds
 WORKDIR /root
 
+# Install Zenoh
+WORKDIR /opt
+COPY scripts/zenoh/install_zenoh.jetson5.sh /opt/install_zenoh.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_zenoh.sh 1.2.1 && \
+  chgrp internal /opt/install_zenoh.sh && \
+  chmod g+rwx /opt/install_zenoh.sh && \
+  chgrp -R internal /opt/zenoh && \
+  chmod -R g+rw /opt/zenoh
+WORKDIR /root
+
 # Build and install ROS 2
 WORKDIR /opt
 COPY scripts/ros2/build_ros2.jetson5.sh /opt/build_ros2.sh
@@ -241,41 +266,18 @@ WORKDIR /root
 # Configure ROS Middleware implementation to use
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
-# # Install PCL v1.12.1
-# # NOTE: This would be installed by rosdep but the version would be 1.10,
-# # which would be incompatible with the one found in other base units.
-# WORKDIR /tmp
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#   libusb-1.0-0 \
-#   libusb-1.0-0-dev && \
-#   wget https://github.com/PointCloudLibrary/pcl/archive/refs/tags/pcl-1.12.1.tar.gz && \
-#   tar xvf pcl-1.12.1.tar.gz && \
-#   cd pcl-pcl-1.12.1 && \
-#   mkdir build && \
-#   cd build && \
-#   cmake -DCMAKE_BUILD_TYPE=Release .. && \
-#   make -j$(nproc --all) && \
-#   make install && \
-#   ldconfig && \
-#   cd /tmp && \
-#   rm -rf pcl-1.12.1.tar.gz pcl-pcl-1.12.1 && \
-#   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
-# WORKDIR /root
-
-# # Build and install dua-utils
-# # The ARG allows us to break cache and rebuild from here upon each new version
-# WORKDIR /opt
-# ARG DUA_UTILS_VERSION=20241022-1746
-# RUN . dua-venv/bin/activate && \
-#   echo "Building dua-utils version ${DUA_UTILS_VERSION}" && \
-#   git clone --recursive https://github.com/dotX-Automation/dua-utils.git ros/dua-utils && \
-#   cd ros/dua-utils && \
-#   . /opt/ros/humble/install/setup.sh && \
-#   colcon build --merge-install && \
-#   rm -rf build log && \
-#   chgrp -R internal /opt/ros/dua-utils && \
-#   chmod -R g+rw /opt/ros/dua-utils
-# WORKDIR /root
+# Build and install dua-utils
+# The ARG allows us to break cache and rebuild from here upon each new version
+WORKDIR /opt
+COPY scripts/ros2/build_dua_utils.sh /opt/build_dua_utils.sh
+ARG DUA_UTILS_VERSION=20241022-1746
+RUN . dua-venv/bin/activate && \
+  /opt/build_dua_utils.sh jazzy && \
+  chgrp internal /opt/build_dua_utils.sh && \
+  chmod g+rwx /opt/build_dua_utils.sh && \
+  chgrp -R internal /opt/ros/dua-utils && \
+  chmod -R g+rw /opt/ros/dua-utils
+WORKDIR /root
 
 ENV DEBIAN_FRONTEND=dialog
 

@@ -10,6 +10,7 @@
 # - Code linters
 # - Template engines
 # - transitions library for FSM software
+# - ROS 2 source build dependencies
 # NOTES
 # - empy==3.3.4 is required since colcon is not compatible with newer versions.
 # - matplotlib==3.5.0 is required for further compatibility issues.
@@ -26,6 +27,7 @@ flake8-docstrings
 flake8-import-order
 flake8-quotes
 flask
+lark-parser
 matplotlib==3.5.0
 mypy
 nunavut

@@ -1,5 +1,5 @@
 repositories:
-  # ROS 2 jazzy HAWKSBILL REPOS #
+  # ROS 2 JAZZY JALISCO REPOS #
   ament/ament_cmake:
     type: git
     url: https://github.com/ament/ament_cmake.git
@@ -239,6 +239,10 @@ repositories:
   ros2/rmw_implementation:
     type: git
     url: https://github.com/ros2/rmw_implementation.git
+    version: jazzy
+  ros2/ros2_tracing:
+    type: git
+    url: https://github.com/ros2/ros2_tracing.git
     version: jazzy
   ros2/ros2cli:
     type: git
