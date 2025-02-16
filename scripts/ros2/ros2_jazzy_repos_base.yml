@@ -234,7 +234,7 @@ repositories:
     version: jazzy
   ros2/rmw_fastrtps:
     type: git
-    url: https://github.com/dotX-Automation/rmw_fastrtps.git
+    url: https://github.com/ros2/rmw_fastrtps.git
     version: jazzy
   ros2/rmw_implementation:
     type: git
@@ -323,10 +323,6 @@ repositories:
   ros2/tinyxml2_vendor:
     type: git
     url: https://github.com/ros2/tinyxml2_vendor.git
-    version: jazzy
-  ros2/tinyxml_vendor:
-    type: git
-    url: https://github.com/ros2/tinyxml_vendor.git
     version: jazzy
   ros2/tlsf:
     type: git
