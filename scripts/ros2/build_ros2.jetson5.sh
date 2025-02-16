@@ -41,6 +41,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 # Install ROS development tools
 # NOTE: There are also Python packages, but they should be installed as part of
 # the Python environment setup.
+apt-get update
 apt-get install -y --no-install-recommends ros-dev-tools
 
 # Build ROS 2 Jazzy Jalisco from source
@@ -65,7 +66,7 @@ cd /opt/ros/jazzy
 vcs import --input $REPOS_FILE src
 rosdep init
 rosdep update --rosdistro=jazzy
-apt-get update
+# apt-get update
 # apt-get remove -y opencv-dev opencv-libs
 # apt-get install -y --no-install-recommends libopencv-dev
 rosdep install \
