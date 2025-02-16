@@ -48,7 +48,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-utils \
   build-essential \
   ccache \
-  cmake \
   cppcheck \
   dialog \
   dirmngr \
@@ -229,7 +228,6 @@ WORKDIR /root
 WORKDIR /opt
 COPY scripts/ros2/build_ros2.jetson5.sh /opt/build_ros2.sh
 COPY scripts/ros2/ros2_jazzy_repos_base.yml /opt/ros2_repos.yml
-COPY scripts/ros2/ament_cmake_core_python.cmake /opt/ament_cmake_core_python.cmake
 RUN . dua-venv/bin/activate && \
   /opt/build_ros2.sh /opt/ros2_repos.yml && \
   chgrp internal /opt/build_ros2.sh && \

@@ -50,15 +50,6 @@ apt-get install -y --no-install-recommends \
   libacl1-dev \
   ros-dev-tools
 
-# Clone ROS 2 sources and patch some things.
-# - ament_cmake_core requires CMake >=3.20 to do something that could be done
-#   also in earlier versions.
-mkdir -p /opt/ros/jazzy/src
-cd /opt/ros/jazzy
-vcs import --input $REPOS_FILE src
-cp /opt/ament_cmake_core_python.cmake /opt/ros/jazzy/src/ament/ament_cmake/ament_cmake_core/cmake/core/python.cmake
-
-# TODO Update docs, check and reenable or delete stuff
 # Build ROS 2 Jazzy Jalisco from source
 # The procedure is not obvious, so here is a brief explanation.
 # 1.  Create a workspace.
@@ -76,6 +67,9 @@ cp /opt/ament_cmake_core_python.cmake /opt/ros/jazzy/src/ament/ament_cmake/ament
 # - Having installed a version of OpenCV that is compatible with this codebase.
 # - Ensure that the Python 3.8.0 environment is found by CMake (it's the one preinstalled by Nvidia).
 # - Ensure that the desired OpenCV installation is found by CMake.
+mkdir -p /opt/ros/jazzy/src
+cd /opt/ros/jazzy
+vcs import --input $REPOS_FILE src
 rosdep init
 rosdep update --rosdistro=jazzy
 # apt-get update
@@ -114,5 +108,4 @@ colcon build \
 # TODO Enable
 # Cleanup
 # rm -rf build log src
-# rm /opt/ament_cmake_core_python.cmake
 # rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
