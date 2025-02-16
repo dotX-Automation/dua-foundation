@@ -190,19 +190,6 @@ RUN . dua-venv/bin/activate && \
   chmod -R g+rw /opt/eigen
 WORKDIR /root
 
-# # Build and install OpenCV
-# WORKDIR /opt
-# COPY scripts/opencv/build_opencv.jetson5.sh /opt/build_opencv.sh
-# RUN . dua-venv/bin/activate && \
-#   /opt/build_opencv.sh 4.11.0 && \
-#   chgrp internal /opt/build_opencv.sh && \
-#   chmod g+rwx /opt/build_opencv.sh && \
-#   chgrp -R internal /opt/opencv && \
-#   chmod -R g+rw /opt/opencv && \
-#   chgrp -R internal /opt/opencv_contrib && \
-#   chmod -R g+rw /opt/opencv_contrib
-# WORKDIR /root
-
 # Install Rust toolchain
 ENV RUSTUP_HOME=/opt/rust
 ENV CARGO_HOME=/opt/rust
@@ -238,78 +225,22 @@ RUN . dua-venv/bin/activate && \
   chmod -R g+rw /opt/dds
 WORKDIR /root
 
-# TODO Got up to here
+# Build and install ROS 2
+WORKDIR /opt
+COPY scripts/ros2/build_ros2.jetson5.sh /opt/build_ros2.sh
+COPY scripts/ros2/ros2_jazzy_repos_base.yml /opt/ros2_repos.yml
+RUN . dua-venv/bin/activate && \
+  /opt/build_ros2.sh /opt/ros2_repos.yml && \
+  chgrp internal /opt/build_ros2.sh && \
+  chmod g+rwx /opt/build_ros2.sh && \
+  chgrp internal /opt/ros2_repos.yml && \
+  chmod g+rw /opt/ros2_repos.yml && \
+  chgrp -R internal /opt/ros && \
+  chmod -R g+rw /opt/ros
+WORKDIR /root
 
-# # Configure ROS 2 repository
-# RUN apt-get update && \
-#   apt-get install -y --no-install-recommends ca-certificates curl && \
-#   curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
-#   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null && \
-#   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
-
-# # Build ROS 2 Humble Hawksbill from source
-# # NOTE: The procedure is not obvious, so here is a brief explanation:
-# # 1.  Create a workspace
-# # 2.  Clone the repos file, containing the default plus some extras
-# # 3.  Initialize rosdep
-# # 4.  Update rosdep
-# # 5.  Remove opencv* packets preinstalled in the base image (should be version 4.5.x)
-# # 6.  Install libopencv-dev (version 4.2.0) which is required for this build
-# # 7.  Install dependencies via rosdep (but it can't handle libopencv-dev alone)
-# # 8.  Reinstall libopencv-dev (version 4.2.0) which gets lost somehow
-# # 9.  Build the workspace
-# # 10. Remove build and log files
-# # Step 9 highly depends on the platform and build environment.
-# # In this case, we need to:
-# # - Install a version of OpenCV that is compatible with this codebase, hence libopencv-dev
-# # - Ensure that the Python 3.8.0 environment is found by CMake (it's the one preinstalled by Nvidia)
-# # - Ensure that OpenCV 4.2.0 (from libopencv-dev) is found by CMake
-# WORKDIR /opt
-# RUN --mount=type=bind,source=ros2_humble_repos_base.yml,target=/opt/repos.yml \
-#   mkdir -p ros/humble/src && \
-#   cd ros/humble && \
-#   vcs import --input /opt/repos.yml src && \
-#   rosdep init && \
-#   rosdep update --rosdistro=humble && \
-#   apt-get update && \
-#   apt-get remove -y opencv-dev opencv-libs && \
-#   apt-get install -y --no-install-recommends libopencv-dev && \
-#   rosdep install \
-#     --rosdistro=humble \
-#     --from-paths src \
-#     --ignore-src \
-#     -y \
-#     --skip-keys="fastcdr python_qt_binding rti-connext-dds-6.0.1 rviz2 rviz_common rviz_default_plugins rviz_rendering urdfdom_headers" && \
-#   apt-get install -y --no-install-recommends libopencv-dev && \
-#   colcon build \
-#     --merge-install \
-#     --cmake-args \
-#       -DPython3_EXECUTABLE=/usr/bin/python3.8 \
-#       -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
-#       -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
-#       -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 \
-#     --ament-cmake-args \
-#       -DPython3_EXECUTABLE=/usr/bin/python3.8 \
-#       -DPython3_LIBRARY=/usr/lib/python3.8/config-3.8-aarch64-linux-gnu/libpython3.8.so \
-#       -DPython3_INCLUDE_DIR=/usr/include/python3.8 \
-#       -DOpenCV_DIR=/usr/lib/aarch64-linux-gnu/cmake/opencv4 \
-#     --packages-ignore joint_state_publisher_gui vision_msgs_rviz_plugins && \
-#   rm -rf build log src && \
-#   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
-#   chgrp -R internal /opt/ros && \
-#   chmod -R g+rw /opt/ros
-# WORKDIR /root
-
-# # Configure ROS Middleware implementation to use
-# ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-
-# TODO Might have to redo this in your ROS 2 build script
-# # Remove matplotlib from apt and reinstall it with pip
-# # This is necessary to avoid an incompatibility of matplotlib with the extension
-# # of the Python 3 system environment.
-# RUN apt-get remove -y python3-matplotlib && \
-#   . /opt/dua-venv/bin/activate && \
-#   pip install matplotlib==3.5.0
+# Configure ROS Middleware implementation to use
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
 # # Install PCL v1.12.1
 # # NOTE: This would be installed by rosdep but the version would be 1.10,

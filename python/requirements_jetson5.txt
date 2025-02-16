@@ -27,18 +27,22 @@ flake8-import-order
 flake8-quotes
 flask
 matplotlib==3.5.0
+mypy
 nunavut
 packaging
 pkgconfig
 py-cpuinfo
+pybind11-global
 pyserial
 pyros-genmsg
 pytest
 pytest-cov
-python-dateutil
+pytest-mock
 pytest-repeat
-pytest-runner
 pytest-rerunfailures
+pytest-runner
+pytest-timeout
+python-dateutil
 pyyaml
 requests
 setuptools
@@ -47,6 +51,7 @@ testresources
 toml
 tqdm
 transitions
+urllib3==2.0.2
 wheel
 
 # Python AI libraries
