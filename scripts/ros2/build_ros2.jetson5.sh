@@ -56,7 +56,7 @@ apt-get install -y --no-install-recommends \
 mkdir -p /opt/ros/jazzy/src
 cd /opt/ros/jazzy
 vcs import --input $REPOS_FILE src
-cp /opt/ament_cmake_core_python.cmake /opt/ros/jazzy/src/ament_cmake/ament_cmake_core/cmake/core/python.cmake
+cp /opt/ament_cmake_core_python.cmake /opt/ros/jazzy/src/ament/ament_cmake/ament_cmake_core/cmake/core/python.cmake
 
 # TODO Update docs, check and reenable or delete stuff
 # Build ROS 2 Jazzy Jalisco from source
