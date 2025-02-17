@@ -203,6 +203,19 @@ RUN . dua-venv/bin/activate && \
   chmod -R g+rw /opt/eigen
 WORKDIR /root
 
+# Build and install OpenCV
+WORKDIR /opt
+COPY scripts/opencv/build_opencv.jetson5.sh /opt/build_opencv.sh
+RUN . dua-venv/bin/activate && \
+  /opt/build_opencv.sh 4.11.0 && \
+  chgrp internal /opt/build_opencv.sh && \
+  chmod g+rwx /opt/build_opencv.sh && \
+  chgrp -R internal /opt/opencv && \
+  chmod -R g+rw /opt/opencv && \
+  chgrp -R internal /opt/opencv_contrib && \
+  chmod -R g+rw /opt/opencv_contrib
+WORKDIR /root
+
 # Install Rust toolchain
 ENV RUSTUP_HOME=/opt/rust
 ENV CARGO_HOME=/opt/rust
