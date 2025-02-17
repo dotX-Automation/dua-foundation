@@ -395,4 +395,8 @@ repositories:
     url: https://github.com/swri-robotics/gps_umd.git
     version: ros2-devel
 
-# TODO: rmw_zenoh
+  # ADDITIONAL RMW #
+  ros2/rmw_zenoh:
+    type: git
+    url: https://github.com/ros2/rmw_zenoh.git
+    version: jazzy
