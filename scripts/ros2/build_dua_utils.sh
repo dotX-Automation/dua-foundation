@@ -30,7 +30,14 @@ fi
 # Clone and build dua-utils
 git clone --recursive https://github.com/dotX-Automation/dua-utils.git /opt/ros/dua-utils
 cd /opt/ros/dua-utils
-. /opt/ros/$ROS_DISTRO/setup.sh
+if [ -f "/opt/ros/$ROS_DISTRO/setup.sh" ]; then
+  . /opt/ros/$ROS_DISTRO/setup.sh
+elif [ -f "/opt/ros/$ROS_DISTRO/install/setup.sh" ]; then
+  . /opt/ros/$ROS_DISTRO/install/setup.sh
+else
+  echo "ROS 2 version $ROS_DISTRO not found"
+  exit 1
+fi
 colcon build --merge-install
 
 # Cleanup
