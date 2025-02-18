@@ -20,6 +20,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e
+
 # Get the requested Fast DDS version
 FASTDDS_VERSION="${1-}"
 

@@ -25,6 +25,8 @@
 # - RUSTUP_HOME
 # - CARGO_HOME
 
+set -e
+
 # Get the desired Rust version
 RUST_DEFAULT_VERSION="${1-}"
 

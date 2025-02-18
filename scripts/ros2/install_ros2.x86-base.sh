@@ -20,6 +20,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e
+
 # Get the requested ROS 2 version
 ROS_DISTRO="${1-}"
 if [ -z "$ROS_DISTRO" ]; then

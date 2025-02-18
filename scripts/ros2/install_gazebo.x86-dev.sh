@@ -20,6 +20,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e
+
 # Get the requested Gazebo version
 GAZEBO_VERSION="${1-}"
 if [ -z "$GAZEBO_VERSION" ]; then

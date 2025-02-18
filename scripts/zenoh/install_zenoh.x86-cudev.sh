@@ -24,6 +24,8 @@
 # - a Rust toolchain has been installed and its environment is configured;
 # - the desired Python virtual (or system) environment has been activated.
 
+set -e
+
 # Get the requested Zenoh version
 ZENOH_VERSION="${1-}"
 

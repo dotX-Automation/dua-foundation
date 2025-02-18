@@ -26,6 +26,8 @@
 
 #! This script builds and installs ROS 2 Jazzy Jalisco.
 
+set -e
+
 # Get repos file
 REPOS_FILE=$1
 if [ -z "$REPOS_FILE" ]; then
