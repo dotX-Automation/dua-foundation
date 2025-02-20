@@ -15,6 +15,9 @@
 # - empy==3.3.4 is required since colcon is not compatible with newer versions.
 # - matplotlib==3.5.0 is required for further compatibility issues.
 cerberus
+colcon-argcomplete
+colcon-common-extensions
+colcon-mixin
 coverage
 empy==3.3.4
 flake8
@@ -54,6 +57,7 @@ toml
 tqdm
 transitions
 urllib3==2.0.2
+vcstool
 wheel
 
 # Python AI libraries

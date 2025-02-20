@@ -263,6 +263,15 @@ RUN . dua-venv/bin/activate && \
   chmod -R g+rw /opt/zenoh
 WORKDIR /root
 
+# Build and install PCL
+WORKDIR /opt
+COPY scripts/ros2/build_pcl.sh /opt/build_pcl.sh
+RUN . dua-venv/bin/activate && \
+  /opt/build_pcl.sh 1.14.0 && \
+  chgrp internal /opt/build_pcl.sh && \
+  chmod g+rwx /opt/build_pcl.sh
+WORKDIR /root
+
 # Build and install ROS 2
 WORKDIR /opt
 COPY scripts/ros2/build_ros2.jetson5.sh /opt/build_ros2.sh

@@ -55,8 +55,6 @@ apt-get install -y --no-install-recommends \
   libgps-dev \
   liblttng-ctl-dev \
   liblttng-ust-dev \
-  libusb-1.0-0 \
-  libusb-1.0-0-dev \
   lttng-tools \
   python3-lttng \
   ros-dev-tools
@@ -77,19 +75,6 @@ Requires:
 Libs: -L${libdir} -llttng-ctl
 Cflags: -I${includedir}
 EOF
-
-# Build and install PCL 1.14.0
-wget https://github.com/PointCloudLibrary/pcl/archive/refs/tags/pcl-1.14.0.tar.gz
-tar xvf pcl-1.14.0.tar.gz
-cd pcl-pcl-1.14.0
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j$(nproc --all)
-make install
-ldconfig
-cd ../..
-rm -rf pcl-1.14.0.tar.gz pcl-pcl-1.14.0
 
 # Remove Python 3.9 if present
 apt-get purge -y python3.9 libpython3.9* || echo "python3.9 not found, skipping removal"
@@ -119,7 +104,7 @@ rosdep install \
   --from-paths src \
   --ignore-src \
   -y \
-  --skip-keys="fastcdr libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python3-matplotlib python-opencv python3-opencv python_qt_binding rti-connext-dds-6.0.1 rviz2 rviz_common rviz_default_plugins rviz_rendering urdfdom_headers"
+  --skip-keys="fastcdr libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python3-matplotlib python-opencv python3-flake8 python3-flake8-builtins python3-flake8-comprehensions python3-flake8-docstrings python3-flake8-import-order python3-flake8-quotes python3-opencv python_qt_binding rti-connext-dds-6.0.1 rviz2 rviz_common rviz_default_plugins rviz_rendering urdfdom_headers"
 colcon build \
   --merge-install \
   --cmake-args \
@@ -129,6 +114,8 @@ colcon build \
     -DPython3_LIBRARY=$(python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBPL') + '/' + sysconfig.get_config_var('LDLIBRARY'))") \
     -DPython3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
     -DOpenCV_DIR=/usr/local/lib/cmake/opencv4 \
+    -DPCL_DIR=/usr/local/share/pcl-1.14 \
+    -DEigen3_DIR=/usr/local/share/eigen3/cmake \
   --ament-cmake-args \
     -DCMAKE_BUILD_TYPE=Release \
     -DTRACETOOLS_DISABLED=ON \
@@ -136,6 +123,8 @@ colcon build \
     -DPython3_LIBRARY=$(python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBPL') + '/' + sysconfig.get_config_var('LDLIBRARY'))") \
     -DPython3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
     -DOpenCV_DIR=/usr/local/lib/cmake/opencv4 \
+    -DPCL_DIR=/usr/local/share/pcl-1.14 \
+    -DEigen3_DIR=/usr/local/share/eigen3/cmake \
   --packages-ignore joint_state_publisher_gui lttngpy vision_msgs_rviz_plugins
 
 # Cleanup
