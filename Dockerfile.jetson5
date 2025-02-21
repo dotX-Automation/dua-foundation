@@ -57,7 +57,6 @@ RUN apt-get update && apt-get remove --purge --auto-remove -y \
 # - Boost C++ libraries
 # - System utilities
 # - Zsh shell
-# - ROS 2 Humble Hawksbill development tools and dependencies
 # Then, add universe repository
 RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-utils \
