@@ -1,0 +1,38 @@
+# Core scientific computing packages
+# These form the foundation and have minimal external dependencies
+numpy<2  # Basic numerical operations, needed by many packages but version defined by PyTorch later on
+scipy>=1.10.0  # Scientific computing foundation
+pandas>=2.0.0  # Data manipulation, no CV dependencies
+
+# Build and packaging tools
+setuptools>=67.0.0  # Python packaging
+wheel>=0.40.0  # Package building
+packaging>=23.0  # Package operations
+pkgconfig>=1.5.5  # Build configuration
+
+# Development essentials
+ipython>=8.12.0  # Enhanced Python shell
+six>=1.16.0  # Python 2/3 compatibility
+python-dateutil>=2.8.2  # Date utilities
+typing-extensions>=4.5.0  # Type hints
+
+# Testing frameworks - needed for build processes
+pytest>=7.0.0
+pytest-cov>=4.0.0
+coverage>=7.2.0
+testresources>=2.0.1
+
+# Code quality - essential subset
+mypy>=1.0.0  # Type checking
+flake8>=6.0.0  # Base linter
+
+# Build dependencies for ROS 2
+empy==3.3.4  # ROS 2 templating
+pybind11-global>=2.10.0  # C++ bindings
+
+# Basic utilities
+psutil>=5.9.0  # System monitoring
+py-cpuinfo>=9.0.0  # CPU information
+pyyaml>=6.0.0  # YAML parsing
+toml>=0.10.2  # TOML parsing
+urllib3==2.0.2  # HTTP client (specific version for ROS 2)

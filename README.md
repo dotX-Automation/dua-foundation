@@ -11,6 +11,7 @@ The following images contain the base units of the Distributed Unified Architect
 - [x] [`x86-cudev`](Dockerfile.x86-cudev) Development environment for x86 systems with CUDA hardware support; based on official Nvidia images, includes AI/ML tools.
 - [x] [`armv8-base`](Dockerfile.armv8-base) Basic ARMv8 deployment environment.
 - [x] [`armv8-dev`](Dockerfile.armv8-dev) Development environment for ARMv8 systems, including Apple Silicon Macs.
+- [x] [`jetson6`](Dockerfile.jetson6) Full environment based on JetPack 6, for Nvidia Jetson devices with additional libraries and frameworks for AI and ML.
 - [x] [`jetson5`](Dockerfile.jetson5) Full environment based on JetPack 5, for Nvidia Jetson devices, based on ML JetPack 5 base image with additional libraries and frameworks for AI and ML.
 
 See the individual Dockerfiles for more information, build steps, and image contents.
