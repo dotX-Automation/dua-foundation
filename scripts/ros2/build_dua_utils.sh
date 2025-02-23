@@ -29,9 +29,14 @@ if [ -z "$ROS_DISTRO" ]; then
   exit 1
 fi
 
-# Clone and build dua-utils
-git clone --recursive https://github.com/dotX-Automation/dua-utils.git /opt/ros/dua-utils
-cd /opt/ros/dua-utils
+# Get the repos file as argument
+REPOS_FILE="${2-}"
+if [ -z "$REPOS_FILE" ]; then
+  echo "No repos file specified"
+  exit 1
+fi
+
+# Source ROS 2 installation
 if [ -f "/opt/ros/$ROS_DISTRO/setup.sh" ]; then
   . /opt/ros/$ROS_DISTRO/setup.sh
 elif [ -f "/opt/ros/$ROS_DISTRO/install/setup.sh" ]; then
@@ -40,6 +45,11 @@ else
   echo "ROS 2 version $ROS_DISTRO not found"
   exit 1
 fi
+
+# Clone and build dua-utils
+mkdir -p /opt/ros/dua-utils/src
+cd /opt/ros/dua-utils
+vcs import --input $REPOS_FILE src
 colcon build --merge-install
 
 # Cleanup
