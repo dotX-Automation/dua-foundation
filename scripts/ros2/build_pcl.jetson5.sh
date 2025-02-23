@@ -56,7 +56,7 @@ cd "pcl-pcl-$PCL_VERSION"
 # - This configuration also enables CUDA and GPU support so it can be applied
 #   only to platforms that support these features.
 # - @robmasocco We suppress a pesky warning from NVCC that is triggered by Eigen
-#   code and its use of attributes.
+#   code and its use of attributes, and some others.
 # - @robmasocco The following modules are currently disabled due to incompatibilities
 #   with the Thrust library provided in the JetPack environment. This disables
 #   additional gpu_* modules that depend on them, depending on the version.
@@ -71,7 +71,7 @@ cd build
 cmake \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=/usr/local \
-  -DCMAKE_CUDA_FLAGS="-diag-suppress 20012" \
+  -DCMAKE_CUDA_FLAGS="-diag-suppress 20012 -Wno-deprecated-gpu-targets" \
   -DPCL_SHARED_LIBS=ON \
   -DWITH_VTK=OFF \
   -DBUILD_2d=ON \
