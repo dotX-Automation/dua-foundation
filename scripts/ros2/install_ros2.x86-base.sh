@@ -68,6 +68,7 @@ apt-get install -y --no-install-recommends \
   ros-$ROS_DISTRO-rmw-zenoh-cpp \
   ros-$ROS_DISTRO-robot-state-publisher \
   ros-$ROS_DISTRO-ros-base \
+  ros-$ROS_DISTRO-rosidl-generator-dds-idl \
   ros-$ROS_DISTRO-vision-msgs \
   ros-$ROS_DISTRO-vision-opencv \
   ros-$ROS_DISTRO-xacro
