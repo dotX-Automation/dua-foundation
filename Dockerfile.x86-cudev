@@ -139,6 +139,47 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
   update-alternatives --set java $(update-alternatives --list java | grep "java-11")
 
+# Install headers of the NVIDIA Video Codec SDK
+# NOTES
+# - Shared libraries are installed from the driver package above.
+WORKDIR /tmp
+RUN wget -O Video_Codec_SDK.zip http://160.80.97.139:8087/Software/DUA/NVIDIA/Video_Codec_SDK_12.2.72.zip && \
+  unzip Video_Codec_SDK.zip && \
+  cp Video_Codec_SDK_12.2.72/Interface/cuviddec.h /usr/local/cuda/include/cuviddec.h && \
+  cp Video_Codec_SDK_12.2.72/Interface/nvcuvid.h /usr/local/cuda/include/nvcuvid.h && \
+  cp Video_Codec_SDK_12.2.72/Interface/nvEncodeAPI.h /usr/local/cuda/include/nvEncodeAPI.h && \
+  rm -rf Video_Codec_SDK.zip Video_Codec_SDK_12.2.72
+WORKDIR /root
+
+# Configure language and locale
+RUN locale-gen en_US.UTF-8 && \
+  update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+
+# Configure CMake system-wide environment to detect our installations first
+ENV CMAKE_PREFIX_PATH=/usr/local
+
+# Install ROS 2
+WORKDIR /opt
+COPY scripts/ros2/install_ros2.x86-cudev.sh /opt/install_ros2.sh
+RUN /opt/install_ros2.sh jazzy && \
+  chgrp internal /opt/install_ros2.sh && \
+  chmod g+rwx /opt/install_ros2.sh && \
+  chgrp -R internal /opt/ros && \
+  chmod -R g+rw /opt/ros
+WORKDIR /root
+
+# Configure default ROS MiddleWare implementation
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+
+# Install Gazebo
+WORKDIR /opt
+COPY scripts/ros2/install_gazebo.x86-cudev.sh /opt/install_gazebo.sh
+RUN /opt/install_gazebo.sh harmonic jazzy && \
+  chgrp internal /opt/install_gazebo.sh && \
+  chmod g+rwx /opt/install_gazebo.sh
+WORKDIR /root
+
 # Create a Python virtual environment and install packages in it
 # NOTES
 # - PyTorch must be installed by hand.
@@ -155,27 +196,7 @@ WORKDIR /root
 # Ensure that the Python environment is correctly sourced
 # System path is the output of:
 # python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
-ENV PYTHONPATH=/opt/dua-venv/lib/python3.12/site-packages:/usr/lib/python3/dist-packages
-
-# Configure language and locale
-RUN locale-gen en_US.UTF-8 && \
-  update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-ENV LANG=en_US.UTF-8
-
-# Configure CMake system-wide environment to detect our installations first
-ENV CMAKE_PREFIX_PATH=/usr/local
-
-# Install headers of the NVIDIA Video Codec SDK
-# NOTES
-# - Shared libraries are installed from the driver package above.
-WORKDIR /tmp
-RUN wget -O Video_Codec_SDK.zip http://160.80.97.139:8087/Software/DUA/NVIDIA/Video_Codec_SDK_12.2.72.zip && \
-  unzip Video_Codec_SDK.zip && \
-  cp Video_Codec_SDK_12.2.72/Interface/cuviddec.h /usr/local/cuda/include/cuviddec.h && \
-  cp Video_Codec_SDK_12.2.72/Interface/nvcuvid.h /usr/local/cuda/include/nvcuvid.h && \
-  cp Video_Codec_SDK_12.2.72/Interface/nvEncodeAPI.h /usr/local/cuda/include/nvEncodeAPI.h && \
-  rm -rf Video_Codec_SDK.zip Video_Codec_SDK_12.2.72
-WORKDIR /root
+ENV PYTHONPATH=/opt/ros/jazzy/lib/python3.12/site-packages:/opt/dua-venv/lib/python3.12/site-packages:/usr/lib/python3/dist-packages
 
 # Build and install Eigen
 WORKDIR /opt
@@ -245,29 +266,6 @@ RUN . dua-venv/bin/activate && \
   chmod g+rwx /opt/install_zenoh.sh && \
   chgrp -R internal /opt/zenoh && \
   chmod -R g+rw /opt/zenoh
-WORKDIR /root
-
-# Install ROS 2
-WORKDIR /opt
-COPY scripts/ros2/install_ros2.x86-cudev.sh /opt/install_ros2.sh
-RUN . dua-venv/bin/activate && \
-  /opt/install_ros2.sh jazzy && \
-  chgrp internal /opt/install_ros2.sh && \
-  chmod g+rwx /opt/install_ros2.sh && \
-  chgrp -R internal /opt/ros && \
-  chmod -R g+rw /opt/ros
-WORKDIR /root
-
-# Configure default ROS MiddleWare implementation
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-
-# Install Gazebo
-WORKDIR /opt
-COPY scripts/ros2/install_gazebo.x86-cudev.sh /opt/install_gazebo.sh
-RUN . dua-venv/bin/activate && \
-  /opt/install_gazebo.sh harmonic jazzy && \
-  chgrp internal /opt/install_gazebo.sh && \
-  chmod g+rwx /opt/install_gazebo.sh
 WORKDIR /root
 
 # Build and install dua-utils

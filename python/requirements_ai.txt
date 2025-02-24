@@ -1,4 +1,5 @@
 # Python AI libraries
+albumentations
 gradio
 keras
 onnx
