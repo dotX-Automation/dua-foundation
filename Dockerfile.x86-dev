@@ -169,7 +169,7 @@ WORKDIR /root
 # Ensure that the Python environment is correctly sourced
 # NOTE: System path is the output of:
 # python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
-ENV PYTHONPATH=/opt/ros/jazzy/lib/python3.12/site-packages:/opt/dua-venv/lib/python3.12/site-packages:/usr/lib/python3/dist-packages
+ENV PYTHONPATH=/opt/dua-venv/lib/python3.12/site-packages:/usr/lib/python3/dist-packages
 
 # Build and install Eigen
 WORKDIR /opt
