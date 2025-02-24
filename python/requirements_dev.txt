@@ -1,5 +1,8 @@
 # Python development tools:
 # - More scientific libraries
+# NOTES
+# - Fix matplotlib to the exact same version installed by python3-matplotlib.
 ipython
 jupyterlab
+matplotlib==3.6.3
 notebook
