@@ -29,7 +29,7 @@ set -e
 # Get the requested Zenoh version
 ZENOH_VERSION="${1-}"
 
-mkdir /etc/zenoh /opt/zenoh
+mkdir -p /etc/zenoh /opt/zenoh
 
 # Install Zenoh router
 wget -O /usr/local/bin/zenohd http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-${ZENOH_VERSION}-aarch64-unknown-linux-gnu-standalone/zenohd
@@ -66,7 +66,7 @@ git clone --depth 1 --single-branch \
   --branch "${ZENOH_VERSION}" \
   https://github.com/eclipse-zenoh/zenoh-c.git \
   /opt/zenoh/zenoh-c
-mkdir /opt/zenoh/zenoh-c/build
+mkdir -p /opt/zenoh/zenoh-c/build
 cd /opt/zenoh/zenoh-c/build
 cmake \
   -DBUILD_SHARED_LIBS=ON \
@@ -90,7 +90,7 @@ git clone --depth 1 --single-branch \
   --branch "${ZENOH_VERSION}" \
   https://github.com/eclipse-zenoh/zenoh-cpp.git \
   /opt/zenoh/zenoh-cpp
-mkdir /opt/zenoh/zenoh-cpp/build
+mkdir -p /opt/zenoh/zenoh-cpp/build
 cd /opt/zenoh/zenoh-cpp/build
 cmake \
   -DZENOHCXX_ZENOHC=ON \
