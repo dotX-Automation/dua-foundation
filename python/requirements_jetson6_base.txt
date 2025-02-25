@@ -1,6 +1,6 @@
 # Core scientific computing packages
 # These form the foundation and have minimal external dependencies
-numpy<2  # Basic numerical operations, needed by many packages but version defined by PyTorch later on
+numpy<2  # Basic numerical operations
 scipy>=1.10.0  # Scientific computing foundation
 pandas>=2.0.0  # Data manipulation, no CV dependencies
 

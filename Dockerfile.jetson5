@@ -48,6 +48,13 @@ RUN apt-get update && apt-get remove --purge --auto-remove -y \
   rm -rf /usr/local/include/opencv4 && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 
+# Purge existing numpy, matplotlib installations
+RUN apt-get update && apt-get remove --purge --auto-remove -y \
+  python3-matplotlib \
+  python3-numpy && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
+  pip uninstall numpy -y
+
 # Install basic utilities, dependencies, and development tools
 # These include:
 # - C/C++ toolchain and debuggers

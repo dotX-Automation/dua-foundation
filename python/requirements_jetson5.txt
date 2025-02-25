@@ -33,6 +33,7 @@ flask
 lark-parser
 matplotlib==3.5.0
 mypy
+numpy<1.24
 nunavut
 packaging
 pkgconfig
