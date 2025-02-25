@@ -1,7 +1,11 @@
 # Python AI libraries
+# NOTES
+# - Re-lock NumPy and matplotlib to their intended versions.
 albumentations
 gradio
 keras
+matplotlib==3.6.3
+numpy<2
 onnx
 onnxsim
 onnxruntime

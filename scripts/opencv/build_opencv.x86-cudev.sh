@@ -45,8 +45,6 @@ cmake \
   -D CMAKE_INSTALL_PREFIX=/usr/local \
   -D CUDA_ARCH_BIN="6.1 7.5 8.6" \
   -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
-  -D CUDA_nvcuvid_LIBRARY=/usr/lib/x86_64-linux-gnu/libnvcuvid.so \
-  -D CUDA_nvidia-encode_LIBRARY=/usr/lib/x86_64-linux-gnu/libnvidia-encode.so \
   -D CUDA_FAST_MATH=OFF \
   -D EIGEN_INCLUDE_PATH=/usr/local/include/eigen3 \
   -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib/modules \
@@ -56,11 +54,13 @@ cmake \
   -D OPENCV_DNN_CUDA=ON \
   -D CPU_BASELINE=SSE4_2 \
   -D CPU_DISPATCH=AVX,AVX2,AVX512_SKX \
-  -D WITH_NVCUVENC=ON \
-  -D WITH_NVCUVID=ON \
+  -D WITH_NVCUVENC=OFF \
+  -D WITH_NVCUVID=OFF \
   -D WITH_CUBLAS=ON \
   -D WITH_CUDA=ON \
   -D WITH_CUDNN=ON \
+  -D WITH_FFMPEG=ON \
+  -D WITH_GSTREAMER=ON \
   -D WITH_TBB=ON \
   -D WITH_OPENMP=ON \
   -D WITH_EIGEN=ON \

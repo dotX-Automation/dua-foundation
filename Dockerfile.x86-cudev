@@ -82,8 +82,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libgeographiclib-dev \
   libgtk2.0-dev \
   libjpeg-dev \
-  libnvidia-encode-560 \
-  libnvidia-decode-560 \
   libpng-dev \
   libssl-dev \
   libswresample-dev \
@@ -139,18 +137,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
   update-alternatives --set java $(update-alternatives --list java | grep "java-11")
 
-# Install headers of the NVIDIA Video Codec SDK
-# NOTES
-# - Shared libraries are installed from the driver package above.
-WORKDIR /tmp
-RUN wget -O Video_Codec_SDK.zip http://160.80.97.139:8087/Software/DUA/NVIDIA/Video_Codec_SDK_12.2.72.zip && \
-  unzip Video_Codec_SDK.zip && \
-  cp Video_Codec_SDK_12.2.72/Interface/cuviddec.h /usr/local/cuda/include/cuviddec.h && \
-  cp Video_Codec_SDK_12.2.72/Interface/nvcuvid.h /usr/local/cuda/include/nvcuvid.h && \
-  cp Video_Codec_SDK_12.2.72/Interface/nvEncodeAPI.h /usr/local/cuda/include/nvEncodeAPI.h && \
-  rm -rf Video_Codec_SDK.zip Video_Codec_SDK_12.2.72
-WORKDIR /root
-
 # Configure language and locale
 RUN locale-gen en_US.UTF-8 && \
   update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
@@ -182,13 +168,15 @@ WORKDIR /root
 
 # Create a Python virtual environment and install packages in it
 # NOTES
-# - PyTorch must be installed by hand.
+# - PyTorch must be installed by hand, before the other packages
+#   that depend on it.
 WORKDIR /opt
 RUN --mount=type=bind,source=python/requirements.txt,target=/opt/requirements.txt --mount=type=bind,source=python/requirements_dev.txt,target=/opt/requirements_dev.txt --mount=type=bind,source=python/requirements_ai.txt,target=/opt/requirements_ai.txt \
   python3 -m venv --system-site-packages dua-venv && \
   . dua-venv/bin/activate && \
-  pip install -U -r requirements.txt -r requirements_dev.txt -r requirements_ai.txt && \
+  pip install -U -r requirements.txt -r requirements_dev.txt && \
   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126 && \
+  pip install -U -r requirements_ai.txt && \
   chgrp -R internal /opt/dua-venv && \
   chmod -R g+rw /opt/dua-venv
 WORKDIR /root
