@@ -7,7 +7,6 @@ keras
 matplotlib==3.6.3
 numpy<2
 onnx
-onnxruntime
 onnxruntime-gpu
 onnxsim
 onnxslim
