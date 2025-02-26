@@ -62,7 +62,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   dirmngr \
   dmidecode \
   file \
-  fuse \
+  fuse3 \
   g++ \
   gcc \
   gdb \
@@ -96,6 +96,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   make \
   minicom \
   nano \
+  nfs-common \
   ninja-build \
   openssh-client \
   openssl \
@@ -110,6 +111,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3-venv \
   shellcheck \
   software-properties-common \
+  sshfs \
   sudo \
   uncrustify \
   unzip \
