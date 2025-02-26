@@ -7,10 +7,12 @@ keras
 matplotlib==3.6.3
 numpy<2
 onnx
-onnxsim
 onnxruntime
 onnxruntime-gpu
+onnxsim
+onnxslim
 pycocotools
 supervision
 tensorflow
+tensorrt
 ultralytics
