@@ -36,6 +36,7 @@ PCL_VERSION_MAJOR=$(echo $PCL_VERSION | cut -d. -f1-2)
 apt-get update
 apt-get install -y --no-install-recommends \
   libflann-dev \
+  libnanoflann-dev \
   libopenni-dev \
   libqhull-dev \
   libusb-1.0-0 \

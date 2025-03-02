@@ -36,6 +36,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 # Install ROS 2 and related components
 apt-get update
 apt-get install -y --no-install-recommends \
+  libnanoflann-dev \
   ros-dev-tools \
   ros-$ROS_DISTRO-actuator-msgs \
   ros-$ROS_DISTRO-ament-lint \
