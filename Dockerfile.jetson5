@@ -166,7 +166,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # NOTES
 # - This is necessary since someone had another brilliant idea consisting in
 #   putting trtexec into this non-standard location and omitting an apt hook.
-ENV PATH=/usr/src/tensorrt/bin:/usr/local/cuda:${PATH-}
+ENV PATH=/usr/src/tensorrt/bin:/usr/local/cuda:${PATH:-}
 
 # Configure Git to accept different ownerships for local repository clones
 RUN git config --system --add safe.directory '*'
