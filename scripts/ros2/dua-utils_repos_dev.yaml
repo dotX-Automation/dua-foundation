@@ -1,12 +1,32 @@
 # DUA-UTILS FOR DEVELOPMENT TARGETS #
 repositories:
+  dotX-Automation/dua_aircraft_interfaces:
+    type: git
+    url: https://github.com/dotX-Automation/dua_aircraft_interfaces.git
+    version: master
   dotX-Automation/dua_app_management:
     type: git
     url: https://github.com/dotX-Automation/dua_app_management.git
     version: master
-  dotX-Automation/dua_interfaces:
+  dotX-Automation/dua_common_interfaces:
     type: git
-    url: https://github.com/dotX-Automation/dua_interfaces.git
+    url: https://github.com/dotX-Automation/dua_common_interfaces.git
+    version: master
+  dotX-Automation/dua_geometry_interfaces:
+    type: git
+    url: https://github.com/dotX-Automation/dua_geometry_interfaces.git
+    version: master
+  dotX-Automation/dua_hardware_interfaces:
+    type: git
+    url: https://github.com/dotX-Automation/dua_hardware_interfaces.git
+    version: master
+  dotX-Automation/dua_mission_interfaces:
+    type: git
+    url: https://github.com/dotX-Automation/dua_mission_interfaces.git
+    version: master
+  dotX-Automation/dua_movement_interfaces:
+    type: git
+    url: https://github.com/dotX-Automation/dua_movement_interfaces.git
     version: master
   dotX-Automation/dua_node_cpp:
     type: git
