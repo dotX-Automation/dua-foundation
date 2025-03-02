@@ -8,9 +8,9 @@ repositories:
     type: git
     url: https://github.com/dotX-Automation/dua_interfaces.git
     version: master
-  dotX-Automation/dua_node:
+  dotX-Automation/dua_node_cpp:
     type: git
-    url: https://github.com/dotX-Automation/dua_node.git
+    url: https://github.com/dotX-Automation/dua_node_cpp.git
     version: master
   dotX-Automation/dua_qos:
     type: git
@@ -24,9 +24,9 @@ repositories:
     type: git
     url: https://github.com/dotX-Automation/dynamic_systems.git
     version: master
-  dotX-Automation/params_manager:
+  dotX-Automation/params_manager_cpp:
     type: git
-    url: https://github.com/dotX-Automation/params_manager.git
+    url: https://github.com/dotX-Automation/params_manager_cpp.git
     version: master
   dotX-Automation/polynomial_kit:
     type: git
