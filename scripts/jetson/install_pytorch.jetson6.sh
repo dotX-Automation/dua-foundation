@@ -56,6 +56,9 @@ pip install --no-cache $TORCH_INSTALL
 # Ref.: https://forums.developer.nvidia.com/t/pytorch-and-torchvision-on-jetson-orin/247818/2
 cd /opt
 export BUILD_VERSION=0.20.0
+export CUDA_HOME=/usr/local/cuda-12.6
+export FORCE_CUDA=1
+export BUILD_CUDA_SOURCES=1
 git clone --branch "v$BUILD_VERSION" https://github.com/pytorch/vision torchvision
 cd torchvision
 python3 setup.py install
