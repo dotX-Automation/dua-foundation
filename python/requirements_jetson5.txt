@@ -36,6 +36,8 @@ matplotlib==3.6.0
 mypy
 numpy==1.23.5
 nunavut
+onnxsim
+onnxslim
 packaging
 pkgconfig
 py-cpuinfo
