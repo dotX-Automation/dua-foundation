@@ -165,6 +165,12 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/arm
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 WORKDIR /root
 
+# Add directories to PATH
+# NOTES
+# - This is necessary since someone had another brilliant idea consisting in
+#   putting trtexec into this non-standard location and omitting an apt hook.
+ENV PATH=/usr/src/tensorrt/bin:/usr/local/cuda:${PATH-}
+
 # Configure Git to accept different ownerships for local repository clones
 RUN git config --system --add safe.directory '*'
 
