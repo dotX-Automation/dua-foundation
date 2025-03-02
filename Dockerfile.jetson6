@@ -285,7 +285,7 @@ RUN . dua-venv/bin/activate && \
 WORKDIR /root
 
 # Install Ultralytics
-RUN . dua-venv/bin/activate && \
+RUN . /opt/dua-venv/bin/activate && \
   pip install ultralytics --no-deps && \
   pip install ultralytics-thop
 

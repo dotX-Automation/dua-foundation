@@ -59,6 +59,7 @@ export BUILD_VERSION=0.20.0
 export CUDA_HOME=/usr/local/cuda-12.6
 export FORCE_CUDA=1
 export BUILD_CUDA_SOURCES=1
+export TORCH_CUDA_ARCH_LIST=8.7
 git clone --branch "v$BUILD_VERSION" https://github.com/pytorch/vision torchvision
 cd torchvision
 python3 setup.py install
