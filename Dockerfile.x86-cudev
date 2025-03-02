@@ -40,6 +40,15 @@ RUN groupadd -r internal
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=all
 
+# Configure Nvidia repositories
+# NOTES
+# - This allows to install TensorRT-related packages with the appropriate CUDA
+#   version, since someone had the brilliant idea to put them all into a single
+#   repo.
+RUN echo "Package: libnvinfer* libnvonnxparsers*" > /etc/apt/preferences.d/cuda-repository-pin && \
+  echo "Pin: version *+cuda12.6*" >> /etc/apt/preferences.d/cuda-repository-pin && \
+  echo "Pin-Priority: 1001" >> /etc/apt/preferences.d/cuda-repository-pin
+
 # Install basic utilities, dependencies, and development tools
 # These include:
 # - C/C++ toolchain and debuggers
@@ -82,6 +91,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libgeographiclib-dev \
   libgtk2.0-dev \
   libjpeg-dev \
+  libnvinfer-bin \
   libpng-dev \
   libssl-dev \
   libswresample-dev \
@@ -126,6 +136,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-get autoremove -y && \
   apt-get autoclean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# Add directories to PATH
+# NOTES
+# - This is necessary since someone had another brilliant idea consisting in
+#   putting trtexec into this non-standard location and omitting an apt hook.
+ENV PATH=/usr/src/tensorrt/bin:${PATH-}
 
 # Configure Git to accept different ownerships for local repository clones
 RUN git config --system --add safe.directory '*'
