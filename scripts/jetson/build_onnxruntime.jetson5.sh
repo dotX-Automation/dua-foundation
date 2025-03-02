@@ -63,9 +63,10 @@ cd /opt/onnxruntime
   --cuda_home /usr/local/cuda \
   --cudnn_home /usr/lib/aarch64-linux-gnu \
   --tensorrt_home /usr/lib/python3.8/dist-packages/tensorrt \
-  --allow_running_as_root \
   --skip_tests \
   --cmake_extra_defines \
+    'CMAKE_C_FLAGS=-Wno-error=switch' \
+    'CMAKE_CXX_FLAGS=-Wno-error=switch' \
     'CMAKE_CUDA_ARCHITECTURES=72' \
     'onnxruntime_BUILD_UNIT_TESTS=OFF' \
     'onnxruntime_USE_FLASH_ATTENTION=OFF' \
