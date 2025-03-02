@@ -15,7 +15,6 @@ lap>=0.4.0  # Linear Assignment Problem
 
 # ML Model formats and export
 onnx>=1.15.0  # Model format
-onnxruntime>=1.16.0  # Runtime
 onnxsim>=0.4.33  # Simplifier
 onnxslim # Pruner
 protobuf>=4.24.4  # Protocol buffers

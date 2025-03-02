@@ -32,6 +32,14 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Create internal users group
 RUN groupadd -r internal
 
+# Update CMake version to the latest available at Kitware
+RUN apt-get remove --purge --auto-remove -y cmake && \
+  wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg > /dev/null && \
+  echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main" | tee /etc/apt/sources.list.d/kitware.list && \
+  apt-get update && \
+  apt-get install -y --no-install-recommends cmake && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
 # Purge existing OpenCV installation
 RUN apt-get update && apt-get remove --purge --auto-remove -y \
   libopencv* \
@@ -58,7 +66,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-utils \
   build-essential \
   ccache \
-  cmake \
   cppcheck \
   curl \
   dialog \
@@ -210,7 +217,7 @@ ENV CMAKE_PREFIX_PATH=/usr/local
 WORKDIR /opt
 COPY scripts/eigen/build_eigen.sh /opt/build_eigen.sh
 RUN . dua-venv/bin/activate && \
-  /opt/build_eigen.sh 3.4.0 && \
+  /opt/build_eigen.sh 3.4 && \
   chgrp internal /opt/build_eigen.sh && \
   chmod g+rwx /opt/build_eigen.sh && \
   chgrp -R internal /opt/eigen && \
@@ -265,10 +272,22 @@ RUN --mount=type=bind,source=python/requirements_jetson6_dev.txt,target=/opt/req
   pip install albumentations --no-deps && \
   pip install supervision --no-deps && \
   pip install tensorflowjs --no-deps && \
-  pip install -U -r requirements_jetson6_dev.txt && \
+  pip install -U -r requirements_jetson6_dev.txt
+WORKDIR /root
+
+# Build and install ONNX Runtime
+WORKDIR /opt
+COPY scripts/jetson/build_onnxruntime.jetson6.sh /opt/build_onnxruntime.sh
+RUN . dua-venv/bin/activate && \
+  /opt/build_onnxruntime.sh \
+  chgrp internal /opt/build_onnxruntime.sh && \
+  chmod g+rwx /opt/build_onnxruntime.sh
+WORKDIR /root
+
+# Install Ultralytics
+RUN . dua-venv/bin/activate && \
   pip install ultralytics --no-deps && \
   pip install ultralytics-thop
-WORKDIR /root
 
 # Configure Ultralytics to avoid actively pulling packages
 ENV ULTRALYTICS_UPDATE_CHECK=False

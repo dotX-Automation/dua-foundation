@@ -188,14 +188,9 @@ RUN --mount=type=bind,source=python/requirements_jetson5.txt,target=/opt/require
   python3 -m venv --system-site-packages dua-venv && \
   . dua-venv/bin/activate && \
   pip install -U -r requirements_jetson5.txt && \
-  pip install ultralytics --no-dependencies && \
-  pip install ultralytics-thop && \
   chgrp -R internal /opt/dua-venv && \
   chmod -R g+rw /opt/dua-venv
 WORKDIR /root
-
-# Configure Ultralytics to avoid actively pulling packages
-ENV ULTRALYTICS_UPDATE_CHECK=False
 
 # Ensure that the Python environment is correctly sourced
 # System path is the output of:
@@ -214,7 +209,7 @@ ENV CMAKE_PREFIX_PATH=/usr/local
 WORKDIR /opt
 COPY scripts/eigen/build_eigen.sh /opt/build_eigen.sh
 RUN . dua-venv/bin/activate && \
-  /opt/build_eigen.sh 3.4.0 && \
+  /opt/build_eigen.sh 3.4 && \
   chgrp internal /opt/build_eigen.sh && \
   chmod g+rwx /opt/build_eigen.sh && \
   chgrp -R internal /opt/eigen && \
@@ -233,6 +228,23 @@ RUN . dua-venv/bin/activate && \
   chgrp -R internal /opt/opencv_contrib && \
   chmod -R g+rw /opt/opencv_contrib
 WORKDIR /root
+
+# Build and install ONNX Runtime
+WORKDIR /opt
+COPY scripts/jetson/build_onnxruntime.jetson5.sh /opt/build_onnxruntime.sh
+RUN . dua-venv/bin/activate && \
+  /opt/build_onnxruntime.sh \
+  chgrp internal /opt/build_onnxruntime.sh && \
+  chmod g+rwx /opt/build_onnxruntime.sh
+WORKDIR /root
+
+# Install Ultralytics
+RUN . dua-venv/bin/activate && \
+  pip install ultralytics --no-dependencies && \
+  pip install ultralytics-thop
+
+# Configure Ultralytics to avoid actively pulling packages
+ENV ULTRALYTICS_UPDATE_CHECK=False
 
 # Install Rust toolchain
 ENV RUSTUP_HOME=/opt/rust
