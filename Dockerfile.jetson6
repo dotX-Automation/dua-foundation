@@ -270,6 +270,9 @@ RUN --mount=type=bind,source=python/requirements_jetson6_dev.txt,target=/opt/req
   pip install ultralytics-thop
 WORKDIR /root
 
+# Configure Ultralytics to avoid actively pulling packages
+ENV ULTRALYTICS_UPDATE_CHECK=False
+
 # Install Rust toolchain
 ENV RUSTUP_HOME=/opt/rust
 ENV CARGO_HOME=/opt/rust
