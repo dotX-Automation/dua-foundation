@@ -209,7 +209,7 @@ ENV CMAKE_PREFIX_PATH=/usr/local
 WORKDIR /opt
 COPY scripts/eigen/build_eigen.sh /opt/build_eigen.sh
 RUN . dua-venv/bin/activate && \
-  /opt/build_eigen.sh 3.4 && \
+  /opt/build_eigen.sh 3.4.0 && \
   chgrp internal /opt/build_eigen.sh && \
   chmod g+rwx /opt/build_eigen.sh && \
   chgrp -R internal /opt/eigen && \

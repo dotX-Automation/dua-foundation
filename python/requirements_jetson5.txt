@@ -67,7 +67,6 @@ wheel
 # Python AI libraries
 # NOTES
 # - ultralytics must be installed manually to avoid dependency conflicts.
-albumentations==1.3.0
 gradio
 pycocotools
 seaborn
