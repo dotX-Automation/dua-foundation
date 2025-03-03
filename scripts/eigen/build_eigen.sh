@@ -33,11 +33,22 @@ git clone --single-branch --depth 1 \
 cd /opt/eigen
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
-make -j$(nproc --all)
+cmake \
+  -DCMAKE_INSTALL_PREFIX=/usr/local \
+  -DEIGEN_BUILD_BLAS=OFF \
+  -DEIGEN_BUILD_LAPACK=OFF \
+  -DEIGEN_BUILD_DEMOS=OFF \
+  -DEIGEN_BUILD_CMAKE_PACKAGE=ON \
+  ..
 
 # Install Eigen
 make install
+
+# @robmasocco Somehow this file is forgotten
+if [ ! -f /usr/local/share/eigen3/cmake/UseEigen3.cmake ]; then
+  cp ../cmake/UseEigen3.cmake /usr/local/share/eigen3/cmake/UseEigen3.cmake
+  echo "Copied missing UseEigen3.cmake"
+fi
 
 # Cleanup
 cd ..
