@@ -269,8 +269,7 @@ WORKDIR /root
 WORKDIR /opt
 RUN --mount=type=bind,source=python/requirements_jetson6_dev.txt,target=/opt/requirements_jetson6_dev.txt \
   . dua-venv/bin/activate && \
-  pip install albumentations --no-deps && \
-  pip install supervision --no-deps && \
+  pip install supervision==0.25.1 --no-deps && \
   pip install tensorflowjs --no-deps && \
   pip install -U -r requirements_jetson6_dev.txt
 WORKDIR /root

@@ -1,5 +1,5 @@
 # Additional scientific and visualization
-matplotlib>=3.7.0  # Plotting library
+matplotlib==3.6.0  # Plotting library
 matplotlib-inline>=0.1.6  # Inline backend
 pandas-stubs>=2.1.1  # Type hints for pandas
 scikit-learn>=1.3.0  # Machine learning
@@ -17,7 +17,7 @@ lap>=0.4.0  # Linear Assignment Problem
 onnx>=1.15.0  # Model format
 onnxsim>=0.4.33  # Simplifier
 onnxslim # Pruner
-protobuf>=4.24.4  # Protocol buffers
+protobuf==4.25.6  # Protocol buffers
 
 # Video processing
 av>=10.0.0  # PyAV
@@ -64,9 +64,10 @@ requests>=2.31.0  # HTTP client
 tqdm>=4.65.0  # Progress bars
 transitions>=0.9.0  # FSM
 gitpython>=3.1.40  # Git operations
-roboflow>=1.1.8  # Dataset management
 
 # Dependencies for pacakges that we have to install manually to avoid conflicts
-albucore
 defusedxml
 pydantic
+
+# Versions that we have to keep locked at this stage
+numpy==1.23.5

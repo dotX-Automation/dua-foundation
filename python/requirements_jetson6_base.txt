@@ -3,6 +3,7 @@
 numpy==1.23.5  # Basic numerical operations
 scipy>=1.10.0  # Scientific computing foundation
 pandas>=2.0.0  # Data manipulation, no CV dependencies
+pyproj==3.3.0  # Geospatial operations
 
 # Build and packaging tools
 setuptools>=67.0.0  # Python packaging
