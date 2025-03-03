@@ -1,0 +1,19 @@
+# Python AI libraries
+# NOTES
+# - Re-lock NumPy and matplotlib to their intended versions.
+albumentations
+clearml
+gradio
+keras
+matplotlib==3.6.3
+numpy<2
+onnx
+onnxruntime-gpu
+onnxsim
+onnxslim
+pycocotools
+roboflow
+supervision
+tensorflow
+tensorrt
+ultralytics

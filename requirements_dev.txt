@@ -1,6 +1,0 @@
-# Python development tools:
-# - More scientific libraries
-ipython
-jupyterlab
-matplotlib
-notebook

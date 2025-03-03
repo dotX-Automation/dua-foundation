@@ -7,8 +7,16 @@
 # - Code linters
 # - Template engines
 # - Scientific libraries
+# - ROS 2 dependencies
 # - transitions library for FSM software
+# NOTES
+# - EmPy's later versions still appear to be incompatible with Colcon;
+#   for now, it is held at the version reported here.
+# - Keep NumPy below 2 for now, something still isn't compatible with it.
 cerberus
+colcon-argcomplete
+colcon-common-extensions
+colcon-mixin
 coverage
 empy==3.3.4
 flake8
@@ -21,7 +29,7 @@ flake8-docstrings
 flake8-import-order
 flake8-quotes
 flask
-numpy
+numpy<2
 nunavut
 packaging
 pandas
@@ -36,6 +44,7 @@ pytest-runner
 pytest-rerunfailures
 pyyaml
 requests
+rosdep
 scipy
 setuptools
 six

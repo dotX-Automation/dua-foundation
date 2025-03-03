@@ -1,8 +1,8 @@
-# ARMv8 basic DUA base unit.
+# Base unit for Nvidia Jetson platforms based on JetPack 6.
 #
 # Roberto Masocco <r.masocco@dotxautomation.com>
 #
-# March 4, 2023
+# February 21, 2025
 
 # Copyright 2025 dotX Automation s.r.l.
 #
@@ -21,13 +21,36 @@
 # BUILD THIS WITH:
 # --network host
 
-# Start from an linux/arm64/v8 Ubuntu 24.04 image
-FROM --platform=linux/arm64/v8 ubuntu:24.04
+# Start from a JetPack 6 image based on Ubuntu 22.04
+# NOTES
+# - The base image is Ubuntu 22.04.
+# - This image is based on L4T 36.4.0, JetPack 6.1.
+FROM --platform=linux/arm64 nvcr.io/nvidia/l4t-jetpack:r36.4.0
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Create internal users group
 RUN groupadd -r internal
+
+# Update CMake version to the latest available at Kitware
+RUN apt-get remove --purge --auto-remove -y cmake && \
+  wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg > /dev/null && \
+  echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main" | tee /etc/apt/sources.list.d/kitware.list && \
+  apt-get update && \
+  apt-get install -y --no-install-recommends cmake && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# Purge existing OpenCV installation
+RUN apt-get update && apt-get remove --purge --auto-remove -y \
+  libopencv* \
+  opencv* && \
+  rm -rf /usr/local/include/opencv4 && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# Purge existing numpy installation
+RUN apt-get update && apt-get remove --purge --auto-remove -y \
+  python3-numpy && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 
 # Install basic utilities, dependencies, and development tools
 # These include:
@@ -42,9 +65,7 @@ RUN groupadd -r internal
 RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-utils \
   build-essential \
-  ca-certificates \
   ccache \
-  cmake \
   cppcheck \
   curl \
   dialog \
@@ -56,6 +77,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   gcc \
   gdb \
   gdbserver \
+  gfortran \
   git \
   gnupg2 \
   gstreamer1.0-tools \
@@ -68,20 +90,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libavcodec-dev \
   libavformat-dev \
   libavutil-dev \
-  libblas-dev \
   libboost-all-dev \
   libcanberra-gtk* \
   libdc1394-dev \
   libfaac-dev \
+  libgeographic-dev \
   libgflags-dev \
-  libgeographiclib-dev \
+  libgoogle-glog-dev \
   libgstreamer1.0-dev \
   libgstreamer-plugins-base1.0-dev \
   libgtk2.0-dev \
   libgtk-3-dev \
   libhdf5-dev \
   libjpeg-dev \
-  liblapack-dev \
   libmp3lame-dev \
   libopenblas-dev \
   libopencore-amrnb-dev \
@@ -96,9 +117,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libv4l-dev \
   libvorbis-dev \
   libx264-dev \
+  libxine2-dev \
   libxml2-utils \
   libxvidcore-dev \
   locales \
+  lsb-core \
   lsb-release \
   lsof \
   make \
@@ -110,13 +133,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   openssl \
   pkg-config \
   protobuf-compiler \
-  python3 \
   python3-argcomplete \
   python3-autopep8 \
   python3-dev \
-  python3-pip \
   python3-pygments \
+  python3-pytest-cov \
   python3-pytest-pylint \
+  python3-vcstools \
   python3-venv \
   shellcheck \
   software-properties-common \
@@ -137,6 +160,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-get autoclean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 
+# Install cuSPARSELt from Nvidia repositories, necessary for Ultralytics
+WORKDIR /tmp
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/arm64/cuda-keyring_1.1-1_all.deb && \
+  dpkg -i cuda-keyring_1.1-1_all.deb && \
+  apt-get update && \
+  apt-get install -y --no-install-recommends \
+    libcusparselt0 \
+    libcusparselt-dev && \
+  rm cuda-keyring_1.1-1_all.deb && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+WORKDIR /root
+
+# Add directories to PATH
+# NOTES
+# - This is necessary since someone had another brilliant idea consisting in
+#   putting trtexec into this non-standard location and omitting an apt hook.
+ENV PATH=/usr/src/tensorrt/bin:/usr/local/cuda:${PATH:-}
+
 # Configure Git to accept different ownerships for local repository clones
 RUN git config --system --add safe.directory '*'
 
@@ -149,6 +190,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
   update-alternatives --set java $(update-alternatives --list java | grep "java-11")
 
+# Create a Python virtual environment and install packages in it
+WORKDIR /opt
+RUN --mount=type=bind,source=python/requirements_jetson6_base.txt,target=/opt/requirements_jetson6_base.txt \
+  python3 -m venv --system-site-packages dua-venv && \
+  . dua-venv/bin/activate && \
+  pip install -U -r requirements_jetson6_base.txt && \
+  chgrp -R internal /opt/dua-venv && \
+  chmod -R g+rw /opt/dua-venv
+WORKDIR /root
+
+# Ensure that the Python environment is correctly sourced
+# System path is the output of:
+# python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
+ENV PYTHONPATH=/opt/dua-venv/lib/python3.10/site-packages:/usr/lib/python3.8/site-packages
+
 # Configure language and locale
 RUN locale-gen en_US.UTF-8 && \
   update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
@@ -157,39 +213,11 @@ ENV LANG=en_US.UTF-8
 # Configure CMake system-wide environment to detect our installations first
 ENV CMAKE_PREFIX_PATH=/usr/local
 
-# Install ROS 2
-WORKDIR /opt
-COPY scripts/ros2/install_ros2.armv8-base.sh /opt/install_ros2.sh
-RUN /opt/install_ros2.sh jazzy && \
-  chgrp internal /opt/install_ros2.sh && \
-  chmod g+rwx /opt/install_ros2.sh && \
-  chgrp -R internal /opt/ros && \
-  chmod -R g+rw /opt/ros
-WORKDIR /root
-
-# Configure default ROS MiddleWare implementation
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-
-# Create a Python virtual environment and install packages in it
-WORKDIR /opt
-RUN --mount=type=bind,source=python/requirements.txt,target=/opt/requirements.txt \
-  python3 -m venv --system-site-packages dua-venv && \
-  . dua-venv/bin/activate && \
-  pip install -U -r requirements.txt && \
-  chgrp -R internal /opt/dua-venv && \
-  chmod -R g+rw /opt/dua-venv
-WORKDIR /root
-
-# Ensure that the Python environment is correctly sourced
-# System path is the output of:
-# python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
-ENV PYTHONPATH=/opt/dua-venv/lib/python3.12/site-packages:/usr/lib/python3/dist-packages
-
 # Build and install Eigen
 WORKDIR /opt
 COPY scripts/eigen/build_eigen.sh /opt/build_eigen.sh
 RUN . dua-venv/bin/activate && \
-  /opt/build_eigen.sh 3.4.0 && \
+  /opt/build_eigen.sh 3.4 && \
   chgrp internal /opt/build_eigen.sh && \
   chmod g+rwx /opt/build_eigen.sh && \
   chgrp -R internal /opt/eigen && \
@@ -198,7 +226,7 @@ WORKDIR /root
 
 # Build and install OpenCV
 WORKDIR /opt
-COPY scripts/opencv/build_opencv.armv8-base.sh /opt/build_opencv.sh
+COPY scripts/opencv/build_opencv.jetson6.sh /opt/build_opencv.sh
 RUN . dua-venv/bin/activate && \
   /opt/build_opencv.sh 4.11.0 && \
   chgrp internal /opt/build_opencv.sh && \
@@ -208,6 +236,60 @@ RUN . dua-venv/bin/activate && \
   chgrp -R internal /opt/opencv_contrib && \
   chmod -R g+rw /opt/opencv_contrib
 WORKDIR /root
+
+# Build and install PyTorch
+WORKDIR /opt
+COPY scripts/jetson/install_pytorch.jetson6.sh /opt/install_pytorch.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_pytorch.sh && \
+  chgrp internal /opt/install_pytorch.sh && \
+  chmod g+rwx /opt/install_pytorch.sh
+WORKDIR /root
+
+# Install TensorFlow
+WORKDIR /opt
+COPY scripts/jetson/install_tensorflow.jetson6.sh /opt/install_tensorflow.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_tensorflow.sh && \
+  chgrp internal /opt/install_tensorflow.sh && \
+  chmod g+rwx /opt/install_tensorflow.sh
+WORKDIR /root
+
+# Install remaining packages from pip
+# NOTES
+# - We have to install some of these manually without dependencies or they will
+#   pull in stuff that is already installed, breaking the build; they are
+#   - albumentations, for image augmentation
+#   - supervision, for training supervision
+#   - tensorflowjs, for exporting models to TensorFlow.js
+# - This includes ultralytics, which we install without dependencies
+#   since we should have already set everything up for it.
+# - This includes some visualization tools. They should not be necessary on this
+#   platform but it appears that something down the line requires them.
+WORKDIR /opt
+RUN --mount=type=bind,source=python/requirements_jetson6_dev.txt,target=/opt/requirements_jetson6_dev.txt \
+  . dua-venv/bin/activate && \
+  pip install supervision==0.25.1 --no-deps && \
+  pip install tensorflowjs --no-deps && \
+  pip install -U -r requirements_jetson6_dev.txt
+WORKDIR /root
+
+# Build and install ONNX Runtime
+WORKDIR /opt
+COPY scripts/jetson/build_onnxruntime.jetson6.sh /opt/build_onnxruntime.sh
+RUN . dua-venv/bin/activate && \
+  /opt/build_onnxruntime.sh \
+  chgrp internal /opt/build_onnxruntime.sh && \
+  chmod g+rwx /opt/build_onnxruntime.sh
+WORKDIR /root
+
+# Install Ultralytics
+RUN . /opt/dua-venv/bin/activate && \
+  pip install ultralytics --no-deps && \
+  pip install ultralytics-thop
+
+# Configure Ultralytics to avoid actively pulling packages
+ENV ULTRALYTICS_UPDATE_CHECK=False
 
 # Install Rust toolchain
 ENV RUSTUP_HOME=/opt/rust
@@ -235,7 +317,7 @@ WORKDIR /root
 #   This is to enable development with standalone DDS implementations while
 #   avoiding to create conflicts with the ROS 2 installation.
 WORKDIR /opt
-COPY scripts/dds/install_dds.armv8-base.sh /opt/install_dds.sh
+COPY scripts/dds/install_dds.jetson6.sh /opt/install_dds.sh
 RUN . dua-venv/bin/activate && \
   /opt/install_dds.sh 2.14.4 0.10.5 && \
   chgrp internal /opt/install_dds.sh && \
@@ -246,7 +328,7 @@ WORKDIR /root
 
 # Install Zenoh
 WORKDIR /opt
-COPY scripts/zenoh/install_zenoh.armv8-base.sh /opt/install_zenoh.sh
+COPY scripts/zenoh/install_zenoh.jetson6.sh /opt/install_zenoh.sh
 RUN . dua-venv/bin/activate && \
   /opt/install_zenoh.sh 1.2.1 && \
   chgrp internal /opt/install_zenoh.sh && \
@@ -254,6 +336,32 @@ RUN . dua-venv/bin/activate && \
   chgrp -R internal /opt/zenoh && \
   chmod -R g+rw /opt/zenoh
 WORKDIR /root
+
+# Build and install PCL
+WORKDIR /opt
+COPY scripts/ros2/build_pcl.jetson6.sh /opt/build_pcl.sh
+RUN . dua-venv/bin/activate && \
+  /opt/build_pcl.sh 1.14.0 && \
+  chgrp internal /opt/build_pcl.sh && \
+  chmod g+rwx /opt/build_pcl.sh
+WORKDIR /root
+
+# Build and install ROS 2
+WORKDIR /opt
+COPY scripts/ros2/build_ros2.jetson6.sh /opt/build_ros2.sh
+COPY scripts/ros2/ros2_jazzy_repos_base.yml /opt/ros2_repos.yml
+RUN . dua-venv/bin/activate && \
+  /opt/build_ros2.sh /opt/ros2_repos.yml && \
+  chgrp internal /opt/build_ros2.sh && \
+  chmod g+rwx /opt/build_ros2.sh && \
+  chgrp internal /opt/ros2_repos.yml && \
+  chmod g+rw /opt/ros2_repos.yml && \
+  chgrp -R internal /opt/ros && \
+  chmod -R g+rw /opt/ros
+WORKDIR /root
+
+# Configure ROS Middleware implementation to use
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
 # Build and install dua-utils
 # The ARG allows us to break cache and rebuild from here upon each new version
@@ -274,6 +382,6 @@ WORKDIR /root
 ENV DEBIAN_FRONTEND=dialog
 
 # Finalize image
-LABEL description="DUA base unit for aarch64 systems"
-LABEL platform="linux/arm64/v8"
+LABEL description="DUA base unit for Nvidia Jetson systems (JetPack 6)"
+LABEL platform="linux/arm64"
 CMD ["bash"]

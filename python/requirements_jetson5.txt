@@ -1,4 +1,4 @@
-# NOTE: Scientific and AI libraries not included here are supposed to be
+# Scientific and AI libraries not included here are supposed to be
 # included in the base l4t-ml image.
 
 # Python basic tools and dependencies:
@@ -10,7 +10,15 @@
 # - Code linters
 # - Template engines
 # - transitions library for FSM software
+# - ROS 2 source build dependencies
+# NOTES
+# - empy==3.3.4 is required since colcon is not compatible with newer versions.
+# - matplotlib and NumPy versions, as well as many other packages, are required
+#   for various compatibility issues.
 cerberus
+colcon-argcomplete
+colcon-common-extensions
+colcon-mixin
 coverage
 empy==3.3.4
 flake8
@@ -23,19 +31,27 @@ flake8-docstrings
 flake8-import-order
 flake8-quotes
 flask
-matplotlib==3.5.0
+lark-parser
+matplotlib==3.6.0
+mypy
+numpy==1.23.5
 nunavut
+onnxsim
+onnxslim
 packaging
 pkgconfig
 py-cpuinfo
+pybind11-global
 pyserial
 pyros-genmsg
 pytest
 pytest-cov
-python-dateutil
+pytest-mock
 pytest-repeat
-pytest-runner
 pytest-rerunfailures
+pytest-runner
+pytest-timeout
+python-dateutil
 pyyaml
 requests
 setuptools
@@ -44,10 +60,13 @@ testresources
 toml
 tqdm
 transitions
+urllib3==2.0.2
+vcstool
 wheel
 
 # Python AI libraries
-# NOTE: ultralytics must be installed manually to avoid dependency conflicts
+# NOTES
+# - ultralytics must be installed manually to avoid dependency conflicts.
 gradio
 pycocotools
 seaborn

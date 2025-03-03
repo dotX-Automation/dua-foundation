@@ -1,0 +1,74 @@
+# DUA-UTILS FOR BASE TARGETS #
+repositories:
+  dotX-Automation/dua_aircraft_interfaces:
+    type: git
+    url: https://github.com/dotX-Automation/dua_aircraft_interfaces.git
+    version: master
+  dotX-Automation/dua_app_management:
+    type: git
+    url: https://github.com/dotX-Automation/dua_app_management.git
+    version: master
+  dotX-Automation/dua_common_interfaces:
+    type: git
+    url: https://github.com/dotX-Automation/dua_common_interfaces.git
+    version: master
+  dotX-Automation/dua_geometry_interfaces:
+    type: git
+    url: https://github.com/dotX-Automation/dua_geometry_interfaces.git
+    version: master
+  dotX-Automation/dua_hardware_interfaces:
+    type: git
+    url: https://github.com/dotX-Automation/dua_hardware_interfaces.git
+    version: master
+  dotX-Automation/dua_mission_interfaces:
+    type: git
+    url: https://github.com/dotX-Automation/dua_mission_interfaces.git
+    version: master
+  dotX-Automation/dua_movement_interfaces:
+    type: git
+    url: https://github.com/dotX-Automation/dua_movement_interfaces.git
+    version: master
+  dotX-Automation/dua_node_cpp:
+    type: git
+    url: https://github.com/dotX-Automation/dua_node_cpp.git
+    version: master
+  dotX-Automation/dua_qos:
+    type: git
+    url: https://github.com/dotX-Automation/dua_qos.git
+    version: master
+  dotX-Automation/dua_structures:
+    type: git
+    url: https://github.com/dotX-Automation/dua_structures.git
+    version: master
+  dotX-Automation/dynamic_systems:
+    type: git
+    url: https://github.com/dotX-Automation/dynamic_systems.git
+    version: master
+  dotX-Automation/params_manager_cpp:
+    type: git
+    url: https://github.com/dotX-Automation/params_manager_cpp.git
+    version: master
+  dotX-Automation/polynomial_kit:
+    type: git
+    url: https://github.com/dotX-Automation/polynomial_kit.git
+    version: master
+  dotX-Automation/pose_kit:
+    type: git
+    url: https://github.com/dotX-Automation/pose_kit.git
+    version: master
+  dotX-Automation/simple_actionclient:
+    type: git
+    url: https://github.com/dotX-Automation/simple_actionclient.git
+    version: master
+  dotX-Automation/simple_serviceclient:
+    type: git
+    url: https://github.com/dotX-Automation/simple_serviceclient.git
+    version: master
+  dotX-Automation/theora_wrappers:
+    type: git
+    url: https://github.com/dotX-Automation/theora_wrappers.git
+    version: master
+  dotX-Automation/transitions_ros:
+    type: git
+    url: https://github.com/dotX-Automation/transitions_ros.git
+    version: master
