@@ -245,7 +245,7 @@ WORKDIR /root
 
 # Build and install dua-utils
 # The ARG allows us to break cache and rebuild from here upon each new version
-ARG DUA_UTILS_VERSION=20250304-0821
+ARG DUA_UTILS_VERSION=20250305-1748
 WORKDIR /opt
 COPY scripts/ros2/build_dua_utils.sh /opt/build_dua_utils.sh
 COPY scripts/ros2/dua-utils_repos_dev.yaml /opt/dua-utils_repos_dev.yaml
