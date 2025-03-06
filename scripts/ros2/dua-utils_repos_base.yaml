@@ -59,7 +59,7 @@ repositories:
   dotX-Automation/pose_kit:
     type: git
     url: https://github.com/dotX-Automation/pose_kit.git
-    version: v1.0.0
+    version: v1.0.1
   dotX-Automation/simple_actionclient:
     type: git
     url: https://github.com/dotX-Automation/simple_actionclient.git
