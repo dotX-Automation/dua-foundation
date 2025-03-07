@@ -278,6 +278,10 @@ RUN . dua-venv/bin/activate && \
   chmod -R g+rw /opt/ros/dua-utils
 WORKDIR /root
 
+# Mark image as complete
+RUN mkdir -p /etc/dua && \
+  echo "armv8-dev" > /etc/dua/target
+
 ENV DEBIAN_FRONTEND=dialog
 
 # Finalize image

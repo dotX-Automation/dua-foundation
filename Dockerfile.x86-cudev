@@ -293,6 +293,10 @@ RUN . dua-venv/bin/activate && \
   chmod -R g+rw /opt/ros/dua-utils
 WORKDIR /root
 
+# Mark image as complete
+RUN mkdir -p /etc/dua && \
+  echo "x86-cudev" > /etc/dua/target
+
 ENV DEBIAN_FRONTEND=dialog
 
 # Finalize image
