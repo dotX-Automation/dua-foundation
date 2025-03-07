@@ -55,7 +55,7 @@ repositories:
   dotX-Automation/params_manager_cpp:
     type: git
     url: https://github.com/dotX-Automation/params_manager_cpp.git
-    version: v1.0.0
+    version: v1.0.1
   dotX-Automation/polynomial_kit:
     type: git
     url: https://github.com/dotX-Automation/polynomial_kit.git
