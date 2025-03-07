@@ -31,7 +31,7 @@ repositories:
   dotX-Automation/dua_node_cpp:
     type: git
     url: https://github.com/dotX-Automation/dua_node_cpp.git
-    version: v1.0.0
+    version: v1.1.0
   dotX-Automation/dua_qos:
     type: git
     url: https://github.com/dotX-Automation/dua_qos.git
@@ -47,7 +47,7 @@ repositories:
   dotX-Automation/dua_tf_server:
     type: git
     url: https://github.com/dotX-Automation/dua_tf_server.git
-    version: v1.0.1
+    version: v1.0.2
   dotX-Automation/dynamic_systems:
     type: git
     url: https://github.com/dotX-Automation/dynamic_systems.git
@@ -67,11 +67,11 @@ repositories:
   dotX-Automation/simple_actionclient:
     type: git
     url: https://github.com/dotX-Automation/simple_actionclient.git
-    version: v1.0.0
+    version: v1.0.1
   dotX-Automation/simple_serviceclient:
     type: git
     url: https://github.com/dotX-Automation/simple_serviceclient.git
-    version: v1.0.0
+    version: v1.0.1
   dotX-Automation/theora_wrappers:
     type: git
     url: https://github.com/dotX-Automation/theora_wrappers.git
