@@ -119,6 +119,11 @@ colcon build \
     -DEigen3_DIR=/usr/local/share/eigen3/cmake \
   --packages-ignore joint_state_publisher_gui vision_msgs_rviz_plugins
 
+# Copy rmw_zenoh configuration files
+mkdir -p /etc/zenoh/rmw
+cp /opt/ros/jazzy/install/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_ROUTER_CONFIG.json5 /etc/zenoh/rmw/DEFAULT_RMW_ZENOH_ROUTER_CONFIG.json5
+cp /opt/ros/jazzy/install/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5 /etc/zenoh/rmw/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5
+
 # Cleanup
 rm -rf build log src
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
