@@ -7,7 +7,7 @@ repositories:
   dotX-Automation/dua_app_management:
     type: git
     url: https://github.com/dotX-Automation/dua_app_management.git
-    version: v1.0.1
+    version: v1.0.2
   dotX-Automation/dua_common_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_common_interfaces.git
@@ -15,7 +15,7 @@ repositories:
   dotX-Automation/dua_geometry_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_geometry_interfaces.git
-    version: v1.1.1
+    version: v1.1.2
   dotX-Automation/dua_hardware_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_hardware_interfaces.git
@@ -31,11 +31,11 @@ repositories:
   dotX-Automation/dua_node_cpp:
     type: git
     url: https://github.com/dotX-Automation/dua_node_cpp.git
-    version: v1.1.1
+    version: v1.1.2
   dotX-Automation/dua_qos:
     type: git
     url: https://github.com/dotX-Automation/dua_qos.git
-    version: v1.0.1
+    version: v1.0.2
   dotX-Automation/dua_rviz_plugins:
     type: git
     url: https://github.com/dotX-Automation/dua_rviz_plugins.git
@@ -51,19 +51,19 @@ repositories:
   dotX-Automation/dynamic_systems:
     type: git
     url: https://github.com/dotX-Automation/dynamic_systems.git
-    version: v1.0.2
+    version: v1.0.3
   dotX-Automation/params_manager_cpp:
     type: git
     url: https://github.com/dotX-Automation/params_manager_cpp.git
-    version: v1.0.2
+    version: v1.0.3
   dotX-Automation/polynomial_kit:
     type: git
     url: https://github.com/dotX-Automation/polynomial_kit.git
-    version: v1.0.2
+    version: v1.0.3
   dotX-Automation/pose_kit:
     type: git
     url: https://github.com/dotX-Automation/pose_kit.git
-    version: v1.0.5
+    version: v1.0.6
   dotX-Automation/simple_actionclient:
     type: git
     url: https://github.com/dotX-Automation/simple_actionclient.git
