@@ -222,6 +222,7 @@ RUN . dua-venv/bin/activate && \
   chgrp -R internal /opt/dds && \
   chmod -R g+rw /opt/dds
 WORKDIR /root
+ENV PATH=/opt/dds/Fast-DDS/src/fastddsgen/scripts:/opt/dds/cyclonedds/install/bin:$PATH
 
 # Install Zenoh
 WORKDIR /opt

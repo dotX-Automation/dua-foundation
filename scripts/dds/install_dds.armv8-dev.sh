@@ -54,6 +54,8 @@ colcon build \
     -DUSE_THIRDPARTY_SHARED_MUTEX=OFF \
     -DSANITIZER=OFF
     # Tests are disabled by default
+cd src/fastddsgen
+./gradlew assemble
 
 # Cleanup
 rm -rf build log
