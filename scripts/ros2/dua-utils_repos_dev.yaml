@@ -55,7 +55,7 @@ repositories:
   dotX-Automation/navsat_converter:
     type: git
     url: https://github.com/dotX-Automation/navsat_converter.git
-    version: v1.0.0
+    version: v1.0.1
   dotX-Automation/params_manager_cpp:
     type: git
     url: https://github.com/dotX-Automation/params_manager_cpp.git
