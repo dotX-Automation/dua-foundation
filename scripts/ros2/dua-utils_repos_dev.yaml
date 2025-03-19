@@ -52,6 +52,10 @@ repositories:
     type: git
     url: https://github.com/dotX-Automation/dynamic_systems.git
     version: v1.0.3
+  dotX-Automation/navsat_converter:
+    type: git
+    url: https://github.com/dotX-Automation/navsat_converter.git
+    version: v1.0.0
   dotX-Automation/params_manager_cpp:
     type: git
     url: https://github.com/dotX-Automation/params_manager_cpp.git
