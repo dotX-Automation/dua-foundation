@@ -31,7 +31,7 @@ repositories:
   dotX-Automation/dua_node_cpp:
     type: git
     url: https://github.com/dotX-Automation/dua_node_cpp.git
-    version: v1.1.2
+    version: v1.1.3
   dotX-Automation/dua_qos:
     type: git
     url: https://github.com/dotX-Automation/dua_qos.git
