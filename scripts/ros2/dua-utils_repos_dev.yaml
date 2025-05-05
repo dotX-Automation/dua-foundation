@@ -1,5 +1,9 @@
 # DUA-UTILS FOR DEVELOPMENT TARGETS #
 repositories:
+  dotX-Automation/camera_calibration:
+    type: git
+    url: https://github.com/dotX-Automation/camera_calibration.git
+    version: v3.0.6
   dotX-Automation/dua_aircraft_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_aircraft_interfaces.git
