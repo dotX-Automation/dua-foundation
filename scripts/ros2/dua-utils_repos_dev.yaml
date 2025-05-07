@@ -23,7 +23,7 @@ repositories:
   dotX-Automation/dua_geometry_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_geometry_interfaces.git
-    version: v1.1.2
+    version: v1.1.3
   dotX-Automation/dua_hardware_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_hardware_interfaces.git
@@ -55,7 +55,7 @@ repositories:
   dotX-Automation/dua_tf_server:
     type: git
     url: https://github.com/dotX-Automation/dua_tf_server.git
-    version: v1.0.5
+    version: v1.0.6
   dotX-Automation/dynamic_systems:
     type: git
     url: https://github.com/dotX-Automation/dynamic_systems.git
@@ -63,7 +63,7 @@ repositories:
   dotX-Automation/navsat_converter:
     type: git
     url: https://github.com/dotX-Automation/navsat_converter.git
-    version: v1.0.2
+    version: v1.0.3
   dotX-Automation/params_manager_cpp:
     type: git
     url: https://github.com/dotX-Automation/params_manager_cpp.git
