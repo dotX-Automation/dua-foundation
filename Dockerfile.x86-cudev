@@ -131,7 +131,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   whois \
   zip \
   zsh \
-  zsh-doc && \
+  zsh-doc \
+  zstd && \
   add-apt-repository universe && \
   apt-get autoremove -y && \
   apt-get autoclean && \
