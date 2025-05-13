@@ -78,6 +78,8 @@ apt-get install -y --no-install-recommends \
 mkdir -p /etc/zenoh/rmw
 cp /opt/ros/$ROS_DISTRO/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_ROUTER_CONFIG.json5 /etc/zenoh/rmw/DEFAULT_RMW_ZENOH_ROUTER_CONFIG.json5
 cp /opt/ros/$ROS_DISTRO/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5 /etc/zenoh/rmw/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5
+chgrp -R internal /etc/zenoh
+chmod -R g+rw /etc/zenoh
 
 # Cleanup
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*

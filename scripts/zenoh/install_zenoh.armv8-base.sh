@@ -56,6 +56,8 @@ chmod a+x /usr/local/bin/zenoh-bridge-dds
 wget -O /usr/local/lib/libzenoh_plugin_dds.so http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-plugin-dds-${ZENOH_VERSION}-aarch64-unknown-linux-gnu-standalone/libzenoh_plugin_dds.so
 wget -O /etc/zenoh/DEFAULT_DDS_CONFIG.json5 http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-plugin-dds-${ZENOH_VERSION}-aarch64-unknown-linux-gnu-standalone/DEFAULT_CONFIG.json5
 
+chgrp -R internal /etc/zenoh
+chmod -R g+rw /etc/zenoh
 ldconfig
 
 # Install Zenoh Python API
