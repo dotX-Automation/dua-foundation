@@ -181,14 +181,14 @@ ENV PATH=/usr/src/tensorrt/bin:/usr/local/cuda:${PATH:-}
 # Configure Git to accept different ownerships for local repository clones
 RUN git config --system --add safe.directory '*'
 
-# Install Java 11
+# Install Java 17
 RUN apt-get update && apt-get install -y --no-install-recommends \
   ant \
-  openjdk-11-jre \
-  openjdk-11-jdk \
-  libvecmath-java && \
+  libvecmath-java \
+  openjdk-17-jdk \
+  openjdk-17-jre && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
-  update-alternatives --set java $(update-alternatives --list java | grep "java-11")
+  update-alternatives --set java $(update-alternatives --list java | grep "java-17")
 
 # Create a Python virtual environment and install packages in it
 WORKDIR /opt
