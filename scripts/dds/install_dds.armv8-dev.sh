@@ -92,4 +92,35 @@ cd ..
 # Cleanup
 rm -rf build
 
+# Clone and build Cyclone DDS C++ bindings
+cd /opt/dds
+git clone --single-branch \
+  --branch "$CYCLONEDDS_VERSION" \
+  https://github.com/eclipse-cyclonedds/cyclonedds-cxx.git
+cd cyclonedds-cxx
+mkdir build install
+cd build
+cmake \
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+  -DCMAKE_INSTALL_PREFIX=/opt/dds/cyclonedds-cxx/install \
+  -DCMAKE_PREFIX_PATH=/opt/dds/cyclonedds/install \
+  -DBUILD_DDSLIB=ON \
+  -DBUILD_IDLLIB=ON \
+  -DBUILD_DOCS=OFF \
+  -DBUILD_TESTING=OFF \
+  -DBUILD_EXAMPLES=OFF \
+  -DENABLE_LEGACY=OFF \
+  -DENABLE_ICEORYX=OFF \
+  -DENABLE_TYPELIB=OFF \
+  -DENABLE_TOPIC_DISCOVERY=ON \
+  -DENABLE_COVERAGE=OFF \
+  -DENABLE_QOS_PROVIDER=ON \
+  ..
+cmake --build . --parallel
+cmake --build . --target install
+cd ..
+
+# Cleanup
+rm -rf build
+
 cd /opt
