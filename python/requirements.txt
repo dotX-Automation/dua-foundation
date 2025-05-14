@@ -13,6 +13,7 @@
 # - EmPy's later versions still appear to be incompatible with Colcon;
 #   for now, it is held at the version reported here.
 # - Keep NumPy below 2 for now, something still isn't compatible with it.
+# - setuptools version is chosen to avoid issues with colcon.
 cerberus
 colcon-argcomplete
 colcon-common-extensions
@@ -46,7 +47,7 @@ pyyaml
 requests
 rosdep
 scipy
-setuptools
+setuptools==75.8.2
 six
 testresources
 toml

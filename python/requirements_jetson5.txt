@@ -15,6 +15,7 @@
 # - empy==3.3.4 is required since colcon is not compatible with newer versions.
 # - matplotlib and NumPy versions, as well as many other packages, are required
 #   for various compatibility issues.
+# - setuptools version is chosen to avoid issues with colcon.
 cerberus
 colcon-argcomplete
 colcon-common-extensions
@@ -54,7 +55,7 @@ pytest-timeout
 python-dateutil
 pyyaml
 requests
-setuptools
+setuptools==75.3.2
 six
 testresources
 toml
