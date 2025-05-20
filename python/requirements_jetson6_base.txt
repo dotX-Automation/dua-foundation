@@ -6,7 +6,7 @@ pandas>=2.0.0  # Data manipulation, no CV dependencies
 pyproj==3.3.0  # Geospatial operations
 
 # Build and packaging tools
-setuptools==75.8.2  # Python packaging
+setuptools==78.1.1  # Python packaging
 wheel>=0.40.0       # Package building
 packaging>=23.0     # Package operations
 pkgconfig>=1.5.5    # Build configuration
