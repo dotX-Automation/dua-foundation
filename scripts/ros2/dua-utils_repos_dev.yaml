@@ -40,6 +40,10 @@ repositories:
     type: git
     url: https://github.com/dotX-Automation/dua_node_cpp.git
     version: v1.1.4
+  dotX-Automation/dua_node_py:
+    type: git
+    url: https://github.com/dotX-Automation/dua_node_py.git
+    version: v1.0.0
   dotX-Automation/dua_qos:
     type: git
     url: https://github.com/dotX-Automation/dua_qos.git
@@ -67,7 +71,11 @@ repositories:
   dotX-Automation/params_manager_cpp:
     type: git
     url: https://github.com/dotX-Automation/params_manager_cpp.git
-    version: v1.0.3
+    version: v1.0.4
+  dotX-Automation/params_manager_py:
+    type: git
+    url: https://github.com/dotX-Automation/params_manager_py.git
+    version: v1.0.0
   dotX-Automation/polynomial_kit:
     type: git
     url: https://github.com/dotX-Automation/polynomial_kit.git
@@ -75,7 +83,7 @@ repositories:
   dotX-Automation/pose_kit:
     type: git
     url: https://github.com/dotX-Automation/pose_kit.git
-    version: v1.0.8
+    version: v1.0.9
   dotX-Automation/simple_actionclient:
     type: git
     url: https://github.com/dotX-Automation/simple_actionclient.git
