@@ -12,8 +12,8 @@ onnxruntime-gpu
 onnxsim
 onnxslim
 pycocotools
+pycuda
 roboflow
 supervision
 tensorflow
-tensorrt
 ultralytics
