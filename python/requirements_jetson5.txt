@@ -43,6 +43,7 @@ packaging
 pkgconfig
 py-cpuinfo
 pybind11-global
+pycuda
 pyserial
 pyros-genmsg
 pytest

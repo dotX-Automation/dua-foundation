@@ -29,6 +29,7 @@ debugpy>=1.6.7  # Debugging
 rich>=13.3.0  # Terminal output
 responses>=0.23.1  # HTTP mocking
 sentry-sdk>=1.32.0  # Error tracking
+pycuda  # GPU computing
 
 # Additional testing tools
 pytest-mock>=3.10.0
