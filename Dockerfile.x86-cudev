@@ -212,7 +212,9 @@ RUN /opt/install_ros2.sh jazzy 82f4cef2e074b6a5a64d699aa7a3b8ba80927c42 && \
   chgrp internal /opt/install_ros2.sh && \
   chmod g+rwx /opt/install_ros2.sh && \
   chgrp -R internal /opt/ros && \
-  chmod -R g+rw /opt/ros
+  chmod -R g+rw /opt/ros && \
+  chgrp -R internal /opt/rust && \
+  chmod -R g+rw /opt/rust
 WORKDIR /root
 
 # Configure default ROS MiddleWare implementation

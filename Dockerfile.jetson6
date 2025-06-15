@@ -361,7 +361,9 @@ RUN . dua-venv/bin/activate && \
   chgrp internal /opt/ros2_repos.yml && \
   chmod g+rw /opt/ros2_repos.yml && \
   chgrp -R internal /opt/ros && \
-  chmod -R g+rw /opt/ros
+  chmod -R g+rw /opt/ros && \
+  chgrp -R internal /opt/rust && \
+  chmod -R g+rw /opt/rust
 WORKDIR /root
 
 # Configure ROS Middleware implementation to use
