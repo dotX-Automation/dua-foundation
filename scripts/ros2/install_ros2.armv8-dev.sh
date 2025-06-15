@@ -30,8 +30,10 @@ if [ -z "$ROS_DISTRO" ]; then
 fi
 
 # Configure ROS 2 repository
-curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu noble main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F\" '{print $4}')
+curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo noble)_all.deb"
+apt install -y /tmp/ros2-apt-source.deb
+rm /tmp/ros2-apt-source.deb
 
 # Install ROS 2 and related components
 apt-get update
@@ -41,6 +43,7 @@ apt-get install -y --no-install-recommends \
   ros-$ROS_DISTRO-ament-lint \
   ros-$ROS_DISTRO-angles \
   ros-$ROS_DISTRO-cv-bridge \
+  ros-$ROS_DISTRO-desktop \
   ros-$ROS_DISTRO-diagnostic-msgs \
   ros-$ROS_DISTRO-diagnostic-updater \
   ros-$ROS_DISTRO-eigen3-cmake-module \
@@ -67,7 +70,6 @@ apt-get install -y --no-install-recommends \
   ros-$ROS_DISTRO-rmw-fastrtps-cpp \
   ros-$ROS_DISTRO-rmw-zenoh-cpp \
   ros-$ROS_DISTRO-robot-state-publisher \
-  ros-$ROS_DISTRO-desktop \
   ros-$ROS_DISTRO-rosidl-generator-dds-idl \
   ros-$ROS_DISTRO-rqt-robot-steering \
   ros-$ROS_DISTRO-vision-msgs \
