@@ -29,6 +29,13 @@ if [ -z "$ROS_DISTRO" ]; then
   exit 1
 fi
 
+# Get the requested rmw_zenoh commit hash
+RMW_ZENOH_COMMIT="${2-}"
+if [ -z "$RMW_ZENOH_COMMIT" ]; then
+  echo "No rmw_zenoh commit hash specified"
+  exit 1
+fi
+
 # Configure ROS 2 repository
 ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F\" '{print $4}')
 curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo noble)_all.deb"
@@ -68,7 +75,6 @@ apt-get install -y --no-install-recommends \
   ros-$ROS_DISTRO-perception-pcl \
   ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
   ros-$ROS_DISTRO-rmw-fastrtps-cpp \
-  ros-$ROS_DISTRO-rmw-zenoh-cpp \
   ros-$ROS_DISTRO-robot-state-publisher \
   ros-$ROS_DISTRO-rosidl-generator-dds-idl \
   ros-$ROS_DISTRO-rqt-robot-steering \
@@ -76,10 +82,25 @@ apt-get install -y --no-install-recommends \
   ros-$ROS_DISTRO-vision-opencv \
   ros-$ROS_DISTRO-xacro
 
+# Build rmw_zenoh from source
+. /opt/ros/$ROS_DISTRO/setup.sh
+cd /opt/ros
+mkdir -p zenoh/src
+cd zenoh/src
+git clone -b $ROS_DISTRO https://github.com/ament/ament_cmake.git
+git clone -b $ROS_DISTRO https://github.com/ros2/rmw_zenoh.git
+cd rmw_zenoh
+git checkout $RMW_ZENOH_COMMIT
+cd /opt/ros/zenoh
+colcon build --merge-install
+printf ". /opt/ros/zenoh/install/setup.bash\n" >> /opt/ros/$ROS_DISTRO/setup.bash
+printf ". /opt/ros/zenoh/install/setup.zsh\n" >> /opt/ros/$ROS_DISTRO/setup.zsh
+printf ". /opt/ros/zenoh/install/setup.sh\n" >> /opt/ros/$ROS_DISTRO/setup.sh
+
 # Install rmw_zenoh sample configuration files
 mkdir -p /etc/zenoh/rmw
-cp /opt/ros/$ROS_DISTRO/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_ROUTER_CONFIG.json5 /etc/zenoh/rmw/DEFAULT_RMW_ZENOH_ROUTER_CONFIG.json5
-cp /opt/ros/$ROS_DISTRO/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5 /etc/zenoh/rmw/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5
+cp /opt/ros/zenoh/install/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_ROUTER_CONFIG.json5 /etc/zenoh/rmw/DEFAULT_RMW_ZENOH_ROUTER_CONFIG.json5
+cp /opt/ros/zenoh/install/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5 /etc/zenoh/rmw/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5
 chgrp -R internal /etc/zenoh
 chmod -R g+rw /etc/zenoh
 

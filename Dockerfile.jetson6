@@ -216,6 +216,19 @@ ENV LANG=en_US.UTF-8
 # Configure CMake system-wide environment to detect our installations first
 ENV CMAKE_PREFIX_PATH=/usr/local
 
+# Install Rust toolchain
+ENV RUSTUP_HOME=/opt/rust
+ENV CARGO_HOME=/opt/rust
+WORKDIR /opt
+COPY scripts/rust/install_rust.sh /opt/install_rust.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_rust.sh 1.85.0 && \
+  chgrp internal /opt/install_rust.sh && \
+  chmod g+rwx /opt/install_rust.sh && \
+  chgrp -R internal /opt/rust && \
+  chmod -R g+rw /opt/rust
+WORKDIR /root
+
 # Build and install Eigen
 WORKDIR /opt
 COPY scripts/eigen/build_eigen.sh /opt/build_eigen.sh
@@ -293,19 +306,6 @@ RUN . /opt/dua-venv/bin/activate && \
 
 # Configure Ultralytics to avoid actively pulling packages
 ENV ULTRALYTICS_UPDATE_CHECK=False
-
-# Install Rust toolchain
-ENV RUSTUP_HOME=/opt/rust
-ENV CARGO_HOME=/opt/rust
-WORKDIR /opt
-COPY scripts/rust/install_rust.sh /opt/install_rust.sh
-RUN . dua-venv/bin/activate && \
-  /opt/install_rust.sh 1.85.0 && \
-  chgrp internal /opt/install_rust.sh && \
-  chmod g+rwx /opt/install_rust.sh && \
-  chgrp -R internal /opt/rust && \
-  chmod -R g+rw /opt/rust
-WORKDIR /root
 
 # Install DDS implementations:
 # - Fast DDS

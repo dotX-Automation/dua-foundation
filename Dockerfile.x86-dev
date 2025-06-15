@@ -141,10 +141,23 @@ ENV LANG=en_US.UTF-8
 # Configure CMake system-wide environment to detect our installations first
 ENV CMAKE_PREFIX_PATH=/usr/local
 
+# Install Rust toolchain
+ENV RUSTUP_HOME=/opt/rust
+ENV CARGO_HOME=/opt/rust
+WORKDIR /opt
+COPY scripts/rust/install_rust.sh /opt/install_rust.sh
+RUN . dua-venv/bin/activate && \
+  /opt/install_rust.sh 1.85.0 && \
+  chgrp internal /opt/install_rust.sh && \
+  chmod g+rwx /opt/install_rust.sh && \
+  chgrp -R internal /opt/rust && \
+  chmod -R g+rw /opt/rust
+WORKDIR /root
+
 # Install ROS 2
 WORKDIR /opt
 COPY scripts/ros2/install_ros2.x86-dev.sh /opt/install_ros2.sh
-RUN /opt/install_ros2.sh jazzy && \
+RUN /opt/install_ros2.sh jazzy 82f4cef2e074b6a5a64d699aa7a3b8ba80927c42 && \
   chgrp internal /opt/install_ros2.sh && \
   chmod g+rwx /opt/install_ros2.sh && \
   chgrp -R internal /opt/ros && \
@@ -199,19 +212,6 @@ RUN . dua-venv/bin/activate && \
   chmod -R g+rw /opt/opencv && \
   chgrp -R internal /opt/opencv_contrib && \
   chmod -R g+rw /opt/opencv_contrib
-WORKDIR /root
-
-# Install Rust toolchain
-ENV RUSTUP_HOME=/opt/rust
-ENV CARGO_HOME=/opt/rust
-WORKDIR /opt
-COPY scripts/rust/install_rust.sh /opt/install_rust.sh
-RUN . dua-venv/bin/activate && \
-  /opt/install_rust.sh 1.85.0 && \
-  chgrp internal /opt/install_rust.sh && \
-  chmod g+rwx /opt/install_rust.sh && \
-  chgrp -R internal /opt/rust && \
-  chmod -R g+rw /opt/rust
 WORKDIR /root
 
 # Install DDS implementations:
