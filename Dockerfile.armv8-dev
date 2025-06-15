@@ -164,8 +164,7 @@ ENV RUSTUP_HOME=/opt/rust
 ENV CARGO_HOME=/opt/rust
 WORKDIR /opt
 COPY scripts/rust/install_rust.sh /opt/install_rust.sh
-RUN . dua-venv/bin/activate && \
-  /opt/install_rust.sh 1.85.0 && \
+RUN /opt/install_rust.sh 1.85.0 && \
   chgrp internal /opt/install_rust.sh && \
   chmod g+rwx /opt/install_rust.sh && \
   chgrp -R internal /opt/rust && \

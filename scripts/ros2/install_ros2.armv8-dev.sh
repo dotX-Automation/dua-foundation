@@ -93,9 +93,10 @@ cd rmw_zenoh
 git checkout $RMW_ZENOH_COMMIT
 cd /opt/ros/zenoh
 colcon build --merge-install
-printf ". /opt/ros/zenoh/install/setup.bash\n" >> /opt/ros/$ROS_DISTRO/setup.bash
-printf ". /opt/ros/zenoh/install/setup.zsh\n" >> /opt/ros/$ROS_DISTRO/setup.zsh
-printf ". /opt/ros/zenoh/install/setup.sh\n" >> /opt/ros/$ROS_DISTRO/setup.sh
+rm -rf build log src
+printf ". /opt/ros/zenoh/install/local_setup.bash\n" >> /opt/ros/$ROS_DISTRO/setup.bash
+printf ". /opt/ros/zenoh/install/local_setup.zsh\n" >> /opt/ros/$ROS_DISTRO/setup.zsh
+printf ". /opt/ros/zenoh/install/local_setup.sh\n" >> /opt/ros/$ROS_DISTRO/setup.sh
 
 # Install rmw_zenoh sample configuration files
 mkdir -p /etc/zenoh/rmw
