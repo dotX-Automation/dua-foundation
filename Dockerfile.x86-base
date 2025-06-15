@@ -198,7 +198,7 @@ ENV CARGO_HOME=/opt/rust
 WORKDIR /opt
 COPY scripts/rust/install_rust.sh /opt/install_rust.sh
 RUN . dua-venv/bin/activate && \
-  /opt/install_rust.sh 1.75.0 && \
+  /opt/install_rust.sh 1.85.0 && \
   chgrp internal /opt/install_rust.sh && \
   chmod g+rwx /opt/install_rust.sh && \
   chgrp -R internal /opt/rust && \
@@ -232,7 +232,7 @@ ENV PATH=/opt/dds/Fast-DDS/src/fastddsgen/scripts:/opt/dds/cyclonedds/install/bi
 WORKDIR /opt
 COPY scripts/zenoh/install_zenoh.x86-base.sh /opt/install_zenoh.sh
 RUN . dua-venv/bin/activate && \
-  /opt/install_zenoh.sh 1.3.2 && \
+  /opt/install_zenoh.sh 1.4.0 && \
   chgrp internal /opt/install_zenoh.sh && \
   chmod g+rwx /opt/install_zenoh.sh && \
   chgrp -R internal /opt/zenoh && \
