@@ -17,7 +17,7 @@ lap>=0.4.0  # Linear Assignment Problem
 onnx>=1.15.0  # Model format
 onnxsim>=0.4.33  # Simplifier
 onnxslim # Pruner
-protobuf==4.25.6  # Protocol buffers
+protobuf==4.25.8  # Protocol buffers
 
 # Video processing
 av>=10.0.0  # PyAV
