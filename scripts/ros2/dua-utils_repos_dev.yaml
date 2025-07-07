@@ -7,7 +7,7 @@ repositories:
   dotX-Automation/dua_aircraft_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_aircraft_interfaces.git
-    version: v1.0.0
+    version: v1.1.0
   dotX-Automation/dua_app_management:
     type: git
     url: https://github.com/dotX-Automation/dua_app_management.git
@@ -27,7 +27,7 @@ repositories:
   dotX-Automation/dua_hardware_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_hardware_interfaces.git
-    version: v1.1.0
+    version: v1.2.0
   dotX-Automation/dua_mission_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_mission_interfaces.git
@@ -35,7 +35,7 @@ repositories:
   dotX-Automation/dua_movement_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_movement_interfaces.git
-    version: v1.0.0
+    version: v1.1.0
   dotX-Automation/dua_node_cpp:
     type: git
     url: https://github.com/dotX-Automation/dua_node_cpp.git
