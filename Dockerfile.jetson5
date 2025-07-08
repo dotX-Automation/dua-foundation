@@ -55,6 +55,21 @@ RUN apt-get update && apt-get remove --purge --auto-remove -y \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
   pip uninstall numpy -y
 
+# Configure Ubuntu 22.04 repositories to download the latest versions of some packages
+# NOTES
+# - This is mostly manually configured, and is due to subsequent builds whose
+#   sources get updated from time to time, raising some version requirements.
+#   The only way to configure this properly is to intervene manually when
+#   something breaks down the line.
+# - Package pin priorities are set to ensure that only selected packages
+#   are installed from the Ubuntu 22.04 repositories, while the rest of the
+#   packages are installed from the Ubuntu 20.04 repositories.
+# - Packages currently handled like this include are:
+# -   libasio-dev (Fast DDS dependency, also in ROS 2 source build)
+RUN echo "deb http://ports.ubuntu.com/ubuntu-ports jammy main universe" | tee /etc/apt/sources.list.d/jammy.list && \
+  printf "Package: *\nPin: release n=jammy\nPin-Priority: 100\n\n" > /etc/apt/preferences.d/jammy && \
+  printf "Package: libasio-dev\nPin: release n=jammy\nPin-Priority: 1001\n\n" >> /etc/apt/preferences.d/jammy
+
 # Install basic utilities, dependencies, and development tools
 # These include:
 # - C/C++ toolchain and debuggers
