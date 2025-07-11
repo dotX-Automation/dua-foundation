@@ -145,6 +145,8 @@ colcon build \
 mkdir -p /etc/zenoh/rmw
 cp /opt/ros/jazzy/install/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_ROUTER_CONFIG.json5 /etc/zenoh/rmw/DEFAULT_RMW_ZENOH_ROUTER_CONFIG.json5
 cp /opt/ros/jazzy/install/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5 /etc/zenoh/rmw/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5
+chgrp -R internal /etc/zenoh
+chmod -R g+rw /etc/zenoh
 
 # Cleanup
 rm -rf build log src
