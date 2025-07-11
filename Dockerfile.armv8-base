@@ -172,6 +172,16 @@ RUN /opt/install_rust.sh 1.85.0 && \
   chmod -R g+rw /opt/rust
 WORKDIR /root
 
+# Install nlohmann/json C++ library
+WORKDIR /opt
+COPY scripts/nlohmann-json/install_nlohmann_json.sh /opt/install_nlohmann_json.sh
+RUN /opt/install_nlohmann_json.sh 3.12.0 && \
+  chgrp internal /opt/install_nlohmann_json.sh && \
+  chmod g+rwx /opt/install_nlohmann_json.sh && \
+  chgrp -R internal /opt/json && \
+  chmod -R g+rw /opt/json
+WORKDIR /root
+
 # Install ROS 2
 WORKDIR /opt
 COPY scripts/ros2/install_ros2.armv8-base.sh /opt/install_ros2.sh
