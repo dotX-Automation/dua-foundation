@@ -27,7 +27,7 @@ JSON_VERSION="${1-}"
 
 # Clone and build library
 git clone --single-branch --depth 1 \
-  --branch "$JSON_VERSION" \
+  --branch "v$JSON_VERSION" \
   https://github.com/nlohmann/json.git \
   /opt/json
 cd /opt/json
