@@ -185,7 +185,7 @@ WORKDIR /root
 # Install ROS 2
 WORKDIR /opt
 COPY scripts/ros2/install_ros2.armv8-base.sh /opt/install_ros2.sh
-RUN /opt/install_ros2.sh jazzy 82f4cef2e074b6a5a64d699aa7a3b8ba80927c42 && \
+RUN /opt/install_ros2.sh jazzy 6fc0d49a93b0d8a440e52c887ecec248dd7bbc49 && \
   chgrp internal /opt/install_ros2.sh && \
   chmod g+rwx /opt/install_ros2.sh && \
   chgrp -R internal /opt/ros && \
