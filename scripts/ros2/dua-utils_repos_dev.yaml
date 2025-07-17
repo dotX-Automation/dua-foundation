@@ -7,7 +7,7 @@ repositories:
   dotX-Automation/dua_aircraft_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_aircraft_interfaces.git
-    version: v1.1.0
+    version: v1.1.1
   dotX-Automation/dua_app_management:
     type: git
     url: https://github.com/dotX-Automation/dua_app_management.git
@@ -31,7 +31,7 @@ repositories:
   dotX-Automation/dua_mission_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_mission_interfaces.git
-    version: v1.0.0
+    version: v1.1.0
   dotX-Automation/dua_movement_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_movement_interfaces.git
@@ -84,6 +84,10 @@ repositories:
     type: git
     url: https://github.com/dotX-Automation/pose_kit.git
     version: v1.0.9
+  dotX-Automation/scan_deskewer:
+    type: git
+    url: https://github.com/dotX-Automation/scan_deskewer.git
+    version: v1.0.0
   dotX-Automation/simple_actionclient:
     type: git
     url: https://github.com/dotX-Automation/simple_actionclient.git
