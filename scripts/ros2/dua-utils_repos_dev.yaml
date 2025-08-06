@@ -87,7 +87,7 @@ repositories:
   dotX-Automation/scan_deskewer:
     type: git
     url: https://github.com/dotX-Automation/scan_deskewer.git
-    version: v1.0.0
+    version: v1.0.1
   dotX-Automation/simple_actionclient:
     type: git
     url: https://github.com/dotX-Automation/simple_actionclient.git
