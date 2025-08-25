@@ -83,11 +83,11 @@ repositories:
   dotX-Automation/simple_actionclient:
     type: git
     url: https://github.com/dotX-Automation/simple_actionclient.git
-    version: v1.0.3
+    version: v1.0.4
   dotX-Automation/simple_serviceclient:
     type: git
     url: https://github.com/dotX-Automation/simple_serviceclient.git
-    version: v1.0.5
+    version: v1.0.6
   dotX-Automation/transitions_ros:
     type: git
     url: https://github.com/dotX-Automation/transitions_ros.git
