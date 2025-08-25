@@ -91,7 +91,7 @@ repositories:
   dotX-Automation/simple_actionclient:
     type: git
     url: https://github.com/dotX-Automation/simple_actionclient.git
-    version: v1.0.2
+    version: v1.0.3
   dotX-Automation/simple_serviceclient:
     type: git
     url: https://github.com/dotX-Automation/simple_serviceclient.git
