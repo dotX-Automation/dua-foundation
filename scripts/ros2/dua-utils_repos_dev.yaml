@@ -1,5 +1,9 @@
 # DUA-UTILS FOR DEVELOPMENT TARGETS #
 repositories:
+  BehaviorTree/BehaviorTree.CPP:
+    type: git
+    url: https://github.com/BehaviorTree/BehaviorTree.CPP.git
+    version: 4.7.0
   dotX-Automation/camera_calibration:
     type: git
     url: https://github.com/dotX-Automation/camera_calibration.git
@@ -12,6 +16,10 @@ repositories:
     type: git
     url: https://github.com/dotX-Automation/dua_app_management.git
     version: v1.0.2
+  dotX-Automation/dua_behaviortree_cpp:
+    type: git
+    url: https://github.com/dotX-Automation/dua_behaviortree_cpp.git
+    version: v1.0.0
   dotX-Automation/dua_common_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_common_interfaces.git

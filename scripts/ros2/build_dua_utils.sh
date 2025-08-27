@@ -22,6 +22,12 @@
 
 set -e
 
+# Install additional dependencies
+apt-get update
+apt-get install -y --no-install-recommends \
+  libzmq3-dev
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
 # Get ROS 2 version as argument
 ROS_DISTRO="${1-}"
 if [ -z "$ROS_DISTRO" ]; then
@@ -50,7 +56,14 @@ fi
 mkdir -p /opt/ros/dua-utils/src
 cd /opt/ros/dua-utils
 vcs import --input $REPOS_FILE src
-colcon build --merge-install
+colcon build --merge-install \
+  --ament-cmake-args \
+    "-DBTCPP_BUILD_TOOLS=OFF" \
+    "-DBTCPP_EXAMPLES=OFF" \
+    "-DBTCPP_GROOT_INTERFACE=ON" \
+    "-DBTCPP_SHARED_LIBS=ON" \
+    "-DBTCPP_SQLITE_LOGGING=ON" \
+    "-DBUILD_TESTING=OFF"
 
 # Cleanup
 rm -rf build log
