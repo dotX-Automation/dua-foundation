@@ -70,7 +70,7 @@ cd build
 cmake \
   -D CMAKE_BUILD_TYPE=RELEASE \
   -D CMAKE_INSTALL_PREFIX=/usr/local \
-  -D CUDA_ARCH_BIN="6.1 7.5 8.6" \
+  -D CUDA_ARCH_BIN="7.5 8.6 8.9 12.0" \
   -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
   -D CUDA_FAST_MATH=OFF \
   -D EIGEN_INCLUDE_PATH=/usr/local/include/eigen3 \
