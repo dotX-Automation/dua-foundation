@@ -29,7 +29,7 @@
 # - The Ubuntu version required by the software to be run on this image.
 # - The Ubuntu version of the CUDA image.
 # Please open an issue if you require a different version.
-FROM --platform=linux/amd64 nvidia/cuda:12.6.2-cudnn-devel-ubuntu24.04
+FROM --platform=linux/amd64 nvidia/cuda:12.6.3-cudnn-devel-ubuntu24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -39,15 +39,6 @@ RUN groupadd -r internal
 # Configure environment variables to expose Nvidia GPUs
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=all
-
-# Configure Nvidia repositories
-# NOTES
-# - This allows to install TensorRT-related packages with the appropriate CUDA
-#   version, since someone had the brilliant idea to put them all into a single
-#   repo.
-RUN echo "Package: libnvinfer* libnvonnxparsers*" > /etc/apt/preferences.d/cuda-repository-pin && \
-  echo "Pin: version *+cuda12.6*" >> /etc/apt/preferences.d/cuda-repository-pin && \
-  echo "Pin-Priority: 1001" >> /etc/apt/preferences.d/cuda-repository-pin
 
 # Install basic utilities, dependencies, and development tools
 # These include:
@@ -145,26 +136,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # - To achieve this, according to
 #   https://docs.nvidia.com/deeplearning/tensorrt/latest/installing-tensorrt/installing.html#debian-installation
 #   apt is the best installation method.
-ENV TENSORRT_VERSION=10.7.0.23-1+cuda12.6
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  libnvinfer-bin=${TENSORRT_VERSION} \
-  libnvinfer-dev=${TENSORRT_VERSION} \
-  libnvinfer-dispatch-dev=${TENSORRT_VERSION} \
-  libnvinfer-headers-dev=${TENSORRT_VERSION} \
-  libnvinfer-headers-plugin-dev=${TENSORRT_VERSION} \
-  libnvinfer-lean-dev=${TENSORRT_VERSION} \
-  libnvinfer-plugin-dev=${TENSORRT_VERSION} \
-  libnvinfer-samples=${TENSORRT_VERSION} \
-  libnvinfer-vc-plugin-dev=${TENSORRT_VERSION} \
-  libnvonnxparsers-dev=${TENSORRT_VERSION} \
-  python3-libnvinfer=${TENSORRT_VERSION} \
-  python3-libnvinfer-dev=${TENSORRT_VERSION} \
-  python3-libnvinfer-dispatch=${TENSORRT_VERSION} \
-  python3-libnvinfer-lean=${TENSORRT_VERSION} \
-  tensorrt=${TENSORRT_VERSION} \
-  tensorrt-dev=${TENSORRT_VERSION} \
-  tensorrt-libs=${TENSORRT_VERSION} && \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+WORKDIR /opt
+COPY scripts/nvidia/install_tensorrt.sh /opt/install_tensorrt.sh
+RUN /opt/install_tensorrt.sh 10.13.2 amd64
+WORKDIR /root
 
 # Add directories to PATH
 # NOTES
