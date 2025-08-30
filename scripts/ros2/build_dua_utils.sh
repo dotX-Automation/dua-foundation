@@ -23,10 +23,10 @@
 set -e
 
 # Install additional dependencies
-apt-get update
-apt-get install -y --no-install-recommends \
+sudo apt-get update
+sudo apt-get install -y --no-install-recommends \
   libzmq3-dev
-rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 
 # Get ROS 2 version as argument
 ROS_DISTRO="${1-}"
