@@ -103,4 +103,4 @@ repositories:
   dotX-Automation/transitions_ros:
     type: git
     url: https://github.com/dotX-Automation/transitions_ros.git
-    version: v1.1.0
+    version: v1.1.1
