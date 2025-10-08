@@ -23,7 +23,7 @@ repositories:
   dotX-Automation/dua_cv_bridge:
     type: git
     url: https://github.com/dotX-Automation/dua_cv_bridge.git
-    version: v1.0.2
+    version: v1.1.1
   dotX-Automation/dua_geometry_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_geometry_interfaces.git
@@ -35,7 +35,7 @@ repositories:
   dotX-Automation/dua_mission_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_mission_interfaces.git
-    version: v1.1.1
+    version: v1.2.0
   dotX-Automation/dua_movement_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_movement_interfaces.git
