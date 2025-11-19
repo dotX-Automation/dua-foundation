@@ -148,6 +148,16 @@ cp /opt/ros/jazzy/install/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_SESSION_C
 chgrp -R internal /etc/zenoh
 chmod -R g+rw /etc/zenoh
 
+# Fix typing issues
+# NOTES:
+# - JetPack 5 comes with Python 3.8, but Jazzy requires typing extensions which
+#   exist only for Python 3.9 and above.
+# - Since we cannot upgrade the system Python unless we want to break the image
+#   and everything it contains, we modify the code to make it compliant with
+#   Python 3.8.
+sed -i '/^from typing import.*Optional/s/import/import List,/' /opt/ros/jazzy/install/lib/python3.8/site-packages/ros2topic/api/__init__.py
+sed -i '165s/\blist\[str\]/List[str]/' /opt/ros/jazzy/install/lib/python3.8/site-packages/ros2topic/api/__init__.py
+
 # Cleanup
 rm -rf build log src
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
