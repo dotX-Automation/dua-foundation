@@ -35,7 +35,7 @@ repositories:
   dotX-Automation/dua_hardware_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_hardware_interfaces.git
-    version: v1.4.0
+    version: v1.5.0
   dotX-Automation/dua_mission_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_mission_interfaces.git
