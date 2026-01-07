@@ -94,6 +94,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libavutil-dev \
   libboost-all-dev \
   libcanberra-gtk* \
+  libceres-dev \
   libdc1394-dev \
   libfaac-dev \
   libgeographic-dev \
