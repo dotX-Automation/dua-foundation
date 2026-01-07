@@ -158,6 +158,16 @@ chmod -R g+rw /etc/zenoh
 sed -i '/^from typing import.*Optional/s/import/import List,/' /opt/ros/jazzy/install/lib/python3.8/site-packages/ros2topic/api/__init__.py
 sed -i '165s/\blist\[str\]/List[str]/' /opt/ros/jazzy/install/lib/python3.8/site-packages/ros2topic/api/__init__.py
 
+# Build and install serial library
+cd /opt
+git clone --single-branch --branch 'main' --depth 1 https://github.com/dotX-Automation/serial.git
+cd serial
+make
+make install
+ldconfig
+cd /opt
+rm -rf serial
+
 # Cleanup
 rm -rf build log src
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*

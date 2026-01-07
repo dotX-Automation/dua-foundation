@@ -28,33 +28,38 @@ set -e
 
 # Get the requested Zenoh version
 ZENOH_VERSION="${1-}"
+ZENOH_ARCH="x86_64-unknown-linux-gnu"
+ZENOH_PICO_ARCH="linux-x64"
 
 mkdir -p /etc/zenoh /opt/zenoh
 
-# Install Zenoh router
-wget -O /usr/local/bin/zenohd http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-${ZENOH_VERSION}-x86_64-unknown-linux-gnu-standalone/zenohd
+# Install standalone Zenoh router, plugins, and sample configuration file
+wget -O /etc/zenoh/DEFAULT_ZENOH_CONFIG.json5 https://raw.githubusercontent.com/eclipse-zenoh/zenoh/refs/tags/${ZENOH_VERSION}/DEFAULT_CONFIG.json5
+wget -O /tmp/zenoh-standalone.zip https://github.com/eclipse-zenoh/zenoh/releases/download/${ZENOH_VERSION}/zenoh-${ZENOH_VERSION}-${ZENOH_ARCH}-standalone.zip
+unzip /tmp/zenoh-standalone.zip -d /tmp
+mv /tmp/zenohd /usr/local/bin/zenohd
+mv /tmp/libzenoh_plugin_rest.so /usr/local/lib/
+mv /tmp/libzenoh_plugin_storage_manager.so /usr/local/lib/
+rm /tmp/zenoh-standalone.zip
 chmod a+x /usr/local/bin/zenohd
 
-# Install zenohd plugins:
-# - REST
-# - Storage manager
-wget -O /usr/local/lib/libzenoh_plugin_rest.so http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-${ZENOH_VERSION}-x86_64-unknown-linux-gnu-standalone/libzenoh_plugin_rest.so
-wget -O /usr/local/lib/libzenoh_plugin_storage_manager.so http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-${ZENOH_VERSION}-x86_64-unknown-linux-gnu-standalone/libzenoh_plugin_storage_manager.so
-
-# Install zenohd sample configuration file
-wget -O /etc/zenoh/DEFAULT_ZENOHD_CONFIG.json5 http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-${ZENOH_VERSION}-x86_64-unknown-linux-gnu-standalone/DEFAULT_CONFIG.json5
+# Install Zenoh DDS Bridge, plugin, and sample configuration file
+wget -O /etc/zenoh/DEFAULT_DDS_CONFIG.json5 https://raw.githubusercontent.com/eclipse-zenoh/zenoh-plugin-dds/refs/tags/${ZENOH_VERSION}/DEFAULT_CONFIG.json5
+wget -O /tmp/zenoh-plugin-dds-standalone.zip https://github.com/eclipse-zenoh/zenoh-plugin-dds/releases/download/${ZENOH_VERSION}/zenoh-plugin-dds-${ZENOH_VERSION}-${ZENOH_ARCH}-standalone.zip
+unzip /tmp/zenoh-plugin-dds-standalone.zip -d /tmp
+mv /tmp/zenoh-bridge-dds /usr/local/bin/zenoh-bridge-dds
+mv /tmp/libzenoh_plugin_dds.so /usr/local/lib/
+rm /tmp/zenoh-plugin-dds-standalone.zip
+chmod a+x /usr/local/bin/zenoh-bridge-dds
 
 # Install Zenoh ROS2DDS Bridge, plugin, and sample configuration file
-wget -O /usr/local/bin/zenoh-bridge-ros2dds http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-plugin-ros2dds-${ZENOH_VERSION}-x86_64-unknown-linux-gnu-standalone/zenoh-bridge-ros2dds
+wget -O /etc/zenoh/DEFAULT_ROS2DDS_CONFIG.json5 https://raw.githubusercontent.com/eclipse-zenoh/zenoh-plugin-ros2dds/refs/tags/${ZENOH_VERSION}/DEFAULT_CONFIG.json5
+wget -O /tmp/zenoh-plugin-ros2dds-standalone.zip https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds/releases/download/${ZENOH_VERSION}/zenoh-plugin-ros2dds-${ZENOH_VERSION}-${ZENOH_ARCH}-standalone.zip
+unzip /tmp/zenoh-plugin-ros2dds-standalone.zip -d /tmp
+mv /tmp/zenoh-bridge-ros2dds /usr/local/bin/zenoh-bridge-ros2dds
+mv /tmp/libzenoh_plugin_ros2dds.so /usr/local/lib/
+rm /tmp/zenoh-plugin-ros2dds-standalone.zip
 chmod a+x /usr/local/bin/zenoh-bridge-ros2dds
-wget -O /usr/local/lib/libzenoh_plugin_ros2dds.so http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-plugin-ros2dds-${ZENOH_VERSION}-x86_64-unknown-linux-gnu-standalone/libzenoh_plugin_ros2dds.so
-wget -O /etc/zenoh/DEFAULT_ROS2DDS_CONFIG.json5 http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-plugin-ros2dds-${ZENOH_VERSION}-x86_64-unknown-linux-gnu-standalone/DEFAULT_CONFIG.json5
-
-# Install Zenoh DDS Bridge, plugin, and sample configuration file
-wget -O /usr/local/bin/zenoh-bridge-dds http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-plugin-dds-${ZENOH_VERSION}-x86_64-unknown-linux-gnu-standalone/zenoh-bridge-dds
-chmod a+x /usr/local/bin/zenoh-bridge-dds
-wget -O /usr/local/lib/libzenoh_plugin_dds.so http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-plugin-dds-${ZENOH_VERSION}-x86_64-unknown-linux-gnu-standalone/libzenoh_plugin_dds.so
-wget -O /etc/zenoh/DEFAULT_DDS_CONFIG.json5 http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-plugin-dds-${ZENOH_VERSION}-x86_64-unknown-linux-gnu-standalone/DEFAULT_CONFIG.json5
 
 chgrp -R internal /etc/zenoh
 chmod -R g+rw /etc/zenoh
@@ -81,10 +86,10 @@ rm -rf /opt/zenoh/zenoh-c/build
 ldconfig
 
 # Install Zenoh-Pico
-wget -O /tmp/libzenohpico.deb http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-pico-${ZENOH_VERSION}-linux-x64-debian/libzenohpico_${ZENOH_VERSION}_amd64.deb
-wget -O /tmp/libzenohpico-dev.deb http://160.80.97.139:8087/Software/DUA/Zenoh/${ZENOH_VERSION}/zenoh-pico-${ZENOH_VERSION}-linux-x64-debian/libzenohpico-dev_${ZENOH_VERSION}_amd64.deb
-dpkg -i /tmp/libzenohpico.deb /tmp/libzenohpico-dev.deb
-rm /tmp/libzenohpico.deb /tmp/libzenohpico-dev.deb
+wget -O /tmp/zenoh-pico.zip https://github.com/eclipse-zenoh/zenoh-pico/releases/download/${ZENOH_VERSION}/zenoh-pico-${ZENOH_VERSION}-${ZENOH_PICO_ARCH}-debian.zip
+unzip /tmp/zenoh-pico.zip -d /tmp
+dpkg -i /tmp/libzenohpico_*.deb /tmp/libzenohpico-dev_*.deb
+rm /tmp/zenoh-pico.zip /tmp/libzenohpico_*.deb /tmp/libzenohpico-dev_*.deb
 ldconfig
 
 # Install Zenoh C++ API

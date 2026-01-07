@@ -106,5 +106,15 @@ cp /opt/ros/zenoh/install/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_SESSION_C
 chgrp -R internal /etc/zenoh
 chmod -R g+rw /etc/zenoh
 
+# Build and install serial library
+cd /opt
+git clone --single-branch --branch 'main' --depth 1 https://github.com/dotX-Automation/serial.git
+cd serial
+make
+make install
+ldconfig
+cd /opt
+rm -rf serial
+
 # Cleanup
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
