@@ -58,7 +58,10 @@ RUN echo "Package: libnvinfer* libnvonnxparsers*" > /etc/apt/preferences.d/cuda-
 # - Boost C++ libraries
 # - System utilities
 # - Zsh shell
+# - MediaMTX
 # Then, add universe repository
+ENV MEDIAMTX_VERSION=v1.15.6
+ENV MEDIAMTX_ARCH=amd64
 RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-utils \
   bind9-dnsutils \
@@ -143,7 +146,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   add-apt-repository universe && \
   apt-get autoremove -y && \
   apt-get autoclean && \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
+  wget -O /tmp/mediamtx.tar.gz https://github.com/bluenviron/mediamtx/releases/download/${MEDIAMTX_VERSION}/mediamtx_${MEDIAMTX_VERSION}_linux_${MEDIAMTX_ARCH}.tar.gz && \
+  tar -xzf /tmp/mediamtx.tar.gz && \
+  mv mediamtx /usr/local/bin/mediamtx && \
+  mv mediamtx.yml /etc/mediamtx.yml && \
+  rm /tmp/mediamtx.tar.gz
 
 # Instal TensorRT with full Python and C++ support
 # NOTES
