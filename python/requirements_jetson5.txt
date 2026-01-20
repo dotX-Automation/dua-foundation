@@ -41,6 +41,7 @@ nunavut
 onnxsim
 onnxslim
 packaging
+pika
 pkgconfig
 py-cpuinfo
 pybind11-global

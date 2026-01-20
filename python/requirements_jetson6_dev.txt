@@ -65,6 +65,7 @@ requests>=2.31.0  # HTTP client
 tqdm>=4.65.0  # Progress bars
 transitions>=0.9.0  # FSM
 gitpython>=3.1.40  # Git operations
+pika  # RabbitMQ client
 
 # Dependencies for pacakges that we have to install manually to avoid conflicts
 defusedxml
