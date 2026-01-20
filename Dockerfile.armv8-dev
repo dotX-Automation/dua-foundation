@@ -185,7 +185,7 @@ WORKDIR /root
 # Install ROS 2
 WORKDIR /opt
 COPY scripts/ros2/install_ros2.armv8-dev.sh /opt/install_ros2.sh
-RUN /opt/install_ros2.sh jazzy 6fc0d49a93b0d8a440e52c887ecec248dd7bbc49 && \
+RUN /opt/install_ros2.sh jazzy 8294968ee233629c8fb223b2a29bb93ccce7480a && \
   chgrp internal /opt/install_ros2.sh && \
   chmod g+rwx /opt/install_ros2.sh && \
   chgrp -R internal /opt/ros && \
@@ -259,7 +259,7 @@ WORKDIR /root
 WORKDIR /opt
 COPY scripts/dds/install_dds.armv8-dev.sh /opt/install_dds.sh
 RUN . dua-venv/bin/activate && \
-  /opt/install_dds.sh 2.14.4 0.10.5 && \
+  /opt/install_dds.sh 2.14.5 0.10.5 && \
   chgrp internal /opt/install_dds.sh && \
   chmod g+rwx /opt/install_dds.sh && \
   chgrp -R internal /opt/dds && \
@@ -271,7 +271,7 @@ ENV PATH=/opt/dds/Fast-DDS/src/fastddsgen/scripts:/opt/dds/cyclonedds/install/bi
 WORKDIR /opt
 COPY scripts/zenoh/install_zenoh.armv8-dev.sh /opt/install_zenoh.sh
 RUN . dua-venv/bin/activate && \
-  /opt/install_zenoh.sh 1.4.0 && \
+  /opt/install_zenoh.sh 1.7.1 && \
   chgrp internal /opt/install_zenoh.sh && \
   chmod g+rwx /opt/install_zenoh.sh && \
   chgrp -R internal /opt/zenoh && \

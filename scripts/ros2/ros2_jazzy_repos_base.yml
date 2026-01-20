@@ -399,4 +399,4 @@ repositories:
   ros2/rmw_zenoh:
     type: git
     url: https://github.com/ros2/rmw_zenoh.git
-    version: 6fc0d49a93b0d8a440e52c887ecec248dd7bbc49
+    version: 8294968ee233629c8fb223b2a29bb93ccce7480a

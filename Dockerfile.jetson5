@@ -307,7 +307,7 @@ ENV ULTRALYTICS_UPDATE_CHECK=False
 WORKDIR /opt
 COPY scripts/dds/install_dds.jetson5.sh /opt/install_dds.sh
 RUN . dua-venv/bin/activate && \
-  /opt/install_dds.sh 2.14.4 0.10.5 && \
+  /opt/install_dds.sh 2.14.5 0.10.5 && \
   chgrp internal /opt/install_dds.sh && \
   chmod g+rwx /opt/install_dds.sh && \
   chgrp -R internal /opt/dds && \
@@ -319,7 +319,7 @@ ENV PATH=/opt/dds/Fast-DDS/src/fastddsgen/scripts:/opt/dds/cyclonedds/install/bi
 WORKDIR /opt
 COPY scripts/zenoh/install_zenoh.jetson5.sh /opt/install_zenoh.sh
 RUN . dua-venv/bin/activate && \
-  /opt/install_zenoh.sh 1.4.0 && \
+  /opt/install_zenoh.sh 1.7.1 && \
   chgrp internal /opt/install_zenoh.sh && \
   chmod g+rwx /opt/install_zenoh.sh && \
   chgrp -R internal /opt/zenoh && \
