@@ -61,6 +61,7 @@ RUN echo "Package: libnvinfer* libnvonnxparsers*" > /etc/apt/preferences.d/cuda-
 # Then, add universe repository
 RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-utils \
+  bind9-dnsutils \
   build-essential \
   ca-certificates \
   ccache \
@@ -82,7 +83,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   gstreamer1.0-pulseaudio \
   gstreamer1.0-tools \
   htop \
+  iperf3 \
   iproute2 \
+  iputils-ping \
   less \
   lcov \
   libasio-dev \
@@ -126,6 +129,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   software-properties-common \
   sshfs \
   sudo \
+  traceroute \
   uncrustify \
   unzip \
   valgrind \

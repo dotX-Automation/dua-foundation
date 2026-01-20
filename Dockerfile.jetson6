@@ -64,6 +64,7 @@ RUN apt-get update && apt-get remove --purge --auto-remove -y \
 # Then, add universe repository
 RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-utils \
+  bind9-dnsutils \
   build-essential \
   ccache \
   cppcheck \
@@ -84,7 +85,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   gstreamer1.0-pulseaudio \
   gstreamer1.0-tools \
   htop \
+  iperf3 \
   iproute2 \
+  iputils-ping \
   less \
   lcov \
   libasio-dev \
@@ -148,6 +151,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   software-properties-common \
   sshfs \
   sudo \
+  traceroute \
   uncrustify \
   unzip \
   v4l-utils \
