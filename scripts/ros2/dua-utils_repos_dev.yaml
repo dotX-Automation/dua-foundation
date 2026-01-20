@@ -3,7 +3,7 @@ repositories:
   BehaviorTree/BehaviorTree.CPP:
     type: git
     url: https://github.com/BehaviorTree/BehaviorTree.CPP.git
-    version: 4.7.0
+    version: 4.8.4
   dotX-Automation/camera_calibration:
     type: git
     url: https://github.com/dotX-Automation/camera_calibration.git
