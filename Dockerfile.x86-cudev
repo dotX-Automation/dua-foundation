@@ -29,7 +29,7 @@
 # - The Ubuntu version required by the software to be run on this image.
 # - The Ubuntu version of the CUDA image.
 # Please open an issue if you require a different version.
-FROM --platform=linux/amd64 nvidia/cuda:12.6.2-cudnn-devel-ubuntu24.04
+FROM --platform=linux/amd64 nvidia/cuda:12.8.1-cudnn-devel-ubuntu24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -46,7 +46,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES=all
 #   version, since someone had the brilliant idea to put them all into a single
 #   repo.
 RUN echo "Package: libnvinfer* libnvonnxparsers*" > /etc/apt/preferences.d/cuda-repository-pin && \
-  echo "Pin: version *+cuda12.6*" >> /etc/apt/preferences.d/cuda-repository-pin && \
+  echo "Pin: version *+cuda12.8*" >> /etc/apt/preferences.d/cuda-repository-pin && \
   echo "Pin-Priority: 1001" >> /etc/apt/preferences.d/cuda-repository-pin
 
 # Install basic utilities, dependencies, and development tools
@@ -158,18 +158,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # - To achieve this, according to
 #   https://docs.nvidia.com/deeplearning/tensorrt/latest/installing-tensorrt/installing.html#debian-installation
 #   apt is the best installation method.
-ENV TENSORRT_VERSION=10.7.0.23-1+cuda12.6
+ENV TENSORRT_VERSION=10.9.0.34-1+cuda12.8
 RUN apt-get update && apt-get install -y --no-install-recommends \
   libnvinfer-bin=${TENSORRT_VERSION} \
   libnvinfer-dev=${TENSORRT_VERSION} \
   libnvinfer-dispatch-dev=${TENSORRT_VERSION} \
+  libnvinfer-dispatch10=${TENSORRT_VERSION} \
   libnvinfer-headers-dev=${TENSORRT_VERSION} \
   libnvinfer-headers-plugin-dev=${TENSORRT_VERSION} \
   libnvinfer-lean-dev=${TENSORRT_VERSION} \
+  libnvinfer-lean10=${TENSORRT_VERSION} \
   libnvinfer-plugin-dev=${TENSORRT_VERSION} \
+  libnvinfer-plugin10=${TENSORRT_VERSION} \
   libnvinfer-samples=${TENSORRT_VERSION} \
   libnvinfer-vc-plugin-dev=${TENSORRT_VERSION} \
+  libnvinfer-vc-plugin10=${TENSORRT_VERSION} \
+  libnvinfer10=${TENSORRT_VERSION} \
   libnvonnxparsers-dev=${TENSORRT_VERSION} \
+  libnvonnxparsers10=${TENSORRT_VERSION} \
   python3-libnvinfer=${TENSORRT_VERSION} \
   python3-libnvinfer-dev=${TENSORRT_VERSION} \
   python3-libnvinfer-dispatch=${TENSORRT_VERSION} \
@@ -259,7 +265,7 @@ RUN --mount=type=bind,source=python/requirements.txt,target=/opt/requirements.tx
   python3 -m venv --system-site-packages dua-venv && \
   . dua-venv/bin/activate && \
   pip install -U -r requirements.txt -r requirements_dev.txt && \
-  pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126 && \
+  pip install torch torchvision && \
   pip install -U -r requirements_ai.txt && \
   chgrp -R internal /opt/dua-venv && \
   chmod -R g+rw /opt/dua-venv
