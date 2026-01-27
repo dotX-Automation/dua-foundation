@@ -36,6 +36,10 @@ repositories:
     type: git
     url: https://github.com/dotX-Automation/dua_hardware_interfaces.git
     version: v1.6.0
+  dotX-Automation/dua_math:
+    type: git
+    url: https://github.com/dotX-Automation/dua_math.git
+    version: v1.0.0
   dotX-Automation/dua_mission_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_mission_interfaces.git
@@ -52,6 +56,10 @@ repositories:
     type: git
     url: https://github.com/dotX-Automation/dua_node_py.git
     version: v1.0.3
+  dotX-Automation/dua_pcl:
+    type: git
+    url: https://github.com/dotX-Automation/dua_pcl.git
+    version: v1.0.0
   dotX-Automation/dua_qos:
     type: git
     url: https://github.com/dotX-Automation/dua_qos.git
