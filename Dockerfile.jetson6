@@ -209,6 +209,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Create a Python virtual environment and install packages in it
 WORKDIR /opt
 RUN --mount=type=bind,source=python/requirements_jetson6_base.txt,target=/opt/requirements_jetson6_base.txt \
+  apt-get update && apt-get remove --purge -y \
+    python3-packaging && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
   python3 -m venv --system-site-packages dua-venv && \
   . dua-venv/bin/activate && \
   pip install -U -r requirements_jetson6_base.txt && \
