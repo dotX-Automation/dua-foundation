@@ -26,7 +26,7 @@ set -e
 sudo apt-get update
 sudo apt-get install -y --no-install-recommends \
   libzmq3-dev
-sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+sudo rm -rf /var/lib/apt/lists/* /var/tmp/*/apt/lists/*
 
 # Get ROS 2 version as argument
 ROS_DISTRO="${1-}"
