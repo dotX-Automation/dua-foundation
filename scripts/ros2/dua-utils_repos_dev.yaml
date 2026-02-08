@@ -19,11 +19,11 @@ repositories:
   dotX-Automation/dua_behaviortree_cpp:
     type: git
     url: https://github.com/dotX-Automation/dua_behaviortree_cpp.git
-    version: v1.1.0
+    version: v1.2.0
   dotX-Automation/dua_common_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_common_interfaces.git
-    version: v1.0.1
+    version: v1.0.2
   dotX-Automation/dua_cv_bridge:
     type: git
     url: https://github.com/dotX-Automation/dua_cv_bridge.git
@@ -43,19 +43,19 @@ repositories:
   dotX-Automation/dua_mission_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_mission_interfaces.git
-    version: v1.2.0
+    version: v1.3.0
   dotX-Automation/dua_movement_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_movement_interfaces.git
-    version: v1.1.2
+    version: v1.2.0
   dotX-Automation/dua_node_cpp:
     type: git
     url: https://github.com/dotX-Automation/dua_node_cpp.git
-    version: v1.1.6
+    version: v1.2.0
   dotX-Automation/dua_node_py:
     type: git
     url: https://github.com/dotX-Automation/dua_node_py.git
-    version: v1.0.3
+    version: v1.1.0
   dotX-Automation/dua_pcl:
     type: git
     url: https://github.com/dotX-Automation/dua_pcl.git
@@ -75,7 +75,7 @@ repositories:
   dotX-Automation/dua_tf_server:
     type: git
     url: https://github.com/dotX-Automation/dua_tf_server.git
-    version: v1.0.7
+    version: v1.0.9
   dotX-Automation/dynamic_systems:
     type: git
     url: https://github.com/dotX-Automation/dynamic_systems.git
@@ -83,7 +83,7 @@ repositories:
   dotX-Automation/navsat_converter:
     type: git
     url: https://github.com/dotX-Automation/navsat_converter.git
-    version: v1.0.9
+    version: v1.1.0
   dotX-Automation/params_manager_cpp:
     type: git
     url: https://github.com/dotX-Automation/params_manager_cpp.git
@@ -103,11 +103,11 @@ repositories:
   dotX-Automation/pose_solver:
     type: git
     url: https://github.com/dotX-Automation/pose_solver.git
-    version: v1.0.1
+    version: v1.1.0
   dotX-Automation/scan_deskewer:
     type: git
     url: https://github.com/dotX-Automation/scan_deskewer.git
-    version: v1.0.1
+    version: v1.1.0
   dotX-Automation/simple_actionclient:
     type: git
     url: https://github.com/dotX-Automation/simple_actionclient.git
@@ -119,8 +119,8 @@ repositories:
   dotX-Automation/targets_converter:
     type: git
     url: https://github.com/dotX-Automation/targets_converter.git
-    version: v1.0.1
+    version: v1.1.0
   dotX-Automation/transitions_ros:
     type: git
     url: https://github.com/dotX-Automation/transitions_ros.git
-    version: v1.1.2
+    version: v1.2.0
