@@ -59,7 +59,7 @@ repositories:
   dotX-Automation/dua_pcl:
     type: git
     url: https://github.com/dotX-Automation/dua_pcl.git
-    version: v1.0.0
+    version: v1.1.0
   dotX-Automation/dua_qos:
     type: git
     url: https://github.com/dotX-Automation/dua_qos.git
