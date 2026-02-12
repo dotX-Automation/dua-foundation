@@ -39,7 +39,7 @@ repositories:
   dotX-Automation/dua_math:
     type: git
     url: https://github.com/dotX-Automation/dua_math.git
-    version: v1.0.1
+    version: v1.2.0
   dotX-Automation/dua_mission_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_mission_interfaces.git
