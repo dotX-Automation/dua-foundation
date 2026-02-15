@@ -3,7 +3,7 @@ repositories:
   BehaviorTree/BehaviorTree.CPP:
     type: git
     url: https://github.com/BehaviorTree/BehaviorTree.CPP.git
-    version: 4.8.4
+    version: 4.9.0
   dotX-Automation/dua_aircraft_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_aircraft_interfaces.git
