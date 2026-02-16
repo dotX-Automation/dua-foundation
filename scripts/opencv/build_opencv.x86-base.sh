@@ -38,6 +38,7 @@ apt-get install -y --no-install-recommends \
   gstreamer1.0-plugins-ugly \
   gstreamer1.0-pulseaudio \
   gstreamer1.0-qt5 \
+  gstreamer1.0-rtsp \
   gstreamer1.0-tools \
   gstreamer1.0-x \
   libgstreamer1.0-0 \

@@ -25,6 +25,11 @@ set -e
 # Get the requested OpenCV version
 OPENCV_VERSION="${1-}"
 
+# NOTE: We do not install GStreamer here because core components are already installed,
+#       and it is better to do so at the beginning and specifying only selected components, to avoid
+#       pulling in OpenCV again from the repositories, which would cause a conflict with the version
+#       we are building here.
+
 # Clone OpenCV and OpenCV contrib
 git clone --single-branch --depth 1 \
   --branch "$OPENCV_VERSION" \

@@ -86,6 +86,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   gnupg2 \
   gstreamer1.0-alsa \
   gstreamer1.0-pulseaudio \
+  gstreamer1.0-rtsp \
   gstreamer1.0-tools \
   htop \
   iperf3 \
