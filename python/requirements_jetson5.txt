@@ -32,7 +32,6 @@ flake8-docstrings
 flake8-import-order
 flake8-quotes
 flask
-hf_xet==1.1.5
 lark-parser
 matplotlib==3.6.0
 mypy
@@ -71,7 +70,6 @@ wheel
 # Python AI libraries
 # NOTES
 # - ultralytics must be installed manually to avoid dependency conflicts.
-gradio
 pycocotools
 seaborn
 supervision
