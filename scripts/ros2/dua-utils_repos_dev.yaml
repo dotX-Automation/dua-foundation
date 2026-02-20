@@ -19,7 +19,7 @@ repositories:
   dotX-Automation/dua_behaviortree_cpp:
     type: git
     url: https://github.com/dotX-Automation/dua_behaviortree_cpp.git
-    version: v1.2.1
+    version: v1.3.0
   dotX-Automation/dua_common_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_common_interfaces.git
