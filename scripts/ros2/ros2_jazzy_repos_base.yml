@@ -340,6 +340,10 @@ repositories:
     type: git
     url: https://github.com/ros2/yaml_cpp_vendor.git
     version: jazzy
+  ros2-rust/rosidl_rust:
+    type: git
+    url: https://github.com/ros2-rust/rosidl_rust.git
+    version: main
 
   # ADDITIONAL PERCEPTION PACKAGES #
   ros-perception/image_pipeline:
