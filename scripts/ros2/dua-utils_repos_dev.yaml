@@ -43,7 +43,7 @@ repositories:
   dotX-Automation/dua_mission_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_mission_interfaces.git
-    version: v1.3.0
+    version: v1.4.0
   dotX-Automation/dua_movement_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_movement_interfaces.git
@@ -67,7 +67,7 @@ repositories:
   dotX-Automation/dua_rviz_plugins:
     type: git
     url: https://github.com/dotX-Automation/dua_rviz_plugins.git
-    version: v1.1.1
+    version: v1.1.2
   dotX-Automation/dua_structures:
     type: git
     url: https://github.com/dotX-Automation/dua_structures.git
@@ -119,7 +119,7 @@ repositories:
   dotX-Automation/targets_converter:
     type: git
     url: https://github.com/dotX-Automation/targets_converter.git
-    version: v1.1.0
+    version: v1.1.1
   dotX-Automation/transitions_ros:
     type: git
     url: https://github.com/dotX-Automation/transitions_ros.git
