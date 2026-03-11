@@ -29,6 +29,7 @@ ENV CMAKE_PREFIX_PATH=/usr/local
 ENV LANG=en_US.UTF-8
 ENV MEDIAMTX_ARCH=amd64
 ENV MEDIAMTX_VERSION=v1.15.6
+ENV PATH=/opt/dds/Fast-DDS/src/fastddsgen/scripts:/opt/dds/cyclonedds/install/bin:$PATH
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 ENV RUSTUP_HOME=/opt/rust
 

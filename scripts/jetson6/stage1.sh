@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Stage 1 script for x86-base.
+# Stage 1 script for jetson6.
 #
 # Roberto Masocco <r.masocco@dotxautomation.com>
 #
@@ -25,12 +25,36 @@ set -e
 # Create internal users group
 groupadd -r internal
 
+# Update CMake version to the latest available at Kitware
+apt-get remove --purge --auto-remove -y cmake
+wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main" | tee /etc/apt/sources.list.d/kitware.list
+apt-get update
+apt-get install -y --no-install-recommends \
+  cmake=3.28.1-0kitware1ubuntu22.04.1 \
+  cmake-data=3.28.1-0kitware1ubuntu22.04.1
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# Purge existing OpenCV installation
+apt-get update
+apt-get remove --purge --auto-remove -y \
+  libopencv* \
+  opencv*
+rm -rf /usr/local/include/opencv4
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
+# Purge existing numpy installation
+apt-get update
+apt-get remove --purge --auto-remove -y \
+  python3-numpy
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+
 # Install basic utilities, dependencies, and development tools
 # These include:
 # - C/C++ toolchain and debuggers
 # - Python 3 interpreter, testers, basic modules and scientific libraries
 # - Linters
-# - OpenCV dependencies for x86 systems
+# - OpenCV dependencies for ARMv8 systems
 # - Boost C++ libraries
 # - System utilities
 # - Zsh shell
@@ -40,9 +64,7 @@ apt-get install -y --no-install-recommends \
   apt-utils \
   bind9-dnsutils \
   build-essential \
-  ca-certificates \
   ccache \
-  cmake \
   cppcheck \
   curl \
   dialog \
@@ -54,10 +76,12 @@ apt-get install -y --no-install-recommends \
   gcc \
   gdb \
   gdbserver \
+  gfortran \
   git \
   gnupg2 \
   gstreamer1.0-alsa \
   gstreamer1.0-pulseaudio \
+  gstreamer1.0-rtsp \
   gstreamer1.0-tools \
   htop \
   iperf3 \
@@ -66,24 +90,43 @@ apt-get install -y --no-install-recommends \
   less \
   lcov \
   libasio-dev \
+  libatlas-base-dev \
   libavcodec-dev \
   libavformat-dev \
   libavutil-dev \
   libboost-all-dev \
+  libcanberra-gtk* \
   libceres-dev \
   libdc1394-dev \
-  libgeographiclib-dev \
+  libfaac-dev \
+  libgeographic-dev \
+  libgflags-dev \
+  libgoogle-glog-dev \
+  libgstreamer1.0-dev \
+  libgstreamer-plugins-base1.0-dev \
   libgtk2.0-dev \
+  libgtk-3-dev \
+  libhdf5-dev \
   libjpeg-dev \
+  libmp3lame-dev \
+  libopenblas-dev \
+  libopencore-amrnb-dev \
   libpng-dev \
+  libprotobuf-dev \
   libssl-dev \
   libswresample-dev \
   libswscale-dev \
-  libtbb-dev \
+  libtheora-dev \
   libtiff-dev \
   libtinyxml2-dev \
+  libv4l-dev \
+  libvorbis-dev \
+  libx264-dev \
+  libxine2-dev \
   libxml2-utils \
+  libxvidcore-dev \
   locales \
+  lsb-core \
   lsb-release \
   lsof \
   make \
@@ -94,13 +137,14 @@ apt-get install -y --no-install-recommends \
   openssh-client \
   openssl \
   pkg-config \
-  python3 \
+  protobuf-compiler \
   python3-argcomplete \
   python3-autopep8 \
   python3-dev \
-  python3-pip \
   python3-pygments \
+  python3-pytest-cov \
   python3-pytest-pylint \
+  python3-vcstools \
   python3-venv \
   shellcheck \
   software-properties-common \
@@ -109,13 +153,15 @@ apt-get install -y --no-install-recommends \
   traceroute \
   uncrustify \
   unzip \
+  v4l-utils \
   valgrind \
   vim \
   wget \
   whois \
   zip \
   zsh \
-  zsh-doc
+  zsh-doc \
+  zstd
 add-apt-repository universe
 apt-get autoremove -y
 apt-get autoclean
@@ -127,6 +173,18 @@ tar -xzf /tmp/mediamtx.tar.gz
 mv mediamtx /usr/local/bin/mediamtx
 mv mediamtx.yml /etc/mediamtx.yml
 rm /tmp/mediamtx.tar.gz
+
+# Install cuSPARSELt from Nvidia repositories, necessary for Ultralytics
+cd /tmp
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/arm64/cuda-keyring_1.1-1_all.deb
+dpkg -i cuda-keyring_1.1-1_all.deb
+apt-get update
+apt-get install -y --no-install-recommends \
+  libcusparselt0 \
+  libcusparselt-dev
+rm cuda-keyring_1.1-1_all.deb
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
+cd /root
 
 # Configure Git to accept different ownerships for local repository clones
 git config --system --add safe.directory '*'
@@ -140,34 +198,3 @@ apt-get install -y --no-install-recommends \
   openjdk-17-jre
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 update-alternatives --set java $(update-alternatives --list java | grep "java-17")
-
-# Configure language and locale
-locale-gen en_US.UTF-8
-update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-
-# Install Rust toolchain
-cd /opt
-/opt/scripts/install_rust.sh x86-base 1.85.0
-chgrp internal /opt/scripts/install_rust.sh
-chmod g+rwx /opt/scripts/install_rust.sh
-chgrp -R internal /opt/rust
-chmod -R g+rw /opt/rust
-cd /root
-
-# Install nlohmann/json C++ library
-cd /opt
-/opt/scripts/install_nlohmann_json.sh x86-base 3.12.0
-chgrp internal /opt/scripts/install_nlohmann_json.sh
-chmod g+rwx /opt/scripts/install_nlohmann_json.sh
-cd /root
-
-# Install ROS 2
-cd /opt
-/opt/scripts/install_ros2.sh x86-base jazzy 8294968ee233629c8fb223b2a29bb93ccce7480a
-chgrp internal /opt/scripts/install_ros2.sh
-chmod g+rwx /opt/scripts/install_ros2.sh
-chgrp -R internal /opt/ros
-chmod -R g+rw /opt/ros
-chgrp -R internal /opt/rust
-chmod -R g+rw /opt/rust
-cd /root

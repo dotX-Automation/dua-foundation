@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Stage 2 script for x86-base.
+# Stage 3 script for jetson6.
 #
 # Roberto Masocco <r.masocco@dotxautomation.com>
 #
@@ -25,19 +25,16 @@ set -e
 # Source new Python virtual environment
 . /opt/dua-venv/bin/activate
 
-# Build and install Eigen
+# Build and install ONNX Runtime
 cd /opt
-/opt/scripts/build_eigen.sh x86-base 3.4.0
-chgrp internal /opt/scripts/build_eigen.sh
-chmod g+rwx /opt/scripts/build_eigen.sh
+/opt/scripts/build_onnxruntime.sh jetson6
+chgrp internal /opt/scripts/build_onnxruntime.sh
+chmod g+rwx /opt/scripts/build_onnxruntime.sh
 cd /root
 
-# Build and install OpenCV
-cd /opt
-/opt/scripts/build_opencv.sh x86-base 4.11.0
-chgrp internal /opt/scripts/build_opencv.sh
-chmod g+rwx /opt/scripts/build_opencv.sh
-cd /root
+# Install Ultralytics
+pip install ultralytics --no-deps
+pip install ultralytics-thop
 
 # Install DDS implementations:
 # - Fast DDS
@@ -52,7 +49,7 @@ cd /root
 #   This is to enable development with standalone DDS implementations while
 #   avoiding to create conflicts with the ROS 2 installation.
 cd /opt
-/opt/scripts/install_dds.sh x86-base 2.14.5 0.10.5
+/opt/scripts/install_dds.sh jetson6 2.14.5 0.10.5
 chgrp internal /opt/scripts/install_dds.sh
 chmod g+rwx /opt/scripts/install_dds.sh
 chgrp -R internal /opt/dds
@@ -61,7 +58,14 @@ cd /root
 
 # Install Zenoh
 cd /opt
-/opt/scripts/install_zenoh.sh x86-base 1.7.1
+/opt/scripts/install_zenoh.sh jetson6 1.7.1
 chgrp internal /opt/scripts/install_zenoh.sh
 chmod g+rwx /opt/scripts/install_zenoh.sh
+cd /root
+
+# Build and install PCL
+cd /opt
+/opt/scripts/build_pcl.sh jetson6 1.14.0
+chgrp internal /opt/scripts/build_pcl.sh
+chmod g+rwx /opt/scripts/build_pcl.sh
 cd /root
