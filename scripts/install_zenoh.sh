@@ -88,8 +88,7 @@ if [ "$BASE_UNIT" = "armv8-base" ]; then
     ..
   cmake --build . --config Release
   cmake --build . --target install
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-c/build
+  cd /opt/zenoh
   ldconfig
 
   # Install Zenoh-Pico
@@ -111,9 +110,12 @@ if [ "$BASE_UNIT" = "armv8-base" ]; then
     -DZENOHCXX_ZENOHPICO=ON \
     ..
   cmake --install .
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-cpp/build
+  cd /opt/zenoh
   ldconfig
+
+  # Cleanup
+  cd /opt
+  rm -rf /opt/zenoh
 elif [ "$BASE_UNIT" = "armv8-dev" ]; then
   echo "Installing Zenoh $ZENOH_VERSION for $BASE_UNIT ..."
 
@@ -170,8 +172,7 @@ elif [ "$BASE_UNIT" = "armv8-dev" ]; then
     ..
   cmake --build . --config Release
   cmake --build . --target install
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-c/build
+  cd /opt/zenoh
   ldconfig
 
   # Install Zenoh-Pico
@@ -193,9 +194,12 @@ elif [ "$BASE_UNIT" = "armv8-dev" ]; then
     -DZENOHCXX_ZENOHPICO=ON \
     ..
   cmake --install .
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-cpp/build
+  cd /opt/zenoh
   ldconfig
+
+  # Cleanup
+  cd /opt
+  rm -rf /opt/zenoh
 elif [ "$BASE_UNIT" = "jetson5" ]; then
   echo "Installing Zenoh $ZENOH_VERSION for $BASE_UNIT ..."
 
@@ -252,8 +256,7 @@ elif [ "$BASE_UNIT" = "jetson5" ]; then
     ..
   cmake --build . --config Release
   cmake --build . --target install
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-c/build
+  cd /opt/zenoh
   ldconfig
 
   # Install Zenoh-Pico
@@ -275,9 +278,12 @@ elif [ "$BASE_UNIT" = "jetson5" ]; then
     -DZENOHCXX_ZENOHPICO=ON \
     ..
   cmake --install .
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-cpp/build
+  cd /opt/zenoh
   ldconfig
+
+  # Cleanup
+  cd /opt
+  rm -rf /opt/zenoh
 elif [ "$BASE_UNIT" = "jetson6" ]; then
   echo "Installing Zenoh $ZENOH_VERSION for $BASE_UNIT ..."
 
@@ -334,8 +340,7 @@ elif [ "$BASE_UNIT" = "jetson6" ]; then
     ..
   cmake --build . --config Release
   cmake --build . --target install
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-c/build
+  cd /opt/zenoh
   ldconfig
 
   # Install Zenoh-Pico
@@ -357,9 +362,12 @@ elif [ "$BASE_UNIT" = "jetson6" ]; then
     -DZENOHCXX_ZENOHPICO=ON \
     ..
   cmake --install .
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-cpp/build
+  cd /opt/zenoh
   ldconfig
+
+  # Cleanup
+  cd /opt
+  rm -rf /opt/zenoh
 elif [ "$BASE_UNIT" = "x86-base" ]; then
   echo "Installing Zenoh $ZENOH_VERSION for $BASE_UNIT ..."
 
@@ -416,8 +424,7 @@ elif [ "$BASE_UNIT" = "x86-base" ]; then
     ..
   cmake --build . --config Release
   cmake --build . --target install
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-c/build
+  cd /opt/zenoh
   ldconfig
 
   # Install Zenoh-Pico
@@ -439,9 +446,12 @@ elif [ "$BASE_UNIT" = "x86-base" ]; then
     -DZENOHCXX_ZENOHPICO=ON \
     ..
   cmake --install .
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-cpp/build
+  cd /opt/zenoh
   ldconfig
+
+  # Cleanup
+  cd /opt
+  rm -rf /opt/zenoh
 elif [ "$BASE_UNIT" = "x86-cudev" ]; then
   echo "Installing Zenoh $ZENOH_VERSION for $BASE_UNIT ..."
 
@@ -498,8 +508,7 @@ elif [ "$BASE_UNIT" = "x86-cudev" ]; then
     ..
   cmake --build . --config Release
   cmake --build . --target install
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-c/build
+  cd /opt/zenoh
   ldconfig
 
   # Install Zenoh-Pico
@@ -521,9 +530,12 @@ elif [ "$BASE_UNIT" = "x86-cudev" ]; then
     -DZENOHCXX_ZENOHPICO=ON \
     ..
   cmake --install .
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-cpp/build
+  cd /opt/zenoh
   ldconfig
+
+  # Cleanup
+  cd /opt
+  rm -rf /opt/zenoh
 elif [ "$BASE_UNIT" = "x86-dev" ]; then
   echo "Installing Zenoh $ZENOH_VERSION for $BASE_UNIT ..."
 
@@ -580,8 +592,7 @@ elif [ "$BASE_UNIT" = "x86-dev" ]; then
     ..
   cmake --build . --config Release
   cmake --build . --target install
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-c/build
+  cd /opt/zenoh
   ldconfig
 
   # Install Zenoh-Pico
@@ -603,9 +614,12 @@ elif [ "$BASE_UNIT" = "x86-dev" ]; then
     -DZENOHCXX_ZENOHPICO=ON \
     ..
   cmake --install .
-  cd ../..
-  rm -rf /opt/zenoh/zenoh-cpp/build
+  cd /opt/zenoh
   ldconfig
+
+  # Cleanup
+  cd /opt
+  rm -rf /opt/zenoh
 else
   echo "ERROR: Invalid base unit '$BASE_UNIT'"
   exit 1

@@ -116,8 +116,8 @@ if [ "$BASE_UNIT" = "armv8-base" ]; then
   ldconfig
 
   # Cleanup
-  cd ..
-  rm -rf build
+  cd /opt
+  rm -rf /opt/opencv /opt/opencv_contrib
 elif [ "$BASE_UNIT" = "armv8-dev" ]; then
   echo "Building OpenCV $OPENCV_VERSION for $BASE_UNIT ..."
 
@@ -206,8 +206,8 @@ elif [ "$BASE_UNIT" = "armv8-dev" ]; then
   ldconfig
 
   # Cleanup
-  cd ..
-  rm -rf build
+  cd /opt
+  rm -rf /opt/opencv /opt/opencv_contrib
 elif [ "$BASE_UNIT" = "jetson5" ]; then
   echo "Building OpenCV $OPENCV_VERSION for $BASE_UNIT ..."
 
@@ -281,8 +281,8 @@ elif [ "$BASE_UNIT" = "jetson5" ]; then
   ldconfig
 
   # Cleanup
-  cd ..
-  rm -rf build
+  cd /opt
+  rm -rf /opt/opencv /opt/opencv_contrib
 elif [ "$BASE_UNIT" = "jetson6" ]; then
   echo "Building OpenCV $OPENCV_VERSION for $BASE_UNIT ..."
 
@@ -356,8 +356,8 @@ elif [ "$BASE_UNIT" = "jetson6" ]; then
   ldconfig
 
   # Cleanup
-  cd ..
-  rm -rf build
+  cd /opt
+  rm -rf /opt/opencv /opt/opencv_contrib
 elif [ "$BASE_UNIT" = "x86-base" ]; then
   echo "Building OpenCV $OPENCV_VERSION for $BASE_UNIT ..."
 
@@ -442,8 +442,8 @@ elif [ "$BASE_UNIT" = "x86-base" ]; then
   ldconfig
 
   # Cleanup
-  cd ..
-  rm -rf build
+  cd /opt
+  rm -rf /opt/opencv /opt/opencv_contrib
 elif [ "$BASE_UNIT" = "x86-cudev" ]; then
   echo "Building OpenCV $OPENCV_VERSION for $BASE_UNIT ..."
 
@@ -539,8 +539,8 @@ elif [ "$BASE_UNIT" = "x86-cudev" ]; then
   ldconfig
 
   # Cleanup
-  cd ..
-  rm -rf build
+  cd /opt
+  rm -rf /opt/opencv /opt/opencv_contrib
 elif [ "$BASE_UNIT" = "x86-dev" ]; then
   echo "Building OpenCV $OPENCV_VERSION for $BASE_UNIT ..."
 
@@ -626,8 +626,8 @@ elif [ "$BASE_UNIT" = "x86-dev" ]; then
   ldconfig
 
   # Cleanup
-  cd ..
-  rm -rf build
+  cd /opt
+  rm -rf /opt/opencv /opt/opencv_contrib
 else
   echo "ERROR: Invalid base unit '$BASE_UNIT'"
   exit 1
