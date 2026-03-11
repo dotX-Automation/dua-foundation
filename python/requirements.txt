@@ -7,6 +7,7 @@
 # - Code linters
 # - Template engines
 # - Scientific libraries
+# - Jupyter notebook metapackage
 # - ROS 2 dependencies
 # - transitions library for FSM software
 # NOTES
@@ -30,6 +31,7 @@ flake8-docstrings
 flake8-import-order
 flake8-quotes
 flask
+jupyter
 numpy<2
 nunavut
 packaging

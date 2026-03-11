@@ -9,6 +9,7 @@
 # - Code coverage testers
 # - Code linters
 # - Template engines
+# - Jupyter notebook metapackage
 # - transitions library for FSM software
 # - ROS 2 source build dependencies
 # NOTES
@@ -32,6 +33,7 @@ flake8-docstrings
 flake8-import-order
 flake8-quotes
 flask
+jupyter
 lark-parser
 matplotlib==3.6.3
 mypy
