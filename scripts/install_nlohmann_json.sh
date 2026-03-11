@@ -22,8 +22,13 @@
 
 set -e
 
+# Get base unit
+BASE_UNIT="${1-}"
+
 # Get requested library version
-JSON_VERSION="${1-}"
+JSON_VERSION="${2-}"
+
+echo "Installing nlohmann/json $JSON_VERSION for $BASE_UNIT ..."
 
 # Clone and build library
 git clone --single-branch --depth 1 \
