@@ -22,8 +22,13 @@
 
 set -e
 
+# Get base unit
+BASE_UNIT="${1-}"
+
 # Get requested Eigen version
-EIGEN_VERSION="${1-}"
+EIGEN_VERSION="${2-}"
+
+echo "Installing Eigen $EIGEN_VERSION for $BASE_UNIT ..."
 
 # Clone and build Eigen
 git clone --single-branch --depth 1 \

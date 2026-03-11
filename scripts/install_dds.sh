@@ -22,11 +22,16 @@
 
 set -e
 
+# Get base unit
+BASE_UNIT="${1-}"
+
 # Get the requested Fast DDS version
-FASTDDS_VERSION="${1-}"
+FASTDDS_VERSION="${2-}"
 
 # Get the requested Cyclone DDS version
-CYCLONEDDS_VERSION="${2-}"
+CYCLONEDDS_VERSION="${3-}"
+
+echo "Installing Fast DDS $FASTDDS_VERSION, Cyclone DDS $CYCLONEDDS_VERSION for $BASE_UNIT ..."
 
 mkdir /opt/dds
 cd /opt/dds

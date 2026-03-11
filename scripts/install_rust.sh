@@ -27,8 +27,13 @@
 
 set -e
 
+# Get base unit
+BASE_UNIT="${1-}"
+
 # Get the desired Rust version
-RUST_DEFAULT_VERSION="${1-}"
+RUST_DEFAULT_VERSION="${2-}"
+
+echo "Installing Rust $RUST_DEFAULT_VERSION for $BASE_UNIT ..."
 
 # Install Rust toolchain
 curl https://sh.rustup.rs -sSf | sh -s -- -y --no-modify-path
@@ -40,5 +45,5 @@ $RUSTUP_HOME/bin/rustup default $RUST_DEFAULT_VERSION
 # Symlink all executables
 for f in $RUSTUP_HOME/bin/*; do
   echo "Symlinking $(basename $f) to /usr/local/bin/$(basename $f) ..."
-  ln -s $f /usr/local/bin/$(basename $f)
+  ln -s $f "/usr/local/bin/$(basename $f)"
 done
