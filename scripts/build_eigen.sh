@@ -57,4 +57,4 @@ fi
 
 # Cleanup
 cd ..
-rm -rf build
+rm -rf /opt/eigen
