@@ -18,9 +18,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# BUILD THIS WITH:
-# --network host
-
 # Start from an amd64 Ubuntu 24.04 image
 FROM --platform=linux/amd64 ubuntu:24.04
 
