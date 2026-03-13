@@ -32,7 +32,7 @@ set -e
 BASE_UNIT="${1-}"
 
 # Get repos file
-REPOS_FILE="{$2-}"
+REPOS_FILE="${2-}"
 if [ -z "$REPOS_FILE" ]; then
   echo "Usage: $0 <repos file>"
   exit 1
