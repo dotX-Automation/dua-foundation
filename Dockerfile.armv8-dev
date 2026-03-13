@@ -23,277 +23,44 @@ FROM --platform=linux/arm64/v8 ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Create internal users group
-RUN groupadd -r internal
-
-# Install basic utilities, dependencies, and development tools
-# These include:
-# - C/C++ toolchain and debuggers
-# - Python 3 interpreter, testers, basic modules and scientific libraries
-# - Linters
-# - OpenCV dependencies for x86 systems
-# - Boost C++ libraries
-# - System utilities
-# - Zsh shell
-# - MediaMTX
-# Then, add universe repository
-ENV MEDIAMTX_VERSION=v1.15.6
-ENV MEDIAMTX_ARCH=arm64
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  apt-utils \
-  bind9-dnsutils \
-  build-essential \
-  ca-certificates \
-  ccache \
-  cmake \
-  cppcheck \
-  curl \
-  dialog \
-  dirmngr \
-  dmidecode \
-  file \
-  fuse3 \
-  g++ \
-  gcc \
-  gdb \
-  gdbserver \
-  git \
-  gnupg2 \
-  gstreamer1.0-alsa \
-  gstreamer1.0-pulseaudio \
-  gstreamer1.0-tools \
-  htop \
-  iperf3 \
-  iproute2 \
-  iputils-ping \
-  less \
-  lcov \
-  libasio-dev \
-  libatlas-base-dev \
-  libavcodec-dev \
-  libavformat-dev \
-  libavutil-dev \
-  libblas-dev \
-  libboost-all-dev \
-  libcanberra-gtk* \
-  libceres-dev \
-  libdc1394-dev \
-  libfaac-dev \
-  libgflags-dev \
-  libgeographiclib-dev \
-  libgstreamer1.0-dev \
-  libgstreamer-plugins-base1.0-dev \
-  libgtk2.0-dev \
-  libgtk-3-dev \
-  libhdf5-dev \
-  libjpeg-dev \
-  liblapack-dev \
-  libmp3lame-dev \
-  libopenblas-dev \
-  libopencore-amrnb-dev \
-  libpng-dev \
-  libprotobuf-dev \
-  libssl-dev \
-  libswresample-dev \
-  libswscale-dev \
-  libtheora-dev \
-  libtiff-dev \
-  libtinyxml2-dev \
-  libv4l-dev \
-  libvorbis-dev \
-  libx264-dev \
-  libxml2-utils \
-  libxvidcore-dev \
-  locales \
-  lsb-release \
-  lsof \
-  make \
-  minicom \
-  nano \
-  nfs-common \
-  ninja-build \
-  openssh-client \
-  openssl \
-  pkg-config \
-  python3 \
-  python3-argcomplete \
-  python3-autopep8 \
-  python3-dev \
-  python3-pip \
-  python3-pygments \
-  python3-pytest-pylint \
-  python3-venv \
-  shellcheck \
-  software-properties-common \
-  sshfs \
-  sudo \
-  traceroute \
-  uncrustify \
-  unzip \
-  v4l-utils \
-  valgrind \
-  vim \
-  wget \
-  whois \
-  zip \
-  zsh \
-  zsh-doc \
-  zstd && \
-  add-apt-repository universe && \
-  apt-get autoremove -y && \
-  apt-get autoclean && \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
-  wget -O /tmp/mediamtx.tar.gz https://github.com/bluenviron/mediamtx/releases/download/${MEDIAMTX_VERSION}/mediamtx_${MEDIAMTX_VERSION}_linux_${MEDIAMTX_ARCH}.tar.gz && \
-  tar -xzf /tmp/mediamtx.tar.gz && \
-  mv mediamtx /usr/local/bin/mediamtx && \
-  mv mediamtx.yml /etc/mediamtx.yml && \
-  rm /tmp/mediamtx.tar.gz
-
-# Configure Git to accept different ownerships for local repository clones
-RUN git config --system --add safe.directory '*'
-
-# Install Java 17
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  ant \
-  libvecmath-java \
-  openjdk-17-jdk \
-  openjdk-17-jre && \
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/* && \
-  update-alternatives --set java $(update-alternatives --list java | grep "java-17")
-
-# Configure language and locale
-RUN locale-gen en_US.UTF-8 && \
-  update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-ENV LANG=en_US.UTF-8
-
-# Configure CMake system-wide environment to detect our installations first
-ENV CMAKE_PREFIX_PATH=/usr/local
-
-# Install Rust toolchain
-ENV RUSTUP_HOME=/opt/rust
+# Configure environment
 ENV CARGO_HOME=/opt/rust
-WORKDIR /opt
-COPY scripts/rust/install_rust.sh /opt/install_rust.sh
-RUN /opt/install_rust.sh 1.85.0 && \
-  chgrp internal /opt/install_rust.sh && \
-  chmod g+rwx /opt/install_rust.sh && \
-  chgrp -R internal /opt/rust && \
-  chmod -R g+rw /opt/rust
-WORKDIR /root
-
-# Install nlohmann/json C++ library
-WORKDIR /opt
-COPY scripts/nlohmann-json/install_nlohmann_json.sh /opt/install_nlohmann_json.sh
-RUN /opt/install_nlohmann_json.sh 3.12.0 && \
-  chgrp internal /opt/install_nlohmann_json.sh && \
-  chmod g+rwx /opt/install_nlohmann_json.sh && \
-  chgrp -R internal /opt/json && \
-  chmod -R g+rw /opt/json
-WORKDIR /root
-
-# Install ROS 2
-WORKDIR /opt
-COPY scripts/ros2/install_ros2.armv8-dev.sh /opt/install_ros2.sh
-RUN /opt/install_ros2.sh jazzy 8294968ee233629c8fb223b2a29bb93ccce7480a && \
-  chgrp internal /opt/install_ros2.sh && \
-  chmod g+rwx /opt/install_ros2.sh && \
-  chgrp -R internal /opt/ros && \
-  chmod -R g+rw /opt/ros && \
-  chgrp -R internal /opt/rust && \
-  chmod -R g+rw /opt/rust
-WORKDIR /root
-
-# Configure default ROS MiddleWare implementation
+ENV CMAKE_PREFIX_PATH=/usr/local
+ENV LANG=en_US.UTF-8
+ENV MEDIAMTX_ARCH=arm64
+ENV MEDIAMTX_VERSION=v1.15.6
+ENV PATH=/opt/dds/Fast-DDS/src/fastddsgen/scripts:/opt/dds/cyclonedds/install/bin:$PATH
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+ENV RUSTUP_HOME=/opt/rust
 
-# Install Gazebo
-WORKDIR /opt
-COPY scripts/ros2/install_gazebo.armv8-dev.sh /opt/install_gazebo.sh
-RUN /opt/install_gazebo.sh harmonic jazzy && \
-  chgrp internal /opt/install_gazebo.sh && \
-  chmod g+rwx /opt/install_gazebo.sh
-WORKDIR /root
+# Copy setup files
+COPY scripts/armv8-dev /opt/scripts
+
+# Execute first stage
+RUN /opt/scripts/stage1.sh
 
 # Create a Python virtual environment and install packages in it
-WORKDIR /opt
-RUN --mount=type=bind,source=python/requirements.txt,target=/opt/requirements.txt --mount=type=bind,source=python/requirements_dev.txt,target=/opt/requirements_dev.txt \
-  python3 -m venv --system-site-packages dua-venv && \
-  . dua-venv/bin/activate && \
-  pip install -U -r requirements.txt -r requirements_dev.txt && \
+RUN --mount=type=bind,source=scripts/python/requirements.txt,target=/opt/requirements.txt --mount=type=bind,source=scripts/python/requirements_dev.txt,target=/opt/requirements_dev.txt \
+  python3 -m venv --system-site-packages /opt/dua-venv && \
+  . /opt/dua-venv/bin/activate && \
+  pip install -U -r /opt/requirements.txt -r /opt/requirements_dev.txt && \
   chgrp -R internal /opt/dua-venv && \
   chmod -R g+rw /opt/dua-venv
-WORKDIR /root
 
 # Ensure that the Python environment is correctly sourced
 # System path is the output of:
 # python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
 ENV PYTHONPATH=/opt/dua-venv/lib/python3.12/site-packages:/usr/lib/python3/dist-packages
 
-# Build and install Eigen
-WORKDIR /opt
-COPY scripts/eigen/build_eigen.sh /opt/build_eigen.sh
-RUN . dua-venv/bin/activate && \
-  /opt/build_eigen.sh 3.4.0 && \
-  chgrp internal /opt/build_eigen.sh && \
-  chmod g+rwx /opt/build_eigen.sh && \
-  chgrp -R internal /opt/eigen && \
-  chmod -R g+rw /opt/eigen
-WORKDIR /root
-
-# Build and install OpenCV
-WORKDIR /opt
-COPY scripts/opencv/build_opencv.armv8-dev.sh /opt/build_opencv.sh
-RUN . dua-venv/bin/activate && \
-  /opt/build_opencv.sh 4.11.0 && \
-  chgrp internal /opt/build_opencv.sh && \
-  chmod g+rwx /opt/build_opencv.sh && \
-  chgrp -R internal /opt/opencv && \
-  chmod -R g+rw /opt/opencv && \
-  chgrp -R internal /opt/opencv_contrib && \
-  chmod -R g+rw /opt/opencv_contrib
-WORKDIR /root
-
-# Install DDS implementations:
-# - Fast DDS
-# - Cyclone DDS
-# NOTES
-# - Only C/C++ libraries and support is installed.
-# - The versions are fixed to the closest ones supported by ROS 2 Jazzy (below).
-# - None of these installations goes to system paths, they remain confined
-#   within subdirectories of /opt/dds; see the scripts for details.
-#   In case you would like to use these libraries in your projects, you
-#   should configure CMake or whatever you use accordingly.
-#   This is to enable development with standalone DDS implementations while
-#   avoiding to create conflicts with the ROS 2 installation.
-WORKDIR /opt
-COPY scripts/dds/install_dds.armv8-dev.sh /opt/install_dds.sh
-RUN . dua-venv/bin/activate && \
-  /opt/install_dds.sh 2.14.5 0.10.5 && \
-  chgrp internal /opt/install_dds.sh && \
-  chmod g+rwx /opt/install_dds.sh && \
-  chgrp -R internal /opt/dds && \
-  chmod -R g+rw /opt/dds
-WORKDIR /root
-ENV PATH=/opt/dds/Fast-DDS/src/fastddsgen/scripts:/opt/dds/cyclonedds/install/bin:$PATH
-
-# Install Zenoh
-WORKDIR /opt
-COPY scripts/zenoh/install_zenoh.armv8-dev.sh /opt/install_zenoh.sh
-RUN . dua-venv/bin/activate && \
-  /opt/install_zenoh.sh 1.7.1 && \
-  chgrp internal /opt/install_zenoh.sh && \
-  chmod g+rwx /opt/install_zenoh.sh && \
-  chgrp -R internal /opt/zenoh && \
-  chmod -R g+rw /opt/zenoh
-WORKDIR /root
+# Execute second stage
+RUN /opt/scripts/stage2.sh
 
 # Build and install dua-utils
 # The ARG allows us to break cache and rebuild from here upon each new version
 ARG DUA_UTILS_VERSION=20260308-1500
-WORKDIR /opt
-COPY scripts/ros2/build_dua_utils.sh /opt/build_dua_utils.sh
-COPY scripts/ros2/dua-utils_repos_dev.yaml /opt/dua-utils_repos_dev.yaml
-RUN . dua-venv/bin/activate && \
+COPY scripts/build_dua_utils.sh /opt/build_dua_utils.sh
+COPY scripts/dua-utils_repos_dev.yaml /opt/dua-utils_repos_dev.yaml
+RUN . /opt/dua-venv/bin/activate && \
   /opt/build_dua_utils.sh jazzy /opt/dua-utils_repos_dev.yaml && \
   chgrp internal /opt/build_dua_utils.sh && \
   chmod g+rwx /opt/build_dua_utils.sh && \
@@ -301,7 +68,6 @@ RUN . dua-venv/bin/activate && \
   chmod g+rw /opt/dua-utils_repos_dev.yaml && \
   chgrp -R internal /opt/ros/dua-utils && \
   chmod -R g+rw /opt/ros/dua-utils
-WORKDIR /root
 
 # Mark image as complete
 RUN mkdir -p /etc/dua && \
