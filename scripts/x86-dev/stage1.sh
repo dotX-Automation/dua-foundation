@@ -177,5 +177,5 @@ cd /root
 cd /opt
 /opt/scripts/install_gazebo.sh x86-dev harmonic jazzy
 chgrp internal /opt/scripts/install_gazebo.sh
-chmod g+rwx /opt/install_gazebo.sh
+chmod g+rwx /opt/scripts/install_gazebo.sh
 cd /root
