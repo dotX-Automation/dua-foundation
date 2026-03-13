@@ -124,6 +124,7 @@ if [ "$BASE_UNIT" = "jetson6" ]; then
       -DPCL_DIR=/usr/local/share/pcl-1.14 \
       -DEigen3_DIR=/usr/local/share/eigen3/cmake \
     --packages-ignore joint_state_publisher_gui vision_msgs_rviz_plugins
+  rm -rf build log src
 
   # Copy rmw_zenoh configuration files
   mkdir -p /etc/zenoh/rmw
@@ -143,7 +144,6 @@ if [ "$BASE_UNIT" = "jetson6" ]; then
   rm -rf serial
 
   # Cleanup
-  rm -rf build log src
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 else
   echo "ERROR: Invalid base unit '$BASE_UNIT'"
