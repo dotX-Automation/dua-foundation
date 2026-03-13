@@ -18,9 +18,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# BUILD THIS WITH:
-# --network host
-
 # Start from an Nvidia CUDA+cuDNN image based on Ubuntu 24.04
 # The correct version of the CUDA image must be chosen according to
 # the following criteria, up to what constitutes an educated guess.
