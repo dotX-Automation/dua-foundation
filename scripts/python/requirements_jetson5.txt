@@ -39,8 +39,6 @@ matplotlib==3.6.3
 mypy
 numpy==1.23.5
 nunavut
-onnxsim
-onnxslim
 packaging
 pika
 pkgconfig
