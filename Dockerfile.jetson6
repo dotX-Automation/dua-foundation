@@ -84,7 +84,7 @@ RUN --mount=type=bind,source=scripts/python/requirements_jetson6_dev.txt,target=
 RUN /opt/scripts/stage3.sh
 
 # Build and install ROS 2
-COPY scripts/ros2_jazzy_repos_base.yml /opt/ros2_repos.yml
+COPY scripts/ros2/ros2_jazzy_repos_base.yml /opt/ros2_repos.yml
 RUN . /opt/dua-venv/bin/activate && \
   /opt/scripts/build_ros2.sh jetson6 /opt/ros2_repos.yml && \
   chgrp internal /opt/scripts/build_ros2.sh && \
@@ -99,8 +99,8 @@ RUN . /opt/dua-venv/bin/activate && \
 # Build and install dua-utils
 # The ARG allows us to break cache and rebuild from here upon each new version
 ARG DUA_UTILS_VERSION=20260316-1737
-COPY scripts/build_dua_utils.sh /opt/build_dua_utils.sh
-COPY scripts/dua-utils_repos_base.yaml /opt/dua-utils_repos_base.yaml
+COPY scripts/ros2/build_dua_utils.sh /opt/build_dua_utils.sh
+COPY scripts/ros2/dua-utils_repos_base.yaml /opt/dua-utils_repos_base.yaml
 RUN . /opt/dua-venv/bin/activate && \
   /opt/build_dua_utils.sh jazzy /opt/dua-utils_repos_base.yaml && \
   chgrp internal /opt/build_dua_utils.sh && \
