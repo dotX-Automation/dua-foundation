@@ -85,6 +85,7 @@ if [ "$BASE_UNIT" = "armv8-dev" ]; then
     ros-$ROS_DISTRO-robot-state-publisher \
     ros-$ROS_DISTRO-rosidl-generator-dds-idl \
     ros-$ROS_DISTRO-rqt-robot-steering \
+    ros-$ROS_DISTRO-topic-tools \
     ros-$ROS_DISTRO-vision-msgs \
     ros-$ROS_DISTRO-vision-opencv \
     ros-$ROS_DISTRO-xacro

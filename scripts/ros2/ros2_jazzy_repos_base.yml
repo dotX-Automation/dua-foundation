@@ -80,6 +80,10 @@ repositories:
     type: git
     url: https://github.com/ros-tooling/libstatistics_collector.git
     version: jazzy
+  ros-tooling/topic_tools:
+    type: git
+    url: https://github.com/ros-tooling/topic_tools.git
+    version: jazzy
   ros/class_loader:
     type: git
     url: https://github.com/ros/class_loader.git
