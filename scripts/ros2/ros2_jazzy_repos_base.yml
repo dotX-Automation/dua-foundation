@@ -56,6 +56,10 @@ repositories:
     type: git
     url: https://github.com/osrf/osrf_testing_tools_cpp.git
     version: jazzy
+  ros-geographic-info/geographic_info:
+    type: git
+    url: https://github.com/ros-geographic-info/geographic_info.git
+    version: jazzy
   ros-perception/image_common:
     type: git
     url: https://github.com/ros-perception/image_common.git
@@ -88,6 +92,10 @@ repositories:
     type: git
     url: https://github.com/ros/class_loader.git
     version: jazzy
+  ros/diagnostics:
+    type: git
+    url: https://github.com/ros/diagnostics.git
+    version: ros2-jazzy
   ros/filters:
     type: git
     url: https://github.com/ros/filters.git
@@ -394,14 +402,6 @@ repositories:
     type: git
     url: https://github.com/fmrico/yaets.git
     version: jazzy
-  ros/diagnostics:
-    type: git
-    url: https://github.com/ros/diagnostics.git
-    version: ros2-jazzy
-  ros-geographic-info/geographic_info:
-    type: git
-    url: https://github.com/ros-geographic-info/geographic_info.git
-    version: ros2
   swri-robotics/gps_umd:
     type: git
     url: https://github.com/swri-robotics/gps_umd.git
