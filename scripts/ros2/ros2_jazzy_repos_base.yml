@@ -390,6 +390,10 @@ repositories:
     version: release/jazzy/xacro
 
   # ADDITIONAL LIBRARIES AND DEPENDENCIES #
+  fmrico/yaets:
+    type: git
+    url: https://github.com/fmrico/yaets.git
+    version: jazzy
   ros/diagnostics:
     type: git
     url: https://github.com/ros/diagnostics.git

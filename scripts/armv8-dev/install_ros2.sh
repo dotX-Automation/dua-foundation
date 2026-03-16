@@ -88,7 +88,8 @@ if [ "$BASE_UNIT" = "armv8-dev" ]; then
     ros-$ROS_DISTRO-topic-tools \
     ros-$ROS_DISTRO-vision-msgs \
     ros-$ROS_DISTRO-vision-opencv \
-    ros-$ROS_DISTRO-xacro
+    ros-$ROS_DISTRO-xacro \
+    ros-$ROS_DISTRO-yaets
 
   # Build rmw_zenoh from source
   . /opt/ros/$ROS_DISTRO/setup.sh
