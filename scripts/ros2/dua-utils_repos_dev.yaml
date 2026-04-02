@@ -119,7 +119,7 @@ repositories:
   dotX-Automation/targets_converter:
     type: git
     url: https://github.com/dotX-Automation/targets_converter.git
-    version: v1.1.1
+    version: v1.1.2
   dotX-Automation/transitions_ros:
     type: git
     url: https://github.com/dotX-Automation/transitions_ros.git
