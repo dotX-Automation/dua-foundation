@@ -18,10 +18,11 @@ python-dateutil>=2.8.2    # Date utilities
 typing-extensions>=4.5.0  # Type hints
 
 # Testing frameworks - needed for build processes
+coverage>=7.2.0
+gcovr
 pytest>=7.0.0
 pytest-cov>=4.0.0
 pytest-pylint>=0.21.0
-coverage>=7.2.0
 testresources>=2.0.1
 
 # Code quality - essential subset
