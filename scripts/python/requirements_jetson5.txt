@@ -33,7 +33,6 @@ flake8-docstrings
 flake8-import-order
 flake8-quotes
 flask
-gcovr
 jupyter
 lark-parser
 matplotlib==3.6.3
