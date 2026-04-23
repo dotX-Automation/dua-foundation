@@ -76,6 +76,10 @@ repositories:
     type: git
     url: https://github.com/dotX-Automation/dua_tf_server.git
     version: v1.0.9
+  dotX-Automation/dua_uxv_interfaces:
+    type: git
+    url: https://github.com/dotX-Automation/dua_uxv_interfaces.git
+    version: v1.0.0
   dotX-Automation/dynamic_systems:
     type: git
     url: https://github.com/dotX-Automation/dynamic_systems.git
