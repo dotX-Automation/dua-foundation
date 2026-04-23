@@ -78,6 +78,7 @@ if [ "$BASE_UNIT" = "armv8-base" ]; then
     ros-$ROS_DISTRO-launch-testing-ros \
     ros-$ROS_DISTRO-perception \
     ros-$ROS_DISTRO-perception-pcl \
+    ros-$ROS_DISTRO-rclpy-message-converter \
     ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
     ros-$ROS_DISTRO-rmw-fastrtps-cpp \
     ros-$ROS_DISTRO-robot-state-publisher \
