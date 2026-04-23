@@ -398,6 +398,10 @@ repositories:
     version: release/jazzy/xacro
 
   # ADDITIONAL LIBRARIES AND DEPENDENCIES #
+  DFKI-NI/rospy_message_converter:
+    type: git
+    url: https://github.com/DFKI-NI/rospy_message_converter.git
+    version: jazzy
   fmrico/yaets:
     type: git
     url: https://github.com/fmrico/yaets.git

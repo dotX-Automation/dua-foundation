@@ -115,8 +115,12 @@ repositories:
   dotX-Automation/targets_converter:
     type: git
     url: https://github.com/dotX-Automation/targets_converter.git
-    version: v1.1.2
+    version: v1.1.4
   dotX-Automation/transitions_ros:
     type: git
     url: https://github.com/dotX-Automation/transitions_ros.git
     version: v1.2.0
+  dotX-Automation/zenoh_json_bridge:
+    type: git
+    url: https://github.com/dotX-Automation/zenoh_json_bridge.git
+    version: v1.0.0
