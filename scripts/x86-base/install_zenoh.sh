@@ -73,7 +73,7 @@ if [ "$BASE_UNIT" = "x86-base" ]; then
   ldconfig
 
   # Install Zenoh Python API
-  pip install eclipse-zenoh
+  pip install eclipse-zenoh=="${ZENOH_VERSION}"
 
   # Build and install Zenoh C API, cleanup
   git clone --depth 1 --single-branch \
