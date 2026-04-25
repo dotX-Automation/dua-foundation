@@ -73,7 +73,12 @@ if [ "$BASE_UNIT" = "jetson5" ]; then
   ldconfig
 
   # Install Zenoh Python API
-  pip install eclipse-zenoh=="${ZENOH_VERSION}"
+  # NOTE: We have to install version 1.5.1 here, since it is the last one shipping
+  #       with a cp38-compatible wheel.
+  #       It is never going to be updated, support has been dropped.
+  #       Wire protocol is going to stay consistent among 1.x versions, but
+  #       newer fancy API will not make it here.
+  pip install eclipse-zenoh==1.5.1
 
   # Build and install Zenoh C API, cleanup
   git clone --depth 1 --single-branch \
