@@ -127,7 +127,7 @@ repositories:
   dotX-Automation/teleop_uxv_joy:
     type: git
     url: https://github.com/dotX-Automation/teleop_uxv_joy.git
-    version: v1.1.0
+    version: v1.2.0
   dotX-Automation/transitions_ros:
     type: git
     url: https://github.com/dotX-Automation/transitions_ros.git
