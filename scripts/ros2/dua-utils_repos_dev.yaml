@@ -64,6 +64,10 @@ repositories:
     type: git
     url: https://github.com/dotX-Automation/dua_qos.git
     version: v1.0.2
+  dotX-Automation/dua_ros_topic_tools:
+    type: git
+    url: https://github.com/dotX-Automation/dua_ros_topic_tools.git
+    version: v2.0.0
   dotX-Automation/dua_rviz_plugins:
     type: git
     url: https://github.com/dotX-Automation/dua_rviz_plugins.git
@@ -127,7 +131,7 @@ repositories:
   dotX-Automation/teleop_uxv_joy:
     type: git
     url: https://github.com/dotX-Automation/teleop_uxv_joy.git
-    version: v1.2.0
+    version: v1.2.3
   dotX-Automation/transitions_ros:
     type: git
     url: https://github.com/dotX-Automation/transitions_ros.git
