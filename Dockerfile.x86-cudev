@@ -76,11 +76,11 @@ RUN /opt/scripts/stage2.sh
 
 # Build and install dua-utils
 # The ARG allows us to break cache and rebuild from here upon each new version
-ARG DUA_UTILS_VERSION=20260628-1837
+ARG DUA_UTILS_VERSION=20260714-1215
 COPY scripts/ros2/build_dua_utils.sh /opt/build_dua_utils.sh
 COPY scripts/ros2/dua-utils_repos_dev.yaml /opt/dua-utils_repos_dev.yaml
 RUN . /opt/dua-venv/bin/activate && \
-  /opt/build_dua_utils.sh jazzy /opt/dua-utils_repos_dev.yaml && \
+  /opt/build_dua_utils.sh dev jazzy /opt/dua-utils_repos_dev.yaml && \
   chgrp internal /opt/build_dua_utils.sh && \
   chmod g+rwx /opt/build_dua_utils.sh && \
   chgrp internal /opt/dua-utils_repos_dev.yaml && \

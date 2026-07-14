@@ -28,15 +28,22 @@ sudo apt-get install -y --no-install-recommends \
   libzmq3-dev
 sudo rm -rf /var/lib/apt/lists/* /var/tmp/*/apt/lists/*
 
+# Get base unit type as argument
+BASE_UNIT_TYPE="${1-}"
+if [ -z "$BASE_UNIT_TYPE" ]; then
+  echo "No base unit type specified"
+  exit 1
+fi
+
 # Get ROS 2 version as argument
-ROS_DISTRO="${1-}"
+ROS_DISTRO="${2-}"
 if [ -z "$ROS_DISTRO" ]; then
   echo "No ROS 2 version specified"
   exit 1
 fi
 
 # Get the repos file as argument
-REPOS_FILE="${2-}"
+REPOS_FILE="${3-}"
 if [ -z "$REPOS_FILE" ]; then
   echo "No repos file specified"
   exit 1
@@ -56,14 +63,127 @@ fi
 mkdir -p /opt/ros/dua-utils/src
 cd /opt/ros/dua-utils
 vcs import --input $REPOS_FILE src
-colcon build --merge-install \
-  --ament-cmake-args \
-    "-DBTCPP_BUILD_TOOLS=OFF" \
-    "-DBTCPP_EXAMPLES=OFF" \
-    "-DBTCPP_GROOT_INTERFACE=ON" \
-    "-DBTCPP_SHARED_LIBS=ON" \
-    "-DBTCPP_SQLITE_LOGGING=ON" \
-    "-DBUILD_TESTING=OFF"
+if [ "$BASE_UNIT_TYPE" = "base" ]; then
+  # Thidparty libraries and dependencies
+  colcon build --merge-install \
+    --ament-cmake-args \
+      "-DBTCPP_BUILD_TOOLS=OFF" \
+      "-DBTCPP_EXAMPLES=OFF" \
+      "-DBTCPP_GROOT_INTERFACE=ON" \
+      "-DBTCPP_SHARED_LIBS=ON" \
+      "-DBTCPP_SQLITE_LOGGING=ON" \
+      "-DBUILD_TESTING=OFF" \
+    --packages-up-to \
+      behaviortree_cpp
+
+  # Interfaces
+  colcon build --merge-install --packages-up-to \
+    dua_aircraft_interfaces \
+    dua_common_interfaces \
+    dua_geometry_interfaces \
+    dua_hardware_interfaces \
+    dua_mission_interfaces \
+    dua_movement_interfaces \
+    dua_uxv_interfaces
+
+  # Core libraries
+  colcon build --merge-install --packages-up-to \
+    dua_app_management \
+    dua_cv_bridge \
+    dua_math \
+    dua_node_cpp \
+    dua_node_py \
+    dua_pcl \
+    dua_qos_cpp \
+    dua_qos_py \
+    dua_structures_cpp \
+    dua_tf_server \
+    params_manager_cpp \
+    params_manager_py \
+    pose_kit \
+    simple_actionclient_cpp \
+    simple_actionclient_py \
+    simple_serviceclient_cpp \
+    simple_serviceclient_py
+
+  # Additional libraries
+  colcon build --merge-install --packages-up-to \
+    dua_behaviortree_cpp \
+    dynamic_systems \
+    polynomial_kit \
+    transitions_ros
+
+  # Nodes
+  colcon build --merge-install --packages-up-to \
+    dua_ros_topic_tools \
+    navsat_converter \
+    pose_solver \
+    scan_deskewer \
+    targets_converter
+elif [ "$BASE_UNIT_TYPE" = "dev" ]; then
+  # Thidparty libraries and dependencies
+  colcon build --merge-install \
+    --ament-cmake-args \
+      "-DBTCPP_BUILD_TOOLS=OFF" \
+      "-DBTCPP_EXAMPLES=OFF" \
+      "-DBTCPP_GROOT_INTERFACE=ON" \
+      "-DBTCPP_SHARED_LIBS=ON" \
+      "-DBTCPP_SQLITE_LOGGING=ON" \
+      "-DBUILD_TESTING=OFF" \
+    --packages-up-to \
+      behaviortree_cpp
+
+  # Interfaces
+  colcon build --merge-install --packages-up-to \
+    dua_aircraft_interfaces \
+    dua_common_interfaces \
+    dua_geometry_interfaces \
+    dua_hardware_interfaces \
+    dua_mission_interfaces \
+    dua_movement_interfaces \
+    dua_uxv_interfaces
+
+  # Core libraries
+  colcon build --merge-install --packages-up-to \
+    dua_app_management \
+    dua_cv_bridge \
+    dua_math \
+    dua_node_cpp \
+    dua_node_py \
+    dua_pcl \
+    dua_qos_cpp \
+    dua_qos_py \
+    dua_structures_cpp \
+    dua_tf_server \
+    params_manager_cpp \
+    params_manager_py \
+    pose_kit \
+    simple_actionclient_cpp \
+    simple_actionclient_py \
+    simple_serviceclient_cpp \
+    simple_serviceclient_py
+
+  # Additional libraries
+  colcon build --merge-install --packages-up-to \
+    camera_calibration \
+    dua_behaviortree_cpp \
+    dua_rviz_plugins \
+    dynamic_systems \
+    polynomial_kit \
+    transitions_ros
+
+  # Nodes
+  colcon build --merge-install --packages-up-to \
+    dua_ros_topic_tools \
+    navsat_converter \
+    pose_solver \
+    scan_deskewer \
+    targets_converter \
+    teleop_uxv_joy
+else
+  echo "Unknown base unit type specified"
+  exit 1
+fi
 
 # Cleanup
 rm -rf build log
