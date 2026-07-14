@@ -67,7 +67,7 @@ repositories:
   dotX-Automation/dua_ros_topic_tools:
     type: git
     url: https://github.com/dotX-Automation/dua_ros_topic_tools.git
-    version: v2.0.0
+    version: v2.1.0
   dotX-Automation/dua_rviz_plugins:
     type: git
     url: https://github.com/dotX-Automation/dua_rviz_plugins.git
