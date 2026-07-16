@@ -189,17 +189,20 @@ elif [ "$BASE_UNIT_TYPE" = "dev" ]; then
   colcon build --merge-install --packages-up-to \
     camera_calibration \
     dua_behaviortree_cpp \
+    transitions_ros
+  colcon build --merge-install --packages-up-to \
     dua_rviz_plugins \
     dynamic_systems \
-    polynomial_kit \
-    transitions_ros
+    polynomial_kit
 
   # Nodes
   colcon build --merge-install --packages-up-to \
     dua_ros_topic_tools \
-    navsat_converter \
+    navsat_converter
+  colcon build --merge-install --packages-up-to \
     pose_solver \
-    scan_deskewer \
+    scan_deskewer
+  colcon build --merge-install --packages-up-to \
     targets_converter \
     teleop_uxv_joy
 else
