@@ -130,17 +130,27 @@ if [ "$BASE_UNIT_TYPE" = "base" ]; then
 
   # Additional libraries
   colcon build --merge-install --packages-up-to \
-    dua_behaviortree_cpp \
-    dynamic_systems \
-    polynomial_kit \
+    dua_btcpp_base \
+    dua_btcpp_nodes \
+    dua_btcpp_types
+  colcon build --merge-install --packages-up-to \
+    btcpp_executor
+  colcon build --merge-install --packages-up-to \
+    dua_behaviortree_cpp
+  colcon build --merge-install --packages-up-to \
     transitions_ros
+  colcon build --merge-install --packages-up-to \
+    dynamic_systems \
+    polynomial_kit
 
   # Nodes
   colcon build --merge-install --packages-up-to \
     dua_ros_topic_tools \
-    navsat_converter \
+    navsat_converter
+  colcon build --merge-install --packages-up-to \
     pose_solver \
-    scan_deskewer \
+    scan_deskewer
+  colcon build --merge-install --packages-up-to \
     targets_converter
 elif [ "$BASE_UNIT_TYPE" = "dev" ]; then
   # Thidparty libraries and dependencies
@@ -187,8 +197,15 @@ elif [ "$BASE_UNIT_TYPE" = "dev" ]; then
 
   # Additional libraries
   colcon build --merge-install --packages-up-to \
+    dua_btcpp_base \
+    dua_btcpp_nodes \
+    dua_btcpp_types
+  colcon build --merge-install --packages-up-to \
+    btcpp_executor
+  colcon build --merge-install --packages-up-to \
+    dua_behaviortree_cpp
+  colcon build --merge-install --packages-up-to \
     camera_calibration \
-    dua_behaviortree_cpp \
     transitions_ros
   colcon build --merge-install --packages-up-to \
     dua_rviz_plugins \
