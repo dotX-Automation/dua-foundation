@@ -28,24 +28,46 @@ sudo apt-get install -y --no-install-recommends \
   libzmq3-dev
 sudo rm -rf /var/lib/apt/lists/* /var/tmp/*/apt/lists/*
 
-# Get base unit type as argument
-BASE_UNIT_TYPE="${1-}"
-if [ -z "$BASE_UNIT_TYPE" ]; then
-  echo "No base unit type specified"
-  exit 1
-fi
+# Parse arguments depending on how many were provided
+if [ "$#" -eq 3 ]; then
+  # Three arguments: base unit type, ROS 2 version, repos file (explicit)
+  BASE_UNIT_TYPE="$1"
+  if [ -z "$BASE_UNIT_TYPE" ]; then
+    echo "No base unit type specified"
+    exit 1
+  fi
 
-# Get ROS 2 version as argument
-ROS_DISTRO="${2-}"
-if [ -z "$ROS_DISTRO" ]; then
-  echo "No ROS 2 version specified"
-  exit 1
-fi
+  ROS_DISTRO="$2"
+  if [ -z "$ROS_DISTRO" ]; then
+    echo "No ROS 2 version specified"
+    exit 1
+  fi
 
-# Get the repos file as argument
-REPOS_FILE="${3-}"
-if [ -z "$REPOS_FILE" ]; then
-  echo "No repos file specified"
+  REPOS_FILE="$3"
+  if [ -z "$REPOS_FILE" ]; then
+    echo "No repos file specified"
+    exit 1
+  fi
+elif [ "$#" -eq 2 ]; then
+  # Two arguments: ROS 2 version and repos file; infer the base unit type
+  # from the repos file name
+  ROS_DISTRO="$1"
+  REPOS_FILE="$2"
+
+  case "${REPOS_FILE##*/}" in
+    *base*)
+      BASE_UNIT_TYPE="base"
+      ;;
+    *dev*)
+      BASE_UNIT_TYPE="dev"
+      ;;
+    *)
+      echo "Cannot infer base unit type from repos file name '$REPOS_FILE'"
+      exit 1
+      ;;
+  esac
+else
+  echo "Usage: $0 <base_unit_type> <ros_distro> <repos_file> | <ros_distro> <repos_file>"
   exit 1
 fi
 
