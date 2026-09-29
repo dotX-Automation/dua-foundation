@@ -128,7 +128,7 @@ if [ "$BASE_UNIT_TYPE" = "base" ]; then
     simple_serviceclient_cpp \
     simple_serviceclient_py
 
-  # Additional libraries
+  # Additional libraries and packages
   colcon build --merge-install --packages-up-to \
     dua_btcpp_base \
     dua_btcpp_nodes \
@@ -195,7 +195,7 @@ elif [ "$BASE_UNIT_TYPE" = "dev" ]; then
     simple_serviceclient_cpp \
     simple_serviceclient_py
 
-  # Additional libraries
+  # Additional libraries and packages
   colcon build --merge-install --packages-up-to \
     dua_btcpp_base \
     dua_btcpp_nodes \
@@ -205,7 +205,7 @@ elif [ "$BASE_UNIT_TYPE" = "dev" ]; then
   colcon build --merge-install --packages-up-to \
     dua_behaviortree_cpp
   colcon build --merge-install --packages-up-to \
-    camera_calibration \
+    dua_camera_calibration \
     transitions_ros
   colcon build --merge-install --packages-up-to \
     dua_rviz_plugins \
