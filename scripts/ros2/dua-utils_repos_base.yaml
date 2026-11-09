@@ -23,7 +23,7 @@ repositories:
   dotX-Automation/dua_cv_bridge:
     type: git
     url: https://github.com/dotX-Automation/dua_cv_bridge.git
-    version: v1.1.1
+    version: v2.0.0
   dotX-Automation/dua_geometry_interfaces:
     type: git
     url: https://github.com/dotX-Automation/dua_geometry_interfaces.git
@@ -123,7 +123,7 @@ repositories:
   dotX-Automation/transitions_ros:
     type: git
     url: https://github.com/dotX-Automation/transitions_ros.git
-    version: v1.2.0
+    version: v1.2.1
   dotX-Automation/zenoh_json_bridge:
     type: git
     url: https://github.com/dotX-Automation/zenoh_json_bridge.git
