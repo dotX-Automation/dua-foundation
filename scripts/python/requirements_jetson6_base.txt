@@ -34,8 +34,10 @@ empy==3.3.4              # ROS 2 templating
 pybind11-global>=2.10.0  # C++ bindings
 
 # Basic utilities
+# Last Pillow line supporting Python 3.10 (Pillow 13 requires >= 3.11)
 psutil>=5.9.0      # System monitoring
 py-cpuinfo>=9.0.0  # CPU information
 pyyaml>=6.0.0      # YAML parsing
 toml>=0.10.2       # TOML parsing
 urllib3==2.0.2     # HTTP client (specific version for ROS 2)
+pillow==12.3.0     # Image processing

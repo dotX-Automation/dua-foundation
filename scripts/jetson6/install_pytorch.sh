@@ -66,9 +66,19 @@ if [ "$BASE_UNIT" = "jetson6" ]; then
   export FORCE_CUDA=1
   export BUILD_CUDA_SOURCES=1
   export TORCH_CUDA_ARCH_LIST=8.7
-  git clone --branch "v$BUILD_VERSION" https://github.com/pytorch/vision torchvision
+
+  # Runtime deps must already be in the venv: the build below resolves nothing
+  # PIL import needs no GPU, unlike torch's
+  python3 -c "import PIL, numpy" || {
+    echo "ERROR: Pillow and NumPy must be installed before building TorchVision" >&2
+    exit 1
+  }
+
+  git -c advice.detachedHead=false clone --depth 1 --branch "v$BUILD_VERSION" https://github.com/pytorch/vision torchvision
   cd torchvision
-  python3 setup.py install
+  # --no-build-isolation: the build must see the installed torch
+  # --no-deps: never let the build fetch anything
+  pip install --no-cache-dir --no-build-isolation --no-deps -v .
 
   # Build and install Torch-TensorRT
   # Ref.: https://pytorch.org/TensorRT/getting_started/jetpack.html
@@ -95,5 +105,6 @@ if [ "$BASE_UNIT" = "jetson6" ]; then
   rm -rf /opt/torchvision
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 else
-  echo "ERROR: Invalid base unit '$BASE_UNIT'"
+  echo "ERROR: Invalid base unit '$BASE_UNIT'" >&2
+  exit 1
 fi
