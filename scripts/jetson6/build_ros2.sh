@@ -109,6 +109,7 @@ if [ "$BASE_UNIT" = "jetson6" ]; then
     --merge-install \
     --cmake-args \
       -DCMAKE_BUILD_TYPE=Release \
+      -DBUILD_TESTING=OFF \
       -DPython3_EXECUTABLE=$(which python3) \
       -DPython3_LIBRARY=$(python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBPL') + '/' + sysconfig.get_config_var('LDLIBRARY'))") \
       -DPython3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
@@ -117,6 +118,7 @@ if [ "$BASE_UNIT" = "jetson6" ]; then
       -DEigen3_DIR=/usr/local/share/eigen3/cmake \
     --ament-cmake-args \
       -DCMAKE_BUILD_TYPE=Release \
+      -DBUILD_TESTING=OFF \
       -DPython3_EXECUTABLE=$(which python3) \
       -DPython3_LIBRARY=$(python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBPL') + '/' + sysconfig.get_config_var('LDLIBRARY'))") \
       -DPython3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \

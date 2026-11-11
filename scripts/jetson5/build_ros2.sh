@@ -129,6 +129,7 @@ EOF
     --merge-install \
     --cmake-args \
       -DCMAKE_BUILD_TYPE=Release \
+      -DBUILD_TESTING=OFF \
       -DTRACETOOLS_DISABLED=ON \
       -DPython3_EXECUTABLE=$(which python3) \
       -DPython3_LIBRARY=$(python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBPL') + '/' + sysconfig.get_config_var('LDLIBRARY'))") \
@@ -138,6 +139,7 @@ EOF
       -DEigen3_DIR=/usr/local/share/eigen3/cmake \
     --ament-cmake-args \
       -DCMAKE_BUILD_TYPE=Release \
+      -DBUILD_TESTING=OFF \
       -DTRACETOOLS_DISABLED=ON \
       -DPython3_EXECUTABLE=$(which python3) \
       -DPython3_LIBRARY=$(python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBPL') + '/' + sysconfig.get_config_var('LDLIBRARY'))") \
